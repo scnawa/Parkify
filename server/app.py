@@ -29,10 +29,12 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
-
-@APP.route('/hello')
+@APP.route('/')
 def homePage(): 
-    return "Hello"
+    return "home"
+
+
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
