@@ -30,18 +30,42 @@ class User:
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
-        
-
-
-
-
-        user = db.userbase_data.find_one(userData[])
+        #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.insert_one(user):
             return json_util.dumps(user)
 
 
+    def create_listing(self, userData):
+        #check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        listing = {
+            "address": userData['listings']['address'],
+            "price": userData['listings']['price'],
+            "image_url": userData['listings']['image_url'], 
+            "start_date": userData['listings']['start_date'],
+            "end_date": userData['listings']['end_date'],
+            "is_active": userData['listings']['is_active']
+        }
+        user_listings = user['listings']
+        user_listings.append(listing)
+        #user.update({'listings': user_listings})
+        filter = {'email': user['email']}
+        newvalues = {"$set" : {'listings': user_listings}}
+        db.userbase_data.update_one(filter, newvalues)
+        return json_util.dumps(user)
+
+"""
+
+listing: 
+{
+address: "123 abc lane"
 
 
+
+
+}
+
+"""
 
 
 

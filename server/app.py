@@ -46,7 +46,10 @@ def signup():
     userData = json.loads(request.data)
     return config.User().signup(userData)
 
-
+@APP.route('/create_listing', methods = ['POST'])
+def create_listing(): 
+    userData = json.loads(request.data)
+    return config.User().create_listing(userData)
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
