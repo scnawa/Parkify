@@ -27,13 +27,69 @@ class User:
             "listings": userData["listings"], # one list of dictionaries of different listings
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
+            "session_id": []
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
         #user = db.userbase_data.find_one(userData[])
+        if db.userbase_data.find_one({"email": userData['email']}): 
+            return jsonify({'type': "email", "error": "Email already in use"}), 400 
+        
+        if db.userbase_data.find_one({"username": userData['username']}): 
+            return jsonify({'type': "username", "error": "Email already in use"}), 400 
+        
         if db.userbase_data.insert_one(user):
             return json_util.dumps(user)
+        
+        return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400 
+    
 
+    def login(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            if pbkdf2_sha256.verify(userData['password'], user['password']):
+                currentSessionID = uuid.uuid4().hex
+                while user['session_id'].count(currentSessionID) > 0:
+                        currentSessionID = uuid.uuid4().hex
+                # Add session id for the user
+                sessionID_list = user["session_id"]
+                sessionID_list.append(currentSessionID)
+                # Updating Session ID and adding new Session ID per Device
+                #user["currentSessionID"] = currentSessionID
+                db.userbase_data.update_many({'email': user['email']}, {"$set": {"session_id": sessionID_list},})
+                    # Add current session id to the user
+                return json_util.dumps(user)
+            else:
+                return jsonify({"type": "password", "error": "Password Is Incorrect"}), 401
+
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+
+    def logout(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            if not user['session_id'].count(userData['currentSessionID']) > 0: 
+                return jsonify({'error': "Session Does Not Exist"}), 403
+            user['session_id'].remove(userData['currentSessionID'])
+            db.userbase_data.update_one({"email": userData['email']}, {
+                                        "$set": {"session_id": user['session_id']}})
+            return jsonify({'status': "PASS"}), 200
+        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
+    
+
+    def delete_account(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            db.userbase_data.delete_one(user)
+            return jsonify({'status': "PASS"}), 200
+        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402 
+    
+    def resetPass(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            db.userbase_data.update_one({"email": userData['email']}, {"$set": {"password": pbkdf2_sha256.encrypt(user['password'])}})
+            return jsonify({'status': "PASS"}), 200
+        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
+    
 
     def create_listing(self, userData):
         #check if the user exists

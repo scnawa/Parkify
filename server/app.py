@@ -46,10 +46,32 @@ def signup():
     userData = json.loads(request.data)
     return config.User().signup(userData)
 
+@APP.route('/login', methods=['POST'])
+def login(): 
+    userData = json.loads(request.data)
+    return config.User().login(userData)
+
+@APP.route('/logout', methods = ['POST'])
+def logout(): 
+    userData = json.loads(request.data)
+    return config.User().logout(userData)
+
+@APP.route('/deleteAccount', methods = ['DELETE'])
+def delete_account(): 
+    userData = json.loads(request.data)
+    return config.User().delete_account(userData)
+
+@APP.route('/resetPass', methods = ['POST'])
+def resetPass():
+    userData = json.loads(request.data)
+    return config.User().resetPass(userData)
+
+
 @APP.route('/create_listing', methods = ['POST'])
 def create_listing(): 
     userData = json.loads(request.data)
     return config.User().create_listing(userData)
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
