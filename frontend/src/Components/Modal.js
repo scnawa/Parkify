@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
+import NotificationComponent from './NotificationComponent';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 function Modal({ isOpen, toggleModal, content }) {
   const [modal, setModal] = useState(isOpen);
@@ -22,18 +24,19 @@ function Modal({ isOpen, toggleModal, content }) {
 
   return (
     <>
-      {modal && (
-        <div className="modal">
-          <div onClick={toggleModal} className="overlay"></div>
-          <div className="modal-content">
-            <h2>Hello Modal</h2>
-            <p>{content}</p>
-            <button className="close-modal" onClick={toggleModal}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+        <NotificationsIcon onClick={toggleModal} className="btn-modal" />
+        {modal && (
+            <div className="modal">
+            <div onClick={toggleModal} className="overlay"></div>
+            <div className="modal-content">
+                <h2>Hello Modal</h2>
+                <p>New Listing: 555 York St Sydney{content}</p>
+                <button className="close-modal" onClick={toggleModal}>
+                Close
+                </button>
+            </div>
+            </div>
+        )}
     </>
   );
 }

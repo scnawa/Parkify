@@ -24,15 +24,16 @@ body.active-modal {
 }
 .modal-content {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     line-height: 1.4;
     background: #f1f1f1;
     padding: 14px 28px;
     border-radius: 3px;
-    max-width: 600px;
-    min-width: 300px;
+    width: 400px;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 .close-modal {
@@ -41,3 +42,31 @@ body.active-modal {
     right: 10px;
     padding: 5px 7px;
 }
+
+/***********Notification***********/
+.notification-component {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .notification-content {
+    flex-grow: 1;
+  }
+  
+  .read-button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .read-button:hover {
+    background-color: #0056b3;
+  }
