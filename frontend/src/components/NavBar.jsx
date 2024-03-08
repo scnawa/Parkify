@@ -93,7 +93,6 @@ function NavBar() {
                             component="a"
                             sx={{
                                 mr: 1.8,
-                                // display: { xs: 'none', md: 'flex' },
                                 fontWeight: 700,
                                 letterSpacing: '.2rem',
                                 fontFamily: 'future',
