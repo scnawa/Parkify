@@ -1,9 +1,12 @@
+
+import React from 'react';
 import './App.css';
+
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import PageList from './PageList';
 
-function App() {
+const App = () => {
   return (
     <>
       <Router>
@@ -11,7 +14,6 @@ function App() {
       </Router>
     </>
   );
-
 }
 
 export default App;
