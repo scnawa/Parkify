@@ -46,6 +46,11 @@ def signup():
     userData = json.loads(request.data)
     return config.User().signup(userData)
 
+@APP.route('/signup/verify', methods = ['POST'])
+def verify_email(): 
+    userData = json.loads(request.data)
+    return helper.sendVerificationEmail(userData['email'], userData['username'], 'verification')
+
 @APP.route('/login', methods=['POST'])
 def login(): 
     userData = json.loads(request.data)
