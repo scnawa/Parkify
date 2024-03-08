@@ -2,9 +2,9 @@ import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import CreateListings from './components/CreateListings';
 import NavBar from './components/NavBar';
-import Login from './Components/Login';
-import Signup from './Components/Signup';
-import AdminDashboard from './Components/AdminDashboard';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import AdminDashboard from './components/AdminDashboard';
 
 
 const PageList = () => {
