@@ -44,7 +44,7 @@ function NavBar() {
         setnotiLocation(event.currentTarget);
     };
     const userMenuClose = (event) => {
-        setnotiLocation(null);
+        setUserMenuLocation(null);
     }
     // TODO: navigate different page
     const pageOnClick = (e) => {
