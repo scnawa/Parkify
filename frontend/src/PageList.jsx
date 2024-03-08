@@ -5,7 +5,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import Login from './Components/Login';
 import Signup from './Components/Signup';
 import AdminDashboard from './Components/AdminDashboard';
-import ProfilePage from './Components/ProfilePage';
+import ProfilePage from './Components/profilePage';
 
 
 const PageList = () => {

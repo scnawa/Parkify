@@ -1,43 +1,114 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import './ProfilePage.css'
+import defaultProfilePicture from '../.././src/assets/user.png'
 
-function ProfilePage() {
-  return (
-    <div>
-      <h2>Profile Page</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-        </label>
-        <br />
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-        </label>
-        <br />
-        <label>
-          Bio:
-          <textarea
-            name="bio"
-            value={formData.bio}
-            onChange={handleInputChange}
-          />
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  )
-}
+const ProfilePage = () => {
+
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        });
+    
+    useEffect(() => {
+        // async/await
+        const userData = {
+            name: 'Dru',
+            email: 'Dru@hotmail.com',
+        };
+
+        // Update the state with user data
+        setFormData(userData);
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        };
+    
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Create FormData object to send mixed content (text + files)
+        // Append profile picture if selected
+        // await async
+        console.log('Form submitted:', formData);
+        };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setProfilePicture(file);
+    };
+
+    const handleDeleteProfile = () => {
+        // Add logic here to handle profile deletion
+        console.log('Profile deleted');
+      };
+
+    return (
+        <div className='container'>
+            <div className="left-box">
+                <div className='profile-picture'>
+                    {profilePicture ? (
+                        <img src={URL.createObjectURL(profilePicture)} alt="Profile" />
+                    ) : (
+                        <img src={defaultProfilePicture} alt="Profile"/>
+                    )}
+                </div>
+                <button
+                        className="upload-button"
+                        onClick={() => document.getElementById('profileImageInput').click()}
+                    >
+                        Change Image
+                    </button>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        id="profileImageInput"
+                        onChange={handleImageChange}
+                        style={{ display: 'none' }}
+                    />  
+            </div>
+            <div className='right-box'>
+                <div className='form-container'>
+                    <form onSubmit={handleSubmit}>
+                        <label>
+                        Name:
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                        />
+                        </label>
+                        <label>
+                        Email:
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
+                        </label>
+                        <h3>Add Payment</h3>
+                        <div class="card-number">
+                            <label> BSB: </label>
+                            <input type="text" class="card-number-field"
+                                placeholder="000-000" />
+                        </div>
+                        <div class="date-number">
+                            <label> ACC #: </label>
+                            <input type="text" class="date-number-field"
+                                placeholder="0123456789" />
+                        </div>
+                        <button type="submit" className="submit-profile-button">Save Changes</button>
+                    </form>
+                    <button onClick={handleDeleteProfile} className="delete-profile-button">
+                        Delete Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+        )
+    }
 
 export default ProfilePage;

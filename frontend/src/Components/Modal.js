@@ -4,7 +4,7 @@ import './Modal.css';
 import NotificationComponent from './NotificationComponent';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-function Modal({ isOpen, toggleModal, content }) {
+const Modal = ({ isOpen, toggleModal, content }) => {
   const [modal, setModal] = useState(isOpen);
 
   useEffect(() => {
