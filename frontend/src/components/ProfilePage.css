@@ -1,9 +1,13 @@
-body {
+/* body {
     background-color: grey;
     background-image: url('../assets/car.png');
     background-size: cover;
-}
+} */
 .container {
+    background-color: grey;
+    background-image: url('../assets/car.png');
+    background-size: cover;
+
     background-color: #ffffff;
     display: flex;
     justify-content: space-around;

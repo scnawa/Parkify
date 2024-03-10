@@ -18,7 +18,6 @@ function Login(props) {
   const [password, setPassword] = React.useState('');
   const navigate = useNavigate();
 
-  
   const handleLogin = async () => {
     try {
       const response = await fetch('/login', {
@@ -37,6 +36,8 @@ function Login(props) {
       if (data.error) {
         alert(data.error);
       } else {
+        props.setToken(data.email);
+
         navigate('/');
       }
 

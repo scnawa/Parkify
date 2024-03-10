@@ -18,6 +18,7 @@ from PIL import Image
 import googlemaps
 from operator import length_hint
 import pandas as pd
+import sys
 
 class User: 
     def signup(self, userData): 
@@ -52,9 +53,13 @@ class User:
         user = db.userbase_data.find_one({"email": userData['email']})
         if "isVerified" in userData: 
             user['isVerified'] = userData['isVerified']
+
             db.userbase_data.update_one({"email": userData['email']}, {
                                         "$set": {"isVerified": user['isVerified']}})
         if user: 
+            if user['isVerified'] == False: 
+                return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
+        
             if pbkdf2_sha256.verify(userData['password'], user['password']):
                 if user['isVerified'] == False: 
                     return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
@@ -129,9 +134,9 @@ class User:
             return json_util.dumps(listing["listing_id"])
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def deactivate_listing(self, userData):
+    def deactivate_listing(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -148,9 +153,9 @@ class User:
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def activate_listing(self, userData):
+    def activate_listing(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -167,9 +172,9 @@ class User:
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def delete_listing(self, userData):
+    def delete_listing(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -190,9 +195,9 @@ class User:
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
-    def update_listing(self, userData):
+    def update_listing(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -220,16 +225,16 @@ class User:
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def get_listings(self, userData):
+    def get_listings(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         if user: 
             return json_util.dumps(user['listings'])
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
-    def get_listing(self, userData):
+    def get_listing(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -240,6 +245,5 @@ class User:
                 return json_util.dumps(user_listings[listing_no])
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
-
 
 
