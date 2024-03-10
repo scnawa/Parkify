@@ -49,7 +49,8 @@ def signup():
 @APP.route('/signup/verify', methods = ['POST'])
 def verify_email(): 
     userData = json.loads(request.data)
-    return helper.sendVerificationEmail(userData['email'], userData['username'], 'verification')
+    username = config.User().getUsername(userData)
+    return helper.sendVerificationEmail(userData['email'], username, 'verification')
 
 
 
@@ -69,6 +70,13 @@ def delete_account():
     return config.User().delete_account(userData)
 
 @APP.route('/resetPass', methods = ['POST'])
+def resetPass():
+    userData = json.loads(request.data)
+    return config.User().resetPass(userData)
+
+
+
+APP.route('/resetPass', methods = ['POST'])
 def resetPass():
     userData = json.loads(request.data)
     return config.User().resetPass(userData)
@@ -114,6 +122,7 @@ def get_listings():
 def get_listing(): 
     userData = request.headers
     return config.User().get_listing(userData)
+
 
 
 if __name__ == "__main__": 

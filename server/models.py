@@ -36,27 +36,33 @@ class User:
         #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
             return jsonify({'type': "email", "error": "Email already in use"}), 400 
-        
-        if db.userbase_data.find_one({"username": userData['username']}): 
-            return jsonify({'type': "username", "error": "Email already in use"}), 400 
-        
+
         if db.userbase_data.insert_one(user):
             # debugging 
             return json_util.dumps(user)
-        
-        return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400 
+
+        return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
-            
-            
+    def getUsername(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            return user['username']
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
         if "isVerified" in userData: 
             user['isVerified'] = userData['isVerified']
+
+            db.userbase_data.update_one({"email": userData['email']}, {
+                                        "$set": {"isVerified": user['isVerified']}})
         if user: 
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
         
             if pbkdf2_sha256.verify(userData['password'], user['password']):
+                if user['isVerified'] == False: 
+                    return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
                 currentSessionID = uuid.uuid4().hex
                 while user['session_id'].count(currentSessionID) > 0:
                         currentSessionID = uuid.uuid4().hex
@@ -100,6 +106,7 @@ class User:
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
     
 
+    
     def create_listing(self, userData):
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
