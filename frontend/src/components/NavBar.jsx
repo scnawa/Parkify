@@ -51,7 +51,7 @@ function NavBar() {
         const text = e.target.innerText;
         switch (text) {
             case "RENT OUT YOUR SLOT":
-                navigate("/");
+                navigate("/myListing");
                 break;
             case "PARKING":
                 navigate("/");
@@ -110,6 +110,7 @@ function NavBar() {
                                         fontFamily: 'time',
                                         letterSpacing: '.06rem',
                                     }}>
+                                        
                                     {item}
                                 </Button>
                             ))}

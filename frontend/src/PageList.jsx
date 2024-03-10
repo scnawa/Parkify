@@ -5,7 +5,11 @@ import NavBar from './components/NavBar';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import AdminDashboard from './components/AdminDashboard';
+
 import ProfilePage from './components/ProfilePage';
+
+import PublishModal from './components/PublishModal';
+import ListingCard from './components/ListingCard';
 
 const PageList = () => {
   const navigate = useNavigate();
@@ -16,6 +20,8 @@ const PageList = () => {
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings/>} />
+        <Route path="/myListing" element={<PublishModal/>} />
+        <Route path="/testing" element={<ListingCard/>} />
 
         <Route path="/login" element={<Login  />} />
         <Route path="/signup" element={<Signup  />} />
