@@ -48,11 +48,11 @@ function CreateListings(props) {
 					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" />
 					<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} />
 					<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} />
-					<CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" />
+					{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
 					<p></p>
 
 					<FileInputField multiple={false} setImage={setThumbnail} content="Upload Thumbnail" />
-					<FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" />
+					{/* <FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" /> */}
 					<p></p>
 
 					<Button variant="outlined" color="secondary" type="submit">Create</Button>
