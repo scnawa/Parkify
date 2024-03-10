@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Typography, Box, createTheme, ThemeProvider } from '@mui/material';
 
@@ -19,6 +19,30 @@ function Verify(props) {
   const [code, setCode] = useState(Array(6).fill(''));
   const navigate = useNavigate();
   const inputRefs = useRef(Array(6).fill(0).map(() => React.createRef()));
+  const [confirmedCode, setConfirmedCode] = useState('')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/signup/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            username: username,
+          }),
+        });
+        const data = await response.json();
+        setConfirmedCode(data);
+      } catch (error) {
+        console.error('An error occurred during verification:', error);
+      }
+    };
+  
+    fetchData();
+  }, [email, username]);
 
   const handleInput = (e, index) => {
     const { value } = e.target;
@@ -45,20 +69,9 @@ function Verify(props) {
       return;
     }
 
-    try {
-      const response = await fetch('/signup/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          username: username
-        }),
-      });
-      const data = await response.json();
-      
-      if (verificationCode === data) {
+
+    if (parseInt(verificationCode) === parseInt(confirmedCode)) {
+      try {
         const response = await fetch('/login', {
           method: 'POST',
           headers: {
@@ -70,14 +83,18 @@ function Verify(props) {
             isVerified: true
           }),
         });
-        const dataLogin = await response.json();
-        navigate('/');
-      } else {
-        alert('Invalid verification code, please try again.');
-        // or alert(data.error)
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+        } else {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('An error occurred during login:', error);
       }
-    } catch (error) {
-      console.error('An error occurred during verification:', error);
+    }
+    else {
+      alert('Invalid verification code, please try again.');
     }
   };
 
@@ -126,4 +143,4 @@ function Verify(props) {
   );
 }
 
-export default Verify;
+export default Verify

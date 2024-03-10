@@ -31,15 +31,22 @@ function Login(props) {
           password: password,
         }),
       });
+      
+      
       const data = await response.json();
       if (data.error) {
         alert(data.error);
       } else {
         navigate('/');
       }
+
+      if (response.status === 405) {
+        navigate('/verify', { state: { email: email, username: '', password: password } });
+        return;
+      }
       
     } catch (error) {
-        console.error('An error occurred during signup:', error);
+      console.error('An error occurred during signup:', error);
     }
   };
 
