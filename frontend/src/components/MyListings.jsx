@@ -25,6 +25,7 @@ function MyListings(props) {
 		if (!props.token) {
 			navigate('/login');
 		}
+		console.log("triggered");
 		const fetchListings = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/get_listings', {
@@ -41,6 +42,7 @@ function MyListings(props) {
 					alert(data.error);
 				} else {
 					setListings(data);
+					return data
 				}
 			} catch (error) {
 				console.error(error);
@@ -49,6 +51,7 @@ function MyListings(props) {
 
 		fetchListings();
 	}, []);
+
 	const createOnClick = () => {
 		navigate('/create-listings')
 	};
