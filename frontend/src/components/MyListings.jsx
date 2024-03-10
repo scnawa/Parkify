@@ -21,7 +21,6 @@ function MyListings(props) {
 			navigate('/login');
 		}
 	}, [props.token]);
-
 	React.useEffect(() => {
 		if (!props.token) {
 			navigate('/login');
@@ -53,6 +52,7 @@ function MyListings(props) {
 	const createOnClick = () => {
 		navigate('/create-listings')
 	};
+
 	return (
 		<>
 			<ThemeProvider theme={theme}>
@@ -68,9 +68,11 @@ function MyListings(props) {
 
 
 			<Grid container spacing={1.5} sx={{}}>
-				{listings.map((listing, key) => {
-					return (<Grid item xs={12} sm={6} md={4} key={key}>
-						<ListingCard token={props.token} listing={listing} listings={listings} setListings={setListings} />
+				{listings.map((listing) => {
+					// the key is somehow nessary for the child component to render
+					// https://stackoverflow.com/questions/73577213/list-components-not-rendering-properly-after-applying-array-filter-reactjs
+					return (<Grid key={listing.listing_id} item xs={12} sm={6} md={4}>
+						<ListingCard key={listing.listing_id} token={props.token} listing={listing} listings={listings} setListings={setListings} />
 					</Grid>)
 				})}
 			</Grid>
