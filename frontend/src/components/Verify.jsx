@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Typography, Box, createTheme, ThemeProvider } from '@mui/material';
 
 const theme = createTheme({
@@ -14,6 +14,8 @@ const theme = createTheme({
 });
 
 function Verify(props) {
+  const location = useLocation();
+  const { email, username, password } = location.state || {};
   const [code, setCode] = useState(Array(6).fill(''));
   const navigate = useNavigate();
   const inputRefs = useRef(Array(6).fill(0).map(() => React.createRef()));
@@ -44,18 +46,32 @@ function Verify(props) {
     }
 
     try {
-      const response = await fetch('/verify', {
+      const response = await fetch('/signup/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code: verificationCode,
+          email: email,
+          username: username
         }),
       });
       const data = await response.json();
-      if (data.success) {
-        navigate('/'); 
+      
+      if (verificationCode === data) {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            isVerified: true
+          }),
+        });
+        const dataLogin = await response.json();
+        navigate('/');
       } else {
         alert('Invalid verification code, please try again.');
       }

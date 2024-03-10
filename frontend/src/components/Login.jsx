@@ -19,9 +19,24 @@ function Login(props) {
   const navigate = useNavigate();
 
   
-  const handleLogin = () => {
-    // will implement login logic here when backend is finished
-    // navigate('/dashboard'); // Navigate on successful login
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+      const data = await response.json();
+      navigate('/');
+      
+    } catch (error) {
+        console.error('An error occurred during signup:', error);
+    }
   };
 
   return (
