@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import AdminDashboard from './components/AdminDashboard';
 import ProfilePage from './components/ProfilePage';
+import Verify from './components/Verify';
 
 const PageList = () => {
   const navigate = useNavigate();
@@ -16,11 +17,11 @@ const PageList = () => {
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings/>} />
-
         <Route path="/login" element={<Login  />} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
         <Route path="/profilepage" element={<ProfilePage/>} />
+        <Route path="/verify" element={<Verify/>} />
       </Routes>
     </>
   );

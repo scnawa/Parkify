@@ -27,27 +27,35 @@ class User:
             "listings": userData["listings"], # one list of dictionaries of different listings
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
-            "session_id": []
+            "session_id": [],
+            "isVerified" : False
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
         #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
             return jsonify({'type': "email", "error": "Email already in use"}), 400 
-        
+
         if db.userbase_data.find_one({"username": userData['username']}): 
             return jsonify({'type': "username", "error": "Email already in use"}), 400 
-        
+
         if db.userbase_data.insert_one(user):
+            # debugging 
             return json_util.dumps(user)
-        
-        return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400 
+
+        return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
 
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
+        if "isVerified" in userData: 
+            user['isVerified'] = userData['isVerified']
+            db.userbase_data.update_one({"email": userData['email']}, {
+                                        "$set": {"isVerified": user['isVerified']}})
         if user: 
             if pbkdf2_sha256.verify(userData['password'], user['password']):
+                if user['isVerified'] == False: 
+                    return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
                 currentSessionID = uuid.uuid4().hex
                 while user['session_id'].count(currentSessionID) > 0:
                         currentSessionID = uuid.uuid4().hex

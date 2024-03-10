@@ -22,10 +22,39 @@ function Signup(props) {
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const navigate = useNavigate();
 
-  const handleSignup = () => {
-    // will implement signup logic here when backend finished
-    // navigate('/dashboard'); // Navigate on successful signup
-  };
+  const handleSignup = async () => {
+    if (password !== confirmPassword) {
+      alert('Passwords need to match!'); // set password fields to red?
+      return;
+    }
+
+    try {
+      const response = await fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers as needed
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          password: password,
+          listings: [],
+          creditCards: [],
+          session_id: [],
+        }),
+      });
+      const data = await response.json();
+      if (data.error) {
+        alert(data.error);
+      } else {
+        navigate('/verify', { state: { email: email, username: username, password: password } });
+      }
+      
+    } catch (error) {
+        console.error('An error occurred during signup:', error);
+    }
+};
 
   return (
     <ThemeProvider theme={theme}>
