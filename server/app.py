@@ -77,6 +77,39 @@ def create_listing():
     userData = json.loads(request.data)
     return config.User().create_listing(userData)
 
+APP.route('/resetPass', methods = ['POST'])
+def resetPass():
+    userData = json.loads(request.data)
+    return config.User().resetPass(userData)
+
+
+@APP.route('/create_listing', methods = ['POST'])
+def create_listing(): 
+    userData = json.loads(request.data)
+    return config.User().create_listing(userData)
+
+@APP.route('/deactivate_listing', methods = ['POST'])
+def deactivate_listing(): 
+    userData = json.loads(request.data)
+    return config.User().deactivate_listing(userData)
+
+@APP.route('/activate_listing', methods = ['POST'])
+def activate_listing(): 
+    userData = json.loads(request.data)
+    return config.User().activate_listing(userData)
+
+@APP.route('/delete_listing', methods = ['POST'])
+def delete_listing(): 
+    userData = json.loads(request.data)
+    return config.User().delete_listing(userData)
+
+@APP.route('/update_listing', methods = ['POST'])
+def update_listing(): 
+    userData = json.loads(request.data)
+    return config.User().update_listing(userData)
+
+
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
