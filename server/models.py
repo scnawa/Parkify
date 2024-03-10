@@ -102,26 +102,29 @@ class User:
     def create_listing(self, userData):
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
 
-        listing = {
-            "listing_id": uuid.uuid4().hex,
-            "listing_no": len(user['listings']),
-            "address": userData['listings']['address'],
-            "price": userData['listings']['price'],
-            "quantity": userData['listings']['quantity'],
-            "details": userData['listings']['details'],
-            "image_url": userData['listings']['image_url'], 
-            "start_date": userData['listings']['start_date'],
-            "end_date": userData['listings']['end_date'],
-            "is_active": 'False'
-            
-        }
-        user_listings = user['listings']
-        user_listings.append(listing)
-        filter = {'email': user['email']}
-        newvalues = {"$set" : {'listings': user_listings}}
-        db.userbase_data.update_one(filter, newvalues)
-        return json_util.dumps(user)
+            listing = {
+                "listing_id": uuid.uuid4().hex,
+                "listing_no": len(user['listings']),
+                "address": userData['listings']['address'],
+                "price": userData['listings']['price'],
+                "quantity": userData['listings']['quantity'],
+                "details": userData['listings']['details'],
+                "restrictions": userData['listings']['restrictions'],
+                "image_url": userData['listings']['image_url'], 
+                "start_date": "",
+                "end_date": "",
+                "is_active": 'False' 
+            }
+
+            user_listings = user['listings']
+            user_listings.append(listing)
+            filter = {'email': user['email']}
+            newvalues = {"$set" : {'listings': user_listings}}
+            db.userbase_data.update_one(filter, newvalues)
+            return json_util.dumps(listing["listing_id"])
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def deactivate_listing(self, userData):
         # check if the user exists
@@ -130,14 +133,17 @@ class User:
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
 
-        if listingFound:
-            listing_no = userData["listings"]["listing_no"] 
-            user_listings[listing_no].update({'is_active': "False"})
-            filter = {'email': user['email']}
-            newvalues = {"$set" : {'listings': user_listings}}
-            db.userbase_data.update_one(filter, newvalues)
-            return json_util.dumps(user)
-        return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        if user:
+
+            if listingFound:
+                listing_no = userData["listings"]["listing_no"] 
+                user_listings[listing_no].update({'start_date': "", 'end_date': "", 'is_active': "False"})
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user)
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def activate_listing(self, userData):
         # check if the user exists
@@ -146,14 +152,17 @@ class User:
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
 
-        if listingFound:
-            listing_no = userData["listings"]["listing_no"] 
-            user_listings[listing_no].update({'is_active': "True"})
-            filter = {'email': user['email']}
-            newvalues = {"$set" : {'listings': user_listings}}
-            db.userbase_data.update_one(filter, newvalues)
-            return json_util.dumps(user)
-        return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        if user:
+            if listingFound:
+                
+                listing_no = userData["listings"]["listing_no"] 
+                user_listings[listing_no].update({'start_date': userData['listings']['start_date'], 'end_date': userData['listings']['end_date'], 'is_active': "True"})
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user)
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def delete_listing(self, userData):
         # check if the user exists
@@ -161,45 +170,72 @@ class User:
         # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
-        if listingFound: 
-            listing_no = userData["listings"]["listing_no"]
-            listing_length = len(user['listings'])
-            user_listings.remove(user_listings[listing_no])
-            listing_length = len(user['listings'])
-            while listing_no < listing_length:
-                user_listings[listing_no].update({'listing_no': user_listings[listing_no]['listing_no'] - 1})
-                listing_no += 1
-                
-            filter = {'email': user['email']}
-            newvalues = {"$set" : {'listings': user_listings}}
-            db.userbase_data.update_one(filter, newvalues)
-            return json_util.dumps(user)
-        return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        if user: 
+            if listingFound: 
+                listing_no = userData["listings"]["listing_no"]
+                listing_length = len(user['listings'])
+                user_listings.remove(user_listings[listing_no])
+                listing_length = len(user['listings'])
+                while listing_no < listing_length:
+                    user_listings[listing_no].update({'listing_no': user_listings[listing_no]['listing_no'] - 1})
+                    listing_no += 1
+                    
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user)
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
     def update_listing(self, userData):
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
         user_listings = user.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
-        if listingFound:
+        if user:
+            if listingFound:
 
-            listing = {
-                "address": userData['listings']['address'],
-                "price": userData['listings']['price'],
-                "quantity": userData['listings']['price'],
-                "details": userData['listings']['details'],
-                "image_url": userData['listings']['image_url'], 
-                "start_date": userData['listings']['start_date'],
-                "end_date": userData['listings']['end_date'],
-                "is_active": userData['listings']['is_active']  
-            }
-            listing_no = userData["listings"]["listing_no"]
-            user_listings = user['listings']
-            user_listings[listing_no].update(listing)
-            filter = {'email': user['email']}
-            newvalues = {"$set" : {'listings': user_listings}}
-            db.userbase_data.update_one(filter, newvalues)
-            return json_util.dumps(user)
-        return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+                listing = {
+                    "address": userData['listings']['address'],
+                    "price": userData['listings']['price'],
+                    "quantity": userData['listings']['price'],
+                    "details": userData['listings']['details'],
+                    "restrictions": userData['listings']['restrictions'],
+                    "image_url": userData['listings']['image_url'], 
+                    "start_date": userData['listings']['start_date'],
+                    "end_date": userData['listings']['end_date'],
+                    "is_active": userData['listings']['is_active']  
+                }
+                listing_no = userData["listings"]["listing_no"]
+                user_listings = user['listings']
+                user_listings[listing_no].update(listing)
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user)
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+    def get_listings(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            return json_util.dumps(user['listings'])
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    def get_listing(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
+        user_listings = user.get('listings')
+        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+
+        if user:
+            if listingFound:
+                listing_no = userData["listings"]["listing_no"] 
+                return json_util.dumps(user_listings[listing_no])
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
 

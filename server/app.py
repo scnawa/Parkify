@@ -99,6 +99,16 @@ def update_listing():
     userData = json.loads(request.data)
     return config.User().update_listing(userData)
 
+@APP.route('/get_listings', methods = ['GET'])
+def get_listings(): 
+    userData = json.loads(request.data)
+    return config.User().get_listings(userData)
+
+@APP.route('/get_listing', methods = ['GET'])
+def get_listing(): 
+    userData = json.loads(request.data)
+    return config.User().get_listing(userData)
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
