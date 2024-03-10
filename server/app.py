@@ -51,6 +51,8 @@ def verify_email():
     userData = json.loads(request.data)
     return helper.sendVerificationEmail(userData['email'], userData['username'], 'verification')
 
+
+
 @APP.route('/login', methods=['POST'])
 def login(): 
     userData = json.loads(request.data)
@@ -76,6 +78,36 @@ def resetPass():
 def create_listing(): 
     userData = json.loads(request.data)
     return config.User().create_listing(userData)
+
+@APP.route('/deactivate_listing', methods = ['POST'])
+def deactivate_listing(): 
+    userData = json.loads(request.data)
+    return config.User().deactivate_listing(userData)
+
+@APP.route('/activate_listing', methods = ['POST'])
+def activate_listing(): 
+    userData = json.loads(request.data)
+    return config.User().activate_listing(userData)
+
+@APP.route('/delete_listing', methods = ['POST'])
+def delete_listing(): 
+    userData = json.loads(request.data)
+    return config.User().delete_listing(userData)
+
+@APP.route('/update_listing', methods = ['POST'])
+def update_listing(): 
+    userData = json.loads(request.data)
+    return config.User().update_listing(userData)
+
+@APP.route('/get_listings', methods = ['GET'])
+def get_listings(): 
+    userData = json.loads(request.data)
+    return config.User().get_listings(userData)
+
+@APP.route('/get_listing', methods = ['GET'])
+def get_listing(): 
+    userData = json.loads(request.data)
+    return config.User().get_listing(userData)
 
 
 if __name__ == "__main__": 
