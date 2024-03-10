@@ -19,8 +19,7 @@ const theme = createTheme({
 
 function ListingCard(props) {
     const [popoverLocation, setPopOverLocation] = useState(false);
-    const [listing, setListing] = useState(props.listing);
-
+    const [listing, _] = useState(props.listing);
     const navigate = useNavigate();
 
     const popoverOnClick = (event) => {
@@ -35,9 +34,8 @@ function ListingCard(props) {
 
                 }
             }
-            console.log(data, props.token);
             try {
-                const response = await fetch('http://localhost:' + '8080' + '/delete_listing', {
+                const response = await fetch('http://localhost:8080/delete_listing', {
                     method: 'DELETE',
                     headers: {
                         'email': props.token,
@@ -48,8 +46,7 @@ function ListingCard(props) {
 
                 const res = await response.json();
                 if (res.error) {
-                    console.log(res.error);
-                    alert(res.error);
+                    return Promise.reject(res.error);
                 } else {
                     return Promise.resolve();
                 }
@@ -63,7 +60,6 @@ function ListingCard(props) {
             alert("listing deleted");
         }).catch(alert);
     }
-    console.log(listing);
     const hadnelEdit = () => {
         navigate('/editListings', { state: { token: props.token, listing: listing } });
 
@@ -72,7 +68,7 @@ function ListingCard(props) {
 
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{ maxWidth: 400, border: 0, boxShadow: 0, borderRadius: 3.5 }}>
+            <Card key={listing.listing_id} sx={{ maxWidth: 400, border: 0, boxShadow: 0, borderRadius: 3.5 }}>
                 <CardMedia
                     sx={{ height: 280, borderRadius: 3.5 }}
                     component="img"

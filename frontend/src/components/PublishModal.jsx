@@ -34,23 +34,21 @@ const style = {
 };
 
 function PublishModal(props) {
-	console.log(props);
-
 	const [dateRange, setDateRange] = useState(
-		(props.listings.startDate !== "" && props.listings.endDate !== "") ?
+		(props.listings.startDate && props.listings.endDate) ?
 			[
 				new Date(props.listings.start_date),
 				new Date(props.listings.end_date)
 			]
 			:
-			[new DateObject(),
-			new DateObject()
+			[
+				new DateObject(),
+				new DateObject()
 			]
 	);
 	const [activated, isActivated] = useState(props.listings.is_active === "True");
 	const popoverLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
-	console.log(activated, dateRange);
 	const fetchPublish = async () => {
 		try {
 			const data = {
