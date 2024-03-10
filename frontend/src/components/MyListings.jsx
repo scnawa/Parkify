@@ -14,21 +14,42 @@ const theme = createTheme({
     },
 });
 function MyListings(props) {
-	const [detail, setDetail] = React.useState('');
-	// TODO: fetch the real data from backend
-
-    const [listings, setListings] = React.useState([1,2,3]);
+    const [listings, setListings] = React.useState([]);
 	const navigate = useNavigate();
 	React.useEffect(() => {
 		if (!props.token) {
 		  navigate('/login');
 		}
 	  }, [props.token]);
+
     React.useEffect(() => {
 		if (!props.token) {
 		  navigate('/login');
 		}
-	}, [listings]);
+		const fetchListings = async() => {
+			try {
+			  const response = await fetch('http://localhost:8080/get_listings', {
+				method: 'Get',
+				headers: {
+				  'Content-Type': 'application/json',
+				  'email':props.token
+				},
+			  });
+			  
+			  
+			  const data = await response.json();
+			  if (data.error) {
+				alert(data.error);
+			  } else {
+				setListings(data);
+			  }			  
+			} catch (error) {
+			  console.error(error);
+			}
+		};
+	
+		fetchListings();
+	}, []);
 	const createOnClick = () => {
 		navigate('/create-listings')
 	};
@@ -40,16 +61,16 @@ function MyListings(props) {
 					<Typography variant="h5" component="div">
 						Manage you listings
 					</Typography>
-					<Button variant="contained"  sx={{height:35}} onClick={createOnClick} color="yellow">Create</Button>
+					<Button variant="contained" sx={{height:35}} onClick={createOnClick} color="yellow">Create</Button>
 
 				</Box>
 			</ThemeProvider>
 
 
 			<Grid container spacing={1.5} sx={{}}>
-			{listings.map((key, listing) => {
+			{listings.map((listing, key) => {
 				return (<Grid item xs={12} sm={6} md={4} key={key}>
-					<ListingCard/>
+					<ListingCard token={props.token} listing={listing} listings={listings} setListings={setListings}/>
 				</Grid>)
 				})}
 			</Grid>

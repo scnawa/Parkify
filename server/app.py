@@ -74,39 +74,45 @@ def resetPass():
     return config.User().resetPass(userData)
 
 
-@APP.route('/create_listing', methods = ['POST'])
+@APP.route('/create_listing', methods = ['PUT'])
 def create_listing(): 
     userData = json.loads(request.data)
     return config.User().create_listing(userData)
 
 @APP.route('/deactivate_listing', methods = ['POST'])
 def deactivate_listing(): 
+    headers = request.headers
+
     userData = json.loads(request.data)
-    return config.User().deactivate_listing(userData)
+    return config.User().deactivate_listing(userData, headers)
 
 @APP.route('/activate_listing', methods = ['POST'])
 def activate_listing(): 
+    headers = request.headers
     userData = json.loads(request.data)
-    return config.User().activate_listing(userData)
+    return config.User().activate_listing(userData, headers)
 
-@APP.route('/delete_listing', methods = ['POST'])
-def delete_listing(): 
+@APP.route('/delete_listing', methods = ['DELETE'])
+def delete_listing():
+    headers = request.headers
     userData = json.loads(request.data)
-    return config.User().delete_listing(userData)
+    return config.User().delete_listing(userData, headers)
 
 @APP.route('/update_listing', methods = ['POST'])
 def update_listing(): 
+    headers = request.headers
     userData = json.loads(request.data)
-    return config.User().update_listing(userData)
+    return config.User().update_listing(userData, headers)
 
 @APP.route('/get_listings', methods = ['GET'])
 def get_listings(): 
-    userData = json.loads(request.data)
-    return config.User().get_listings(userData)
+    headers = request.headers
+
+    return config.User().get_listings(headers)
 
 @APP.route('/get_listing', methods = ['GET'])
 def get_listing(): 
-    userData = json.loads(request.data)
+    userData = request.headers
     return config.User().get_listing(userData)
 
 
