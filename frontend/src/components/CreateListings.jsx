@@ -23,6 +23,12 @@ function CreateListings(props) {
 	const [images, setImages] = React.useState([]);
 
 	const navigate = useNavigate();
+	React.useEffect(() => {
+		if (!props.token) {
+		  navigate('/login');
+		}
+	  }, [props.token]);
+	
 	const submitForm = (e) => {
 
 	}

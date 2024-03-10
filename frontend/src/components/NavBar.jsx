@@ -15,6 +15,7 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Menu, MenuItem } from '@mui/material';
+import Modal from './Modal';
 const theme = createTheme({
     palette: {
         green: {
@@ -27,13 +28,12 @@ const theme = createTheme({
 });
 
 
-function NavBar() {
-    // TODO: auth user from backend
-    const [token, setToken] = React.useState(true);
-
+function NavBar(props) {
     const [userMenuLocation, setUserMenuLocation] = React.useState(null);
     const [notiLocation, setnotiLocation] = React.useState(null);
-
+    const token = props.token;
+    
+    
     const pages = ['Home', 'Parking', 'Rent out your slot'];
     const navigate = useNavigate();
     // TODO: navigate user profile
@@ -68,16 +68,22 @@ function NavBar() {
         // ToDo: navigate the actual page
         navigate("/");
     }
-
+    const loginOnClick = (event) => {
+        navigate("/login");
+    }
     const logOut = (event) => {
         setUserMenuLocation(null);
         // ToDo: actual logout
         navigate("/");
     }
 
+    const signUpOnclick = (event) => {
+        navigate("/signup");
+    }
     const notiLocationClose = (event) => {
         setnotiLocation(null);
     };
+
 
     // the app bar and menu structure is from https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
 
@@ -124,8 +130,9 @@ function NavBar() {
                                 color="inherit"
                             >
                                 <NotificationsNoneOutlinedIcon />
+                                <Modal isOpen={notiLocation} openModal={notiLocationOnclick} closeModal={notiLocationClose} content=""></Modal>
+
                             </IconButton>
-                            // Todo: insert the noti modal 
                         )}
                         {token && (
                             <>
@@ -150,6 +157,33 @@ function NavBar() {
                                 </Menu>
                             </>
                         )}
+                        {!token && (
+                                <Button onClick={loginOnClick}
+                                    sx={{
+                                        color: 'green.light',
+                                        fontWeight: 500,
+
+                                        fontFamily: 'time',
+                                        letterSpacing: '.06rem',
+                                    }}>
+                                        
+                                    Log In
+                                </Button>
+                        )}
+                        {!token && (
+                                <Button onClick={signUpOnclick}
+                                    sx={{
+                                        color: 'green.light',
+                                        fontWeight: 500,
+
+                                        fontFamily: 'time',
+                                        letterSpacing: '.06rem',
+                                    }}>
+                                        
+                                    Sign Up
+                                </Button>
+                        )}
+
                     </Toolbar>
                 </Container>
             </AppBar>
