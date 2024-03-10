@@ -81,14 +81,15 @@ function CreateListings(props) {
 					if (res.error) {
 						return Promise.reject(res.error);
 					} else {
-						return Promise.resolve();
+						return Promise.resolve(res);
 					}
 				} catch (error) {
 					return Promise.reject(error);
 				}
 			};
-			return new Promise(fetchListings);
-		}).then(navigate('/myListing')).catch((err) => {
+			return fetchListings();
+		}).then(()=>navigate('/myListing'))
+		.catch((err) => {
 			alert(err);
 			console.error(err);
 		});
