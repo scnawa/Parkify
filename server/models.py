@@ -54,6 +54,7 @@ class User:
         if user: 
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
+        
             if pbkdf2_sha256.verify(userData['password'], user['password']):
                 currentSessionID = uuid.uuid4().hex
                 while user['session_id'].count(currentSessionID) > 0:
