@@ -45,6 +45,11 @@ class User:
 
         return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
+    def getUsername(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            return user['username']
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
