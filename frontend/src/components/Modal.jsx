@@ -4,28 +4,33 @@ import './Modal.css';
 // import NotificationComponent from './NotificationComponent';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-const Modal = ({ isOpen, openModal, closeModal, content }) => {
-  const [modal, setModal] = useState(isOpen);
+const Modal = ({ isOpen, setnotiLocation, content }) => {
 
-  useEffect(() => {
-    setModal(isOpen);
-  }, [isOpen]);
+  // useEffect(() => {
+  //   setModal(isOpen);
+  // }, [isOpen]);
+  const openModal = () => {
+    setnotiLocation(true);
+  }
+  const closeModal = () => {
+    setnotiLocation(false);
+  }
 
-  useEffect(() => {
-    if (modal) {
-      document.body.classList.add('active-modal');
-    } else {
-      document.body.classList.remove('active-modal');
-    }
-    return () => {
-      document.body.classList.remove('active-modal');
-    };
-  }, [modal]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     document.body.classList.add('active-modal');
+  //   } else {
+  //     document.body.classList.remove('active-modal');
+  //   }
+  //   return () => {
+  //     document.body.classList.remove('active-modal');
+  //   };
+  // }, [isOpen]);
 
   return (
     <>
-        <NotificationsIcon onClick={openModal} className="btn-modal" />
-        {modal && (
+        {/* <NotificationsIcon onClick={openModal} className="btn-modal" /> */}
+        {isOpen && (
             <div className="modal">
             <div onClick={openModal} className="overlay"></div>
             <div className="modal-content">
@@ -43,8 +48,7 @@ const Modal = ({ isOpen, openModal, closeModal, content }) => {
 
 Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  openModal: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  setnotiLocation: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,
 };
 

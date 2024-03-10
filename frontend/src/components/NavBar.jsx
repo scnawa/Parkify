@@ -82,6 +82,9 @@ function NavBar(props) {
     }
     const notiLocationClose = (event) => {
         setnotiLocation(null);
+        console.log("close");
+        console.log(notiLocation);
+
     };
 
 
@@ -122,6 +125,7 @@ function NavBar(props) {
                             ))}
                         </Box>
                         {token && (
+                            <>
                             <IconButton
                                 aria-haspopup={true}
                                 aria-label="notifications"
@@ -130,9 +134,10 @@ function NavBar(props) {
                                 color="inherit"
                             >
                                 <NotificationsNoneOutlinedIcon />
-                                <Modal isOpen={notiLocation} openModal={notiLocationOnclick} closeModal={notiLocationClose} content=""></Modal>
 
                             </IconButton>
+                                <Modal isOpen={notiLocation} setnotiLocation={setnotiLocation} content=""></Modal>
+                            </>
                         )}
                         {token && (
                             <>

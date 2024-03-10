@@ -13,13 +13,13 @@ import ListingCard from './components/ListingCard';
 
 const PageList = () => {
   const navigate = useNavigate();
-
+  const token=true
   return (
     <>
-      <NavBar/>
+      <NavBar token={token}/>
       <Routes>
         <Route path="/"/>
-        <Route path="/create-listings" element={<CreateListings/>} />
+        <Route path="/create-listings" element={<CreateListings token={token}/>} />
         <Route path="/myListing" element={<PublishModal/>} />
         <Route path="/testing" element={<ListingCard/>} />
 
