@@ -40,19 +40,17 @@ class User:
             return jsonify({'type': "username", "error": "Email already in use"}), 400 
         
         if db.userbase_data.insert_one(user):
+            # debugging 
             return json_util.dumps(user)
         
         return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400 
     
-    def login_verified(self, userData): 
-        user = db.userbase_data.find_one({"email": userData['email']})
-        if user: 
-            db.userbase_data.update_one({"email": userData['email']}, {
-                                        "$set": {"isVerified": user['isVerified']}})
             
             
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
+        if "isVerified" in userData: 
+            user['isVerified'] = userData['isVerified']
         if user: 
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405

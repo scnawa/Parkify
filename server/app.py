@@ -51,10 +51,7 @@ def verify_email():
     userData = json.loads(request.data)
     return helper.sendVerificationEmail(userData['email'], userData['username'], 'verification')
 
-@APP.route('login/verified', methods=['POST'])
-def login_verified(): 
-    userData = json.loads(request.data)
-    
+
 
 @APP.route('/login', methods=['POST'])
 def login(): 
