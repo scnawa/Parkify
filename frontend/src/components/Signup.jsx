@@ -45,7 +45,11 @@ function Signup(props) {
         }),
       });
       const data = await response.json();
-      navigate('/verify', { state: { email: email, username: username, password: password } });
+      if (data.error) {
+        alert(data.error);
+      } else {
+        navigate('/verify', { state: { email: email, username: username, password: password } });
+      }
       
     } catch (error) {
         console.error('An error occurred during signup:', error);

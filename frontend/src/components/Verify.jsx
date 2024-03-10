@@ -74,6 +74,7 @@ function Verify(props) {
         navigate('/');
       } else {
         alert('Invalid verification code, please try again.');
+        // or alert(data.error)
       }
     } catch (error) {
       console.error('An error occurred during verification:', error);

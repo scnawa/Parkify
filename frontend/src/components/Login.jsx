@@ -32,7 +32,11 @@ function Login(props) {
         }),
       });
       const data = await response.json();
-      navigate('/');
+      if (data.error) {
+        alert(data.error);
+      } else {
+        navigate('/');
+      }
       
     } catch (error) {
         console.error('An error occurred during signup:', error);
