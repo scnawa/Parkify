@@ -18,8 +18,7 @@ function Login(props) {
   const [password, setPassword] = React.useState('');
   const navigate = useNavigate();
 
-  
-  const handleLogin = async() => {
+  const handleLogin = async () => {
     try {
       const response = await fetch('/login', {
         method: 'POST',
@@ -38,11 +37,12 @@ function Login(props) {
         alert(data.error);
       } else {
         props.setToken(data.email);
+
         navigate('/');
       }
 
       if (response.status === 405) {
-        navigate('/verify', { state: { email: email, username: '', password: password } });
+        navigate('/verify', { state: { email: email, password: password } });
         return;
       }
       
