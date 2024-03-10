@@ -17,6 +17,8 @@ function CreateListings(props) {
 
 	const [price, setPrice] = React.useState(0);
 	const [address, setAddress] = React.useState('');
+	const [Quantity, setQuantity] = React.useState(0);
+
 	const [restriction, setRestriction] = React.useState('');
 	const [amenties, setAmenties] = React.useState({ 'car charging': false, 'under shade': false, 'private security': false });
 	const [thumbnail, setThumbnail] = React.useState('');
@@ -45,7 +47,9 @@ function CreateListings(props) {
 				<p></p>
 				<form autoComplete="off" onSubmit={(e) => submitForm(e)}>
 					<TextInputField label="Address:" setFunction={setAddress} value={address} color="success" variant="outlined" />
-					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" />
+					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number"/>
+					<TextInputField label="Quantity:" setFunction={setQuantity} value={Quantity} color="success" variant="outlined" type="number"/>
+
 					<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} />
 					<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} />
 					{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}

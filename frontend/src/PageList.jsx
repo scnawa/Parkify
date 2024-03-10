@@ -10,6 +10,7 @@ import ProfilePage from './components/ProfilePage';
 
 import PublishModal from './components/PublishModal';
 import ListingCard from './components/ListingCard';
+import MyListings from './components/MyListings';
 
 const PageList = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const PageList = () => {
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings token={token}/>} />
-        <Route path="/myListing" element={<PublishModal/>} />
+        <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/testing" element={<ListingCard/>} />
 
         <Route path="/login" element={<Login  />} />

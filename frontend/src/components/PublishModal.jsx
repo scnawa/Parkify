@@ -33,16 +33,18 @@ const style = {
 
 };
 
-function PublishModal() {
+function PublishModal(props) {
+    console.log(props);
+
     const [dateRange, setDateRange] = useState([
-        new DateObject(),
-        new DateObject()
+        new DateObject(props.listings.startDate),
+        new DateObject(props.listings.endDate)
     ]);
-    const [popoverLocation, setPopOverLocation] = useState(true);
+    const [activated, isActivated] = useState(props.listings.isActive);
+    const popoverLocation = props.popoverLocation;
+    const  setPopOverLocation = props.setPopOverLocation;
     // TODO: useEffect fetch listing status
-
-    const [activated, setActivated] = useState(false);
-
+    console.log(props);
     const popoverOnClick = (event) => {
         setPopOverLocation(true);
     };

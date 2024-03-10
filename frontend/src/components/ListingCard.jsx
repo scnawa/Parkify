@@ -2,6 +2,8 @@ import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } fr
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Background from '../assets/car.png'
+import PublishModal from "./PublishModal";
+import { useState } from "react";
 const theme = createTheme({
     palette: {
         green: {
@@ -14,9 +16,20 @@ const theme = createTheme({
 });
 
 function ListingCard() {
+    const [popoverLocation, setPopOverLocation] = useState(false);
+    // TODO: fetch the real data from backend
+    const listings = {
+        startDate:"12-12-2024",
+        endDate:"12-12-2024",
+        activated:"true",
+    }
+    const popoverOnClick = (event) => {
+        setPopOverLocation(true);
+    };
+
     return(
         <ThemeProvider theme={theme}>
-        <Card sx={{ minWidth: 325,maxWidth:375, border: 0, boxShadow:0 }}>
+        <Card sx={{ maxWidth:400, border: 0, boxShadow:0,borderRadius:3.5 }}>
         <CardMedia
             sx={{ height: 280, borderRadius:3.5}}
             image={Background}
@@ -33,7 +46,8 @@ function ListingCard() {
                     </Typography>
                 </Box>
                 <Box sx={{ display:'flex', flexDirection:"column", justifyContent:"space-between", rowGap:0.4}}>
-                    <Button size="small" color='green' variant="contained">status</Button>
+                    <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Go Live</Button>
+                    <PublishModal listings ={listings} popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}/>
 
                     <Box sx={{ display:'inline-flex', columnGap:0.3}}>
                         <Button size="small" color='green' variant="contained">Edit</Button>
