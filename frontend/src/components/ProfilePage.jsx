@@ -39,10 +39,28 @@ const ProfilePage = () => {
         setProfilePicture(file);
     };
 
-    const handleDeleteProfile = () => {
-        // Add logic here to handle profile deletion
-        console.log('Profile deleted');
-      };
+    const handleDeleteProfile = async () => {
+        try {
+            const response = await fetch('/deleteAccount', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers as needed
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                }),
+            });
+    
+            if (response.ok) {
+                console.log('Profile deleted successfully!');
+            } else {
+                console.error('Failed to delete profile. Server response:', response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error('An error occurred during the deletion:', error);
+        }
+    };
 
     return (
         <div className='container'>
