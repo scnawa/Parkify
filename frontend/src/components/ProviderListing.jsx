@@ -1,11 +1,10 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 
 import Background from '../assets/car.png'
-import PublishModal from "./PublishModal";
+import PublishModal from "./PublishPopUp";
 import { useState } from "react";
-import { ThemeContext } from "@emotion/react";
 const theme = createTheme({
     palette: {
         green: {
@@ -17,14 +16,12 @@ const theme = createTheme({
     },
 });
 
-function ListingCard(props) {
+function ProviderListing(props) {
     const [popoverLocation, setPopOverLocation] = useState(false);
     const [listing, _] = useState(props.listing);
     const navigate = useNavigate();
 
-    const popoverOnClick = (event) => {
-        setPopOverLocation(true);
-    };
+
     const handleDelete = (event) => {
         const fetchDelete = async () => {
             const data = {
@@ -64,8 +61,15 @@ function ListingCard(props) {
         navigate('/editListings', { state: { token: props.token, listing: listing } });
 
     }
+    const popoverOnClick = (event) => {
+		setPopOverLocation(event.currentTarget);
+    };
+	const popoverOnClose = () => {
+		setPopOverLocation(null);
+	};
 
 
+    // the card structure is from https://mui.com/material-ui/react-card/
     return (
         <ThemeProvider theme={theme}>
             <Card key={listing.listing_id} sx={{ maxWidth: 400, border: 0, boxShadow: 0, borderRadius: 3.5 }}>
@@ -87,7 +91,10 @@ function ListingCard(props) {
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
                             <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Live Status</Button>
-                            <PublishModal listings={listing} token={props.token} popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation} />
+                            <PublishModal listings={listing} token={props.token}
+                                popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
+                                popoverOnClose={popoverOnClose}
+                                 />
 
                             <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
                                 <Button size="small" color='green' variant="contained" onClick={hadnelEdit}>Edit</Button>
@@ -101,4 +108,4 @@ function ListingCard(props) {
         </ThemeProvider>
     )
 }
-export default ListingCard; 
+export default ProviderListing; 

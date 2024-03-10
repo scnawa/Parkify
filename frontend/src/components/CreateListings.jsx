@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Paper } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TextInputField from './TextInputField';
 import CheckBoxInput from './CheckBoxInput';
@@ -103,13 +103,12 @@ function CreateListings(props) {
 					maxWidth: "md",
 				}}
 			>
-				<h3>Create Listings</h3>
-				<p></p>
-				<form autoComplete="off" onSubmit={(e) => submitForm(e)}>
-					<TextInputField label="Address:" setFunction={setAddress} value={address} color="success" variant="outlined" />
-					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number" />
-					<TextInputField label="Quantity:" setFunction={setQuantity} value={quantity} color="success" variant="outlined" type="number" />
+				<Typography>Create Listings</Typography>
 
+				<Box component="form" sx={{ mt: 1}}>
+					<TextInputField label="Address:" setFunction={setAddress} value={address} color="success" variant="outlined" />
+					<TextInputField label="Quantity:" setFunction={setQuantity} value={quantity} color="success" variant="outlined" type="number" />
+					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number" />
 					<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} />
 					<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} />
 					{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
@@ -119,8 +118,8 @@ function CreateListings(props) {
 					{/* <FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" /> */}
 					<p></p>
 
-					<Button variant="outlined" color="secondary" type="submit">Create</Button>
-				</form>
+					<Button variant="outlined" color="secondary"  onClick={(e) => submitForm(e)}>Create</Button>
+				</Box>
 			</Paper>
 
 		</div>

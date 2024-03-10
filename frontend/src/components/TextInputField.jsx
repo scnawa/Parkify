@@ -1,22 +1,24 @@
-import { TextField } from "@mui/material";
+import {  TextField } from "@mui/material";
 
 function TextInputField({ label, setFunction, value, type, color, variant, multiline }) {
 	return (
-		<TextField
-			name={label}
-			label={label}
-			onChange={e => setFunction(e.target.value)}
-			required
-			variant={variant}
-			color={color}
-			type={type}
-			sx={{ mb: 3 }}
-			fullWidth
-			multiline={multiline}
-			value={value}
-			InputProps={{ inputProps: { min: 0 } }}
+			<TextField
+				onChange={e => setFunction(e.target.value)}
+				required
+				color={color}
+				type={type}
+				sx={{ mb: 3 }}
+				name={label}
+				label={label}
 
-		/>
+				fullWidth
+				multiline={multiline}
+				value={value}
+				variant={variant}
+
+				InputProps={{ inputProps: { min: 0 } }}
+
+			/>
 	)
 }
 export default TextInputField;

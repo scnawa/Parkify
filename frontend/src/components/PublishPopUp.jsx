@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, DateObject } from "react-multi-date-picker"
-import { Box, Button, Modal, createTheme } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Box, Button, Popover, Typography, createTheme } from '@mui/material';
 import "react-multi-date-picker/styles/colors/green.css"
 import { ThemeProvider } from '@emotion/react';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 
 const theme = createTheme({
@@ -33,30 +36,29 @@ const style = {
 
 };
 
-function PublishModal(props) {
-	const [dateRange, setDateRange] = useState(
-		(props.listings.startDate && props.listings.endDate) ?
-			[
-				new Date(props.listings.start_date),
-				new Date(props.listings.end_date)
-			]
-			:
-			[
-				new DateObject(),
-				new DateObject()
-			]
+function PublishPopUp(props) {
+	const [start, setStart] = useState(
+		(props.listings.startDate) ?
+				new dayjs(props.listings.start_date):null
 	);
+	const [end, setEnd] = useState(
+		(props.listings.endDate) ?
+				new dayjs(props.listings.end_date):null
+	);
+		
 	const [activated, isActivated] = useState(props.listings.is_active === "True");
-	const popoverLocation = props.popoverLocation;
+	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
+	const popoverOnClose = props.popoverOnClose;
+
 	const fetchPublish = async () => {
 		try {
 			const data = {
 				listings: {
 					"listing_id": props.listings.listing_id,
 					"listing_no": props.listings.listing_no,
-					"start_date": dateRange[0],
-					"end_date": dateRange[1],
+					"start_date": start,
+					"end_date": end,
 
 				}
 			}
@@ -79,10 +81,6 @@ function PublishModal(props) {
 			return Promise.reject(error);
 		}
 	}
-
-	const popoverOnClick = (event) => {
-		setPopOverLocation(true);
-	};
 	// TODO: send request to backend and send notification
 	const publishOnClick = (event) => {
 		fetchPublish().then(() => {
@@ -122,54 +120,84 @@ function PublishModal(props) {
 		};
 		fetchPublish().then(() => {
 			isActivated(false);
-			setDateRange([new DateObject(),
-			new DateObject()
-			]);
+			setStart(null);
+			setEnd(null);
+
 			alert("listing is now deactivated");
 		}).catch(alert);
 		setPopOverLocation(false);
 	}
-	const popoverOnClose = () => {
-		setPopOverLocation(false);
-	};
+	const isTriggered = Boolean(popLocation);
+	const id = isTriggered ? 'box' : undefined;
+	console.log(isTriggered,popLocation);
 
 	return (<>
 		<ThemeProvider theme={theme}>
 
-			<Modal
-				open={popoverLocation}
-				onClose={popoverOnClose}
+		<Popover
+			id={id}
+			open={isTriggered}
+			anchorEl={popLocation}
+			onClose={popoverOnClose}
+			anchorOrigin={{
+				vertical: 'bottom',
+				horizontal: 'left',
+			}}
+      	>
+			<div 
+				style={{
+					width: '300px', 
+					height: '300px',
+				}}
 			>
-				<Box sx={{ ...style, }}>
+					<Box display='flex' sx={{ flexDirection:'column', justifyContent:'space-around', alignItems: 'center',rowGap:'2px', marginTop:'35px'}}>
+						<div style={{ 
+							display:'flex',
+							flexDirection:'column',
+							justifyContent:'space-around',
+							alignItems: 'center',
+							rowGap:'15px'
+						}}>
+							<LocalizationProvider dateAdapter={AdapterDayjs}>
+								<DatePicker value={start} onChange={(input) => setStart(input)} />
+							</LocalizationProvider>
+							<Typography variant="button" display="block" gutterBottom sx={{justifySelf:'center'}}>to</Typography>
+							<LocalizationProvider dateAdapter={AdapterDayjs}>
+								<DatePicker value={end} onChange={(input) => setEnd(input)} />
+							</LocalizationProvider>
+						</div>
 
-					<Calendar
-						className="green"
-						readOnly={activated}
-						value={dateRange}
-						onChange={setDateRange}
-						range
-					/>
+						<div style={{ 
+							display:'flex',
+							flexDirection:'column',
+							justifyContent:'space-between',
+							rowGap:'10px',
+							marginTop:'30px'
+							}}
+						>
+							{!activated &&
+								<Button variant="contained" onClick={publishOnClick} >
+									Activate
+								</Button>
+							}
+							{activated &&
+								<Button variant="contained" onClick={deactivateOnClick}>
+									Deactivate
+								</Button>
+							}
 
-					{!activated &&
-						<Button variant="contained" onClick={publishOnClick} >
-							Publish
-						</Button>
-					}
-					{activated &&
-						<Button variant="contained" onClick={deactivateOnClick} sx={{ mt: 0.2 }}>
-							Deactivate
-						</Button>
-					}
+							<Button variant="contained" onClick={popoverOnClose}>
+								Cancel
+							</Button>
+						</div>
+					</Box>
 
-					<Button variant="contained" onClick={popoverOnClose} sx={{ mt: 0.2 }}>
-						Cancel
-					</Button>
-				</Box>
 
-			</Modal>
+				</div>
+			</Popover>
 		</ThemeProvider>
 
 	</>)
 
 }
-export default PublishModal;
+export default PublishPopUp;

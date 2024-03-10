@@ -9,8 +9,6 @@ import AdminDashboard from './components/AdminDashboard';
 import ProfilePage from './components/ProfilePage';
 import Verify from './components/Verify';
 
-import PublishModal from './components/PublishModal';
-import ListingCard from './components/ListingCard';
 import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
 
