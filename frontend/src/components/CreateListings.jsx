@@ -22,17 +22,17 @@ const uploadFile = (file) => {
 	const expectedType = ['image/jpeg', 'image/png', 'image/jpg']
 	const valid = expectedType.find(type => type === targetFile.type);
 	if (!valid) {
-	  return new Promise(resolve => resolve(targetFile));
+		return new Promise(resolve => resolve(targetFile));
 	}
 	const reader = new FileReader();
 	const dataPromise = new Promise((resolve, reject) => {
-	  reader.onerror = reject;
-	  reader.onload = () => resolve(reader.result);
+		reader.onerror = reject;
+		reader.onload = () => resolve(reader.result);
 	});
 	reader.readAsDataURL(targetFile);
 	return dataPromise;
-  }
-  
+}
+
 function CreateListings(props) {
 	const [detail, setDetail] = React.useState('');
 
@@ -48,47 +48,47 @@ function CreateListings(props) {
 	const navigate = useNavigate();
 	React.useEffect(() => {
 		if (!props.token) {
-		  navigate('/login');
+			navigate('/login');
 		}
 		// eslint-disable-next-line
-	  }, [props.token]);
-	
+	}, [props.token]);
+
 	const submitForm = (e) => {
 		e.preventDefault();
-		uploadFile(thumbnail).then((url)=> {
+		uploadFile(thumbnail).then((url) => {
 			const data = {
-				email:props.token,
-				listings:{
-					"address":address,
-					"price":price,
-					"quantity":quantity,
-					"details":detail,
+				email: props.token,
+				listings: {
+					"address": address,
+					"price": price,
+					"quantity": quantity,
+					"details": detail,
 					"restrictions": restriction,
 					"image_url": url
 				}
 			}
-			const fetchListings = async() => {
+			const fetchListings = async () => {
 				try {
-				  const response = await fetch('http://localhost:' + '8080/' + 'create_listing', {
-					method: 'PUT',
-					headers: {
-					  'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(data),
-				  });
-				  
-				  const res = await response.json();
-				  if (res.error) {
-					return Promise.reject(res.error);
-				} else {
-					return Promise.resolve();
-				  }			  
+					const response = await fetch('http://localhost:' + '8080/' + 'create_listing', {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(data),
+					});
+
+					const res = await response.json();
+					if (res.error) {
+						return Promise.reject(res.error);
+					} else {
+						return Promise.resolve();
+					}
 				} catch (error) {
-				  return Promise.reject(error);
+					return Promise.reject(error);
 				}
 			};
-			return new Promise(fetchListings);	
-		}).then(navigate('/myListing')).catch((err)=>{
+			return new Promise(fetchListings);
+		}).then(navigate('/myListing')).catch((err) => {
 			alert(err);
 			console.error(err);
 		});
@@ -106,8 +106,8 @@ function CreateListings(props) {
 				<p></p>
 				<form autoComplete="off" onSubmit={(e) => submitForm(e)}>
 					<TextInputField label="Address:" setFunction={setAddress} value={address} color="success" variant="outlined" />
-					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number"/>
-					<TextInputField label="Quantity:" setFunction={setQuantity} value={quantity} color="success" variant="outlined" type="number"/>
+					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number" />
+					<TextInputField label="Quantity:" setFunction={setQuantity} value={quantity} color="success" variant="outlined" type="number" />
 
 					<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} />
 					<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} />
