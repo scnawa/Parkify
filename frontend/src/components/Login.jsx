@@ -41,7 +41,7 @@ function Login(props) {
       }
 
       if (response.status === 405) {
-        navigate('/verify', { state: { email: email, username: '', password: password } });
+        navigate('/verify', { state: { email: email, password: password } });
         return;
       }
       

@@ -15,7 +15,7 @@ const theme = createTheme({
 
 function Verify(props) {
   const location = useLocation();
-  const { email, username, password } = location.state || {};
+  const { email, password } = location.state || {};
   const [code, setCode] = useState(Array(6).fill(''));
   const navigate = useNavigate();
   const inputRefs = useRef(Array(6).fill(0).map(() => React.createRef()));
@@ -31,7 +31,6 @@ function Verify(props) {
           },
           body: JSON.stringify({
             email: email,
-            username: username,
           }),
         });
         const data = await response.json();
@@ -42,7 +41,7 @@ function Verify(props) {
     };
   
     fetchData();
-  }, [email, username]);
+  }, [email]);
 
   const handleInput = (e, index) => {
     const { value } = e.target;

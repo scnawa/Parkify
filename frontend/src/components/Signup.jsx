@@ -48,7 +48,7 @@ function Signup(props) {
       if (data.error) {
         alert(data.error);
       } else {
-        navigate('/verify', { state: { email: email, username: username, password: password } });
+        navigate('/verify', { state: { email: email, password: password } });
       }
       
     } catch (error) {

@@ -49,7 +49,7 @@ def signup():
 @APP.route('/signup/verify', methods = ['POST'])
 def verify_email(): 
     userData = json.loads(request.data)
-    username = config.User.getUsername(userData['email'])
+    username = config.User().getUsername(userData)
     return helper.sendVerificationEmail(userData['email'], username, 'verification')
 
 @APP.route('/login', methods=['POST'])
@@ -72,11 +72,6 @@ def resetPass():
     userData = json.loads(request.data)
     return config.User().resetPass(userData)
 
-
-@APP.route('/create_listing', methods = ['POST'])
-def create_listing(): 
-    userData = json.loads(request.data)
-    return config.User().create_listing(userData)
 
 APP.route('/resetPass', methods = ['POST'])
 def resetPass():

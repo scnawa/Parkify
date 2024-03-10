@@ -36,9 +36,6 @@ class User:
         if db.userbase_data.find_one({"email": userData['email']}): 
             return jsonify({'type': "email", "error": "Email already in use"}), 400 
 
-        if db.userbase_data.find_one({"username": userData['username']}): 
-            return jsonify({'type': "username", "error": "Email already in use"}), 400 
-
         if db.userbase_data.insert_one(user):
             # debugging 
             return json_util.dumps(user)
