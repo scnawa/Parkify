@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Paper } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
@@ -101,9 +101,8 @@ function EditListings(props) {
                     maxWidth: "md",
                 }}
             >
-                <h3>Edit Listings</h3>
-                <p></p>
-                <form autoComplete="off" onSubmit={(e) => submitForm(e)}>
+				<Typography>Edit Listings</Typography>
+				<Box component="form" sx={{ mt: 1}}>
                     <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="outlined" />
                     <TextInputField label="Price:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
                     <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" />
@@ -113,11 +112,11 @@ function EditListings(props) {
                     {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
                     <p></p>
                     <FileInputField multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" />
-                    {/* <FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" /> */}
+                    {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
                     <p></p>
 
                     <Button variant="outlined" color="secondary" type="submit">Edit</Button>
-                </form>
+                </Box>
             </Paper>
 
         </div>
