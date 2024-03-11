@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { Box, Button, Paper, Typography, createTheme, ThemeProvider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TextInputField from './TextInputField';
 import CheckBoxInput from './CheckBoxInput';
@@ -11,6 +11,17 @@ const pageStyle = {
 	height: "100%",
 
 }
+const theme = createTheme({
+    palette: {
+        green: {
+            main: '#00897B',
+            light: '#E0F2F1',
+            dark: '#004D40',
+            contrastText: '#E0F2F1',
+        },
+    },
+});
+
 // the general purpose file image processing function is from comp6080 assignment 4
 const uploadFile = (file) => {
 	let targetFile;
@@ -95,6 +106,8 @@ function CreateListings(props) {
 		});
 	}
 	return (
+		<ThemeProvider theme={theme} >
+
 		<div style={pageStyle}>
 			<Paper elevation={4}
 				sx={{
@@ -118,11 +131,13 @@ function CreateListings(props) {
 					{/* <FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" /> */}
 					<p></p>
 
-					<Button variant="outlined" color="secondary"  onClick={(e) => submitForm(e)}>Create</Button>
+					<Button variant="contained" color="green" onClick={(e) => submitForm(e)}>Create</Button>
 				</Box>
 			</Paper>
 
 		</div>
+		</ThemeProvider>
+
 	)
 }
 export default CreateListings;

@@ -1,7 +1,8 @@
-import { Box, Button, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Button, List, Stack, ThemeProvider, Typography, createTheme } from "@mui/material";
 import React from "react";
+import ListItem from '@mui/material/ListItem';
+
 import { useNavigate } from "react-router-dom";
-import Grid from '@mui/material/Unstable_Grid2';
 import ProviderListing from "./ProviderListing";
 const theme = createTheme({
 	palette: {
@@ -67,19 +68,20 @@ function MyListings(props) {
 				</Box>
 			</ThemeProvider>
 
-			{/* the grid/card structure is from https://stackoverflow.com/questions/69259870/react-material-ui-card-using-grid */}
-			{/* i used a similar ui/ux approach with mui grid/card structure in my own comp6080 assignment4 but 
-				i redesigned the style of card and restructured the layout of card content 
-			*/}
-			<Grid container spacing={1.5}>
+    		<List sx={{ width: '100%', bgcolor: 'background.paper' }}>
 				{listings.map((listing) => {
 					// the key is somehow nessary for the child component to render
 					// https://stackoverflow.com/questions/73577213/list-components-not-rendering-properly-after-applying-array-filter-reactjs
-					return (<Grid key={listing.listing_id - listing.listing_no} xs={12} sm={6} md={4}>
-						<ProviderListing key={listing.listing_id} token={props.token} listing={listing} listings={listings} setListings={setListings} />
-					</Grid>)
+					return (
+						<ListItem key={listing.listing_id + listing.listing_no}>
+
+							<ProviderListing  token={props.token} listing={listing} listings={listings} setListings={setListings} />
+					    </ListItem>
+
+					)
 				})}
-			</Grid>
+			</List>
+
 		</>
 	)
 }
