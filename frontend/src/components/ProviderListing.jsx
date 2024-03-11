@@ -1,10 +1,15 @@
-import { Box, Button, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CardMedia, ListItem, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {  useNavigate } from 'react-router-dom';
 
 import Background from '../assets/car.png'
 import PublishPopUp from "./PublishPopUp";
 import { useState } from "react";
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+
 const theme = createTheme({
     palette: {
         green: {
@@ -21,42 +26,6 @@ function ProviderListing(props) {
     const [listing, _] = useState(props.listing);
     const navigate = useNavigate();
 
-
-    const handleRemove = (event) => {
-        const fetchDelete = async () => {
-            const data = {
-                listings: {
-                    "listing_id": listing.listing_id,
-                    "listing_no": listing.listing_no
-
-                }
-            }
-            try {
-                const response = await fetch('http://localhost:8080/delete_listing', {
-                    method: 'DELETE',
-                    headers: {
-                        'email': props.token,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                const res = await response.json();
-                if (res.error) {
-                    return Promise.reject(res.error);
-                } else {
-                    return Promise.resolve(res);
-                }
-            } catch (error) {
-                return Promise.reject(error);
-            }
-        };
-        fetchDelete().then((res) => {
-            const new_listings = res
-            props.setListings(new_listings);
-            alert("listing deleted");
-        }).catch(alert);
-    }
     const hadnelEdit = () => {
         navigate('/editListings', { state: { token: props.token, listing: listing } });
 
@@ -68,44 +37,49 @@ function ProviderListing(props) {
 		setPopOverLocation(null);
 	};
 
-
-    // the card structure is from https://mui.com/material-ui/react-card/
     return (
-        <ThemeProvider theme={theme}>
-            <Card key={listing.listing_id} sx={{ maxWidth: 400, border: 0, boxShadow: 0, borderRadius: 3.5 }}>
-                <CardMedia
-                    sx={{ height: 280, borderRadius: 3.5 }}
-                    component="img"
-                    image={listing.image_url !== '' ? listing.image_url : Background}
-                />
-                <CardContent sx={{ border: 0, padding: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: "space-between" }}>
-                        <Box>
-                            <Typography variant="h5" component="div">
-                                {listing.address}
-                            </Typography>
-                            <Typography variant="h6" color="text.secondary">
-                                ${listing.price}
 
-                            </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
-                            <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Live Status</Button>
-                            <PublishPopUp listings={listing} token={props.token}
-                                popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
-                                popoverOnClose={popoverOnClose}
-                                 />
+            <ThemeProvider theme={theme} >
+                    <ListItemAvatar >
+                        <Avatar
+                            src={listing.image_url !== '' ? listing.image_url : Background}
+                        />
+                    </ListItemAvatar>
+                    <Box  sx={{ display: { xs: 'block', sm: 'block', md: 'none' }, width:'100%' }}>
+                                <Typography variant="h6" component="div">
+                                    Address: {listing.address}
+                                </Typography>
+                                <Typography variant="h6" color="text.secondary">
+                                    ${listing.price}
 
-                            <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
-                                <Button size="small" color='green' variant="contained" onClick={hadnelEdit}>Edit</Button>
-                                <Button size="small" color='green' variant="contained" onClick={handleRemove}>Remove</Button>
-                            </Box>
-
-                        </Box>
+                                </Typography>
                     </Box>
-                </CardContent>
-            </Card>
-        </ThemeProvider>
+                    {/* TODO improve the apperance on desktop */}
+                    <Box  sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, width:'100%' }}>
+                                <Typography variant="h6" component="div">
+                                    Address: {listing.address}
+                                </Typography>
+                                <Typography variant="h6" color="text.secondary">
+                                    ${listing.price}
+
+                                </Typography>
+                    </Box>
+                        <Box display='flex' sx={{width:'100%', "justifyContent":"end"}}>
+                            <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
+                                <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+                                <PublishPopUp listings={listing} token={props.token}
+                                    popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
+                                    popoverOnClose={popoverOnClose}
+                                    />
+
+                                <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
+                                    <Button size="small" color='green' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
+                                </Box>
+
+                            </Box>
+                        </Box>
+            </ThemeProvider>
+
     )
 }
 export default ProviderListing; 
