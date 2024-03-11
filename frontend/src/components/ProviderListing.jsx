@@ -22,7 +22,7 @@ function ProviderListing(props) {
     const navigate = useNavigate();
 
 
-    const handleDelete = (event) => {
+    const handleRemove = (event) => {
         const fetchDelete = async () => {
             const data = {
                 listings: {
@@ -98,7 +98,7 @@ function ProviderListing(props) {
 
                             <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
                                 <Button size="small" color='green' variant="contained" onClick={hadnelEdit}>Edit</Button>
-                                <Button size="small" color='green' variant="contained" onClick={handleDelete}>Delete</Button>
+                                <Button size="small" color='green' variant="contained" onClick={handleRemove}>Remove</Button>
                             </Box>
 
                         </Box>

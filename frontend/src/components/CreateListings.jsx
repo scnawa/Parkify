@@ -36,7 +36,7 @@ const uploadFile = (file) => {
 function CreateListings(props) {
 	const [detail, setDetail] = React.useState('');
 
-	const [price, setPrice] = React.useState(0);
+	const [rate, setRate] = React.useState(0);
 	const [address, setAddress] = React.useState('');
 	const [quantity, setQuantity] = React.useState(0);
 
@@ -60,7 +60,7 @@ function CreateListings(props) {
 				email: props.token,
 				listings: {
 					"address": address,
-					"price": price,
+					"price": rate,
 					"quantity": quantity,
 					"details": detail,
 					"restrictions": restriction,
@@ -108,7 +108,7 @@ function CreateListings(props) {
 				<Box component="form" sx={{ mt: 1}}>
 					<TextInputField label="Address:" setFunction={setAddress} value={address} color="success" variant="outlined" />
 					<TextInputField label="Quantity:" setFunction={setQuantity} value={quantity} color="success" variant="outlined" type="number" />
-					<TextInputField label="Price:" setFunction={setPrice} value={price} color="success" variant="outlined" type="number" />
+					<TextInputField label="Rate:" setFunction={setRate} value={rate} color="success" variant="outlined" type="number" />
 					<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} />
 					<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} />
 					{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
