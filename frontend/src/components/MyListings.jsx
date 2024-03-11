@@ -25,7 +25,6 @@ function MyListings(props) {
 		if (!props.token) {
 			navigate('/login');
 		}
-		console.log("triggered");
 		const fetchListings = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/get_listings', {
@@ -55,7 +54,6 @@ function MyListings(props) {
 	const createOnClick = () => {
 		navigate('/create-listings')
 	};
-
 	return (
 		<>
 			<ThemeProvider theme={theme}>
@@ -74,7 +72,7 @@ function MyListings(props) {
 				{listings.map((listing) => {
 					// the key is somehow nessary for the child component to render
 					// https://stackoverflow.com/questions/73577213/list-components-not-rendering-properly-after-applying-array-filter-reactjs
-					return (<Grid key={listing.listing_id} xs={12} sm={6} md={4}>
+					return (<Grid key={listing.listing_id - listing.listing_no} xs={12} sm={6} md={4}>
 						<ProviderListing key={listing.listing_id} token={props.token} listing={listing} listings={listings} setListings={setListings} />
 					</Grid>)
 				})}

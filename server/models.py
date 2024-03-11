@@ -191,7 +191,7 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
-                return json_util.dumps(user)
+                return json_util.dumps(user_listings)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
