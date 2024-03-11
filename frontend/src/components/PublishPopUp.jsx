@@ -46,10 +46,12 @@ function PublishPopUp(props) {
 				new dayjs(props.listings.end_date):null
 	);
 		
-	const [activated, isActivated] = useState(props.listings.is_active === "True");
 	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
 	const popoverOnClose = props.popoverOnClose;
+	const activated = props.activated;
+	const setActivated = props.setActivated;
+
 
 	const fetchPublish = async () => {
 		try {
@@ -84,7 +86,7 @@ function PublishPopUp(props) {
 	// TODO: send request to backend and send notification
 	const publishOnClick = (event) => {
 		fetchPublish().then(() => {
-			isActivated(true);
+			setActivated(true);
 			alert("listing is now published");
 		}).catch(alert);
 		setPopOverLocation(false);
@@ -119,7 +121,7 @@ function PublishPopUp(props) {
 			}
 		};
 		fetchPublish().then(() => {
-			isActivated(false);
+			setActivated(false);
 			setStart(null);
 			setEnd(null);
 
