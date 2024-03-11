@@ -45,7 +45,6 @@ const ProfilePage = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add any additional headers as needed
                 },
                 body: JSON.stringify({
                     email: formData.email,
