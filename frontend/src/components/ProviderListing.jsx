@@ -45,14 +45,14 @@ function ProviderListing(props) {
                 if (res.error) {
                     return Promise.reject(res.error);
                 } else {
-                    return Promise.resolve();
+                    return Promise.resolve(res);
                 }
             } catch (error) {
                 return Promise.reject(error);
             }
         };
-        fetchDelete().then(() => {
-            const new_listings = props.listings.filter(x => x.listing_id !== listing.listing_id)
+        fetchDelete().then((res) => {
+            const new_listings = res
             props.setListings(new_listings);
             alert("listing deleted");
         }).catch(alert);
