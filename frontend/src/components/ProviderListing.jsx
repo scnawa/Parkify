@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {  useNavigate } from 'react-router-dom';
 
 import Background from '../assets/car.png'
-import PublishModal from "./PublishPopUp";
+import PublishPopUp from "./PublishPopUp";
 import { useState } from "react";
 const theme = createTheme({
     palette: {
@@ -91,7 +91,7 @@ function ProviderListing(props) {
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
                             <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Live Status</Button>
-                            <PublishModal listings={listing} token={props.token}
+                            <PublishPopUp listings={listing} token={props.token}
                                 popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
                                 popoverOnClose={popoverOnClose}
                                  />
