@@ -103,8 +103,8 @@ function EditListings(props) {
             >
 				<Typography>Edit Listings</Typography>
 				<Box component="form" sx={{ mt: 1}}>
-                    <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="outlined" />
-                    <TextInputField label="Price:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
+                    <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="outlined" disabled/>
+                    <TextInputField label="Rate:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
                     <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" />
 
                     <TextInputField label="Details:" setFunction={handleChange("details")} value={listing.details} color="success" variant="outlined" multiline={true} />
@@ -115,7 +115,7 @@ function EditListings(props) {
                     {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
                     <p></p>
 
-                    <Button variant="outlined" color="secondary" type="submit">Edit</Button>
+                    <Button variant="outlined" color="secondary" onClick={(e) => submitForm(e)}>Edit</Button>
                 </Box>
             </Paper>
 

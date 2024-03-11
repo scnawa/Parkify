@@ -68,6 +68,9 @@ function MyListings(props) {
 			</ThemeProvider>
 
 			{/* the grid/card structure is from https://stackoverflow.com/questions/69259870/react-material-ui-card-using-grid */}
+			{/* i used a similar ui/ux approach with mui grid/card structure in my own comp6080 assignment4 but 
+				i redesigned the style of card and restructured the layout of card content 
+			*/}
 			<Grid container spacing={1.5}>
 				{listings.map((listing) => {
 					// the key is somehow nessary for the child component to render
