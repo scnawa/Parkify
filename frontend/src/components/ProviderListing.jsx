@@ -9,7 +9,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-
 const theme = createTheme({
     palette: {
         green: {
@@ -18,12 +17,27 @@ const theme = createTheme({
             dark: '#004D40',
             contrastText: '#E0F2F1',
         },
+        anotherGreen: {
+            main: '#4caf50', // Green primary colour
+            light: '#E0F2F1',
+            contrastText: '#E0F2F1',
+
+        },
+        red:{
+            main: '#5e1914', // Green primary colour
+            light: '#E0F2F1',
+            contrastText: '#E0F2F1',
+
+
+        }
     },
 });
 
 function ProviderListing(props) {
     const [popoverLocation, setPopOverLocation] = useState(false);
     const [listing, _] = useState(props.listing);
+    const [activated, setActivated] = useState(props.listings.is_active === "True");
+
     const navigate = useNavigate();
 
     const hadnelEdit = () => {
@@ -36,7 +50,6 @@ function ProviderListing(props) {
 	const popoverOnClose = () => {
 		setPopOverLocation(null);
 	};
-
     return (
 
             <ThemeProvider theme={theme} >
@@ -66,10 +79,17 @@ function ProviderListing(props) {
                     </Box>
                         <Box display='flex' sx={{width:'100%', "justifyContent":"end"}}>
                             <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
-                                <Button size="small" color='green' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+                            {activated &&
+                                <Button size="small" color='anotherGreen' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+
+							}
+							{!activated &&
+                                <Button size="small" color='red' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+
+							}
                                 <PublishPopUp listings={listing} token={props.token}
                                     popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
-                                    popoverOnClose={popoverOnClose}
+                                    popoverOnClose={popoverOnClose} activated={activated} setActivated={setActivated}
                                     />
 
                                 <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
