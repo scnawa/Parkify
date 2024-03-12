@@ -20,7 +20,7 @@ const PageList = () => {
     <>
       <NavBar token={token} setToken={setToken}/>
       <Routes>
-        <Route path="/"/>
+        <Route path="/"element={<AllListings token={token}/>} />
         <Route path="/create-listings" element={<CreateListings token={token}/>} />
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
