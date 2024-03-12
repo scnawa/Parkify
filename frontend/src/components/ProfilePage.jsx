@@ -10,7 +10,7 @@ const ProfilePage = (props) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [formData, setFormData] = useState({
         name: 'Bob',
-        email: 'Bob@hotmail.com',
+        email: props.token,
         });
 
     const handleInputChange = (e) => {
