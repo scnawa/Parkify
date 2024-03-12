@@ -67,8 +67,7 @@ function NavBar(props) {
 	}
 	const profileOnClick = (event) => {
 		setUserMenuLocation(null);
-		// ToDo: navigate the actual page
-		navigate("/");
+		navigate("/profilepage");
 	}
 	const loginOnClick = (event) => {
 		navigate("/login");
