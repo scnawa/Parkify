@@ -237,13 +237,28 @@ class User:
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         user_listings = user.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+        listingFound = [i for i in user_listings if i["listing_id"] == headers["listings"]["listing_id"]]
 
         if user:
             if listingFound:
-                listing_no = userData["listings"]["listing_no"] 
+                listing_no = headers["listings"]["listing_no"] 
                 return json_util.dumps(user_listings[listing_no])
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
+
+    def get_all_listings(self): 
+        
+        all_listings = db.userbase_data.find({},{"_id":0,'listings':1})
+        all_active_listings = []
+        for listing_dict in all_listings: 
+            #print(listing)
+            for listing in listing_dict['listings']:
+                if listing['is_active'] == "True":  
+                
+                    all_active_listings.append(listing)
+
+        return json_util.dumps(all_active_listings)
+
 
 
