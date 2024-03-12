@@ -8,12 +8,22 @@ import defaultProfilePicture from '../.././src/assets/user.png'
 
 const ProfilePage = (props) => {
     //console.log(props);
-    const [user, setUser] = useState(null);
+    //const [user, setUser] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        email: props.token,
+    });
+
     useEffect(() => {
         const fetchData = async () => {
           try {
             const userData = await GetUser(props.token);
-            setUser(userData);
+            //console.log(userData.username);
+            //setUser(userData.username);
+            setFormData({
+                ...formData,
+                name: userData.username,  
+              });
           } catch (error) {
             console.error('Error fetching user:', error);
           }
@@ -21,14 +31,11 @@ const ProfilePage = (props) => {
     
         fetchData();
       }, [props.token]);
-      console.log(user);
+
+
+    //console.log(user);
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
-    const [formData, setFormData] = useState({
-        name: "user",
-        email: props.token,
-        });
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
