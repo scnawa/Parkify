@@ -261,4 +261,7 @@ class User:
         return json_util.dumps(all_active_listings)
 
 
+    def getUserInfo(self, userData): 
+        return json_util.dumps(db.userbase_data.find_one({"email": userData['email']}))
+
 

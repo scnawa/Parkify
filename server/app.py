@@ -127,5 +127,10 @@ def get_listing():
 def get_all_listings(): 
     return config.User().get_all_listings()
 
+@APP.route('/getUserInfo', methods=['GET'])
+def getUserInfo(): 
+    userData = json.loads(request.data)
+    return config.User().getUserInfo(userData['email'])
+
 if __name__ == "__main__": 
     APP.run(port = config.port)
