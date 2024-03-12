@@ -262,6 +262,9 @@ class User:
 
 
     def getUserInfo(self, userData): 
-        return json_util.dumps(db.userbase_data.find_one({"email": userData['email']}))
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            return json_util.dumps(user)
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
 
