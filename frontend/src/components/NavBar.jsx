@@ -16,6 +16,8 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Menu, MenuItem } from '@mui/material';
 import Modal from './Modal';
+import Logout from './logout';
+
 const theme = createTheme({
 	palette: {
 		green: {
@@ -32,9 +34,11 @@ function NavBar(props) {
 	const [userMenuLocation, setUserMenuLocation] = React.useState(null);
 	const [notiLocation, setnotiLocation] = React.useState(null);
 	const token = props.token;
+	const SID = props.SID;
+	const setToken = props.setToken;
+	const setSID = props.setSID;
 
-
-	const pages = ['Home', 'Parking', 'Rent out your slot'];
+	const pages = ['HOME', 'MY PARKING SPACES'];
 	const navigate = useNavigate();
 	// TODO: navigate user profile
 	const userMenuOnclick = (event) => {
@@ -50,32 +54,25 @@ function NavBar(props) {
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
 		switch (text) {
-			case "RENT OUT YOUR SLOT":
+			case "MY PARKING SPACES":
 				navigate("/myListing");
-				break;
-			case "PARKING":
-				navigate("/");
 				break;
 			case "HOME":
 				navigate("/");
-
 				break;
 
 		}
 	}
 	const profileOnClick = (event) => {
 		setUserMenuLocation(null);
-		// ToDo: navigate the actual page
-		navigate("/");
+		navigate("/profilepage");
 	}
 	const loginOnClick = (event) => {
 		navigate("/login");
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		// ToDo: actual logout
-		props.setToken(null);
-		localStorage.removeItem('token');
+		Logout(token, SID, setToken, setSID);
 		navigate("/");
 	}
 
@@ -86,7 +83,6 @@ function NavBar(props) {
 		setnotiLocation(null);
 		console.log("close");
 		console.log(notiLocation);
-
 	};
 
 
@@ -107,11 +103,12 @@ function NavBar(props) {
 								fontWeight: 700,
 								letterSpacing: '.2rem',
 								fontFamily: 'future',
+								display: { xs: 'none', sm: 'block', md: 'block' },
 							}}
 						>
 							Parkify
 						</Typography>
-						<Box sx={{ display: { xs: 'none', sm: 'block' }, flexGrow: 1, }}>
+						<Box sx={{ display: { xs: 'block', sm: 'block', md: 'block' }, flexGrow: 1, }}>
 							{pages.map((item) => (
 								<Button key={item} onClick={pageOnClick}
 									sx={{

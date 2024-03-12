@@ -20,11 +20,13 @@ function MyListings(props) {
 	React.useEffect(() => {
 		if (!props.token) {
 			navigate('/login');
+			return
 		}
 	}, [props.token]);
 	React.useEffect(() => {
 		if (!props.token) {
 			navigate('/login');
+			return
 		}
 		const fetchListings = async () => {
 			try {
@@ -56,33 +58,29 @@ function MyListings(props) {
 		navigate('/create-listings')
 	};
 	return (
-		<>
-			<ThemeProvider theme={theme}>
-
-				<Box display='flex' sx={{ justifyContent: "space-between", margin: 2 }}>
-					<Typography variant="h5" component="div">
-						Manage you listings
-					</Typography>
-					<Button variant="contained" sx={{ height: 35 }} onClick={createOnClick} color="yellow">Create</Button>
-
-				</Box>
-			</ThemeProvider>
-
-    		<List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-				{listings.map((listing) => {
-					// the key is somehow nessary for the child component to render
-					// https://stackoverflow.com/questions/73577213/list-components-not-rendering-properly-after-applying-array-filter-reactjs
-					return (
-						<ListItem key={listing.listing_id + listing.listing_no}>
-
-							<ProviderListing  token={props.token} listing={listing} listings={listings} setListings={setListings} />
-					    </ListItem>
-
-					)
-				})}
-			</List>
-
-		</>
-	)
+        <ThemeProvider theme={theme}>
+            <Box display='flex' flexDirection="column" sx={{ justifyContent: "space-between", margin: 2 }}>
+                <Box display='flex' justifyContent="space-between" alignItems="center" mb={4}>
+                    <Typography variant="h4" component="div">
+                        Manage Your Parking Spaces
+                    </Typography>
+                    <Button variant="contained" onClick={createOnClick} color="yellow">
+                        Create
+                    </Button>
+                </Box>
+                <List sx={{ width: '100%' }}>
+                    {listings.map((listing, index) => (
+                        <ListItem key={listing.listing_id} sx={{
+                            my: 0.5,
+                            borderRadius: 1,
+							border: 1,
+                        }}>
+                            <ProviderListing token={props.token} listing={listing} listings={listings} setListings={setListings} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+        </ThemeProvider>
+    );
 }
 export default MyListings;

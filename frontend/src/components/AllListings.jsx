@@ -17,17 +17,9 @@ const theme = createTheme({
 function AllListings(props) {
     const [listings, setListings] = React.useState([]);
     const navigate = useNavigate();
-
+    
     React.useEffect(() => {
-        if (!props.token) {
-            navigate('/login');
-        }
-    }, [props.token]);
 
-    React.useEffect(() => {
-		if (!props.token) {
-			navigate('/login');
-		}
 		const fetchListings = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/getAllListings', {

@@ -261,4 +261,10 @@ class User:
         return json_util.dumps(all_active_listings)
 
 
+    def getUserInfo(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            return json_util.dumps(user)
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
 

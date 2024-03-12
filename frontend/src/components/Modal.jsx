@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
-// import NotificationComponent from './NotificationComponent';
+import NotificationComponent from './Notifications';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 const Modal = ({ isOpen, setnotiLocation, content }) => {
@@ -32,14 +32,17 @@ const Modal = ({ isOpen, setnotiLocation, content }) => {
         {/* <NotificationsIcon onClick={openModal} className="btn-modal" /> */}
         {isOpen && (
             <div className="modal">
-            <div onClick={openModal} className="overlay"></div>
-            <div className="modal-content">
-                <h2>Hello Modal</h2>
-                <p>New Listing: 555 York St Sydney{content}</p>
+              <div onClick={closeModal} className="overlay"></div>
+                <div className="modal-content">
+                  <NotificationComponent
+                    title="New Notification"
+                    description={`New Listing: 555 York St Sydney${content}`}
+                    onReadClick={closeModal}
+                  />
                 <button className="close-modal" onClick={closeModal}>
-                Close
+                  Close
                 </button>
-            </div>
+              </div>
             </div>
         )}
     </>

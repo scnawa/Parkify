@@ -70,7 +70,7 @@ function ProviderListing(props) {
                     {/* TODO improve the apperance on desktop */}
                     <Box  sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, width:'100%' }}>
                                 <Typography variant="h6" component="div">
-                                    Address: {listing.address}
+                                    {listing.address}
                                 </Typography>
                                 <Typography variant="h6" color="text.secondary">
                                     ${listing.price}
