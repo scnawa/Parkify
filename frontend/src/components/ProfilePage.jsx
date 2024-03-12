@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Logout from './logout';
+import GetUser from './GetUser';
 import './ProfilePage.css'
 import defaultProfilePicture from '../.././src/assets/user.png'
 
+
 const ProfilePage = (props) => {
-    // console.log(props);
+    //console.log(props);
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const userData = await GetUser(props.token);
+            setUser(userData);
+          } catch (error) {
+            console.error('Error fetching user:', error);
+          }
+        };
+    
+        fetchData();
+      }, [props.token]);
+      console.log(user);
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [formData, setFormData] = useState({
-        name: 'Bob',
+        name: "user",
         email: props.token,
         });
 

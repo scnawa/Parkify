@@ -16,7 +16,7 @@ import AllListings from './components/AllListings';
 const PageList = () => {
 
   const [token, setToken] = React.useState(localStorage.getItem('token'));
-  const [SID, setSID] = useState("");
+  const [SID, setSID] = React.useState(localStorage.getItem('SID'));
   const navigate = useNavigate();
   return (
     <>
@@ -31,7 +31,7 @@ const PageList = () => {
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
         <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
-        <Route path="/verify" element={<Verify/>} />
+        <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
       </Routes>
     </>
   );
