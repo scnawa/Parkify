@@ -79,9 +79,6 @@ class User:
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
 
-            if "isAdmin" in user: 
-                if user['isAdmin'] == True: 
-                    return jsonify({"admin": True})
                 
             if pbkdf2_sha256.verify(userData['password'], user['password']):
                 if user['isVerified'] == False: 
@@ -96,6 +93,10 @@ class User:
                 #user["currentSessionID"] = currentSessionID
                 db.userbase_data.update_many({'email': user['email']}, {"$set": {"session_id": sessionID_list},})
                     # Add current session id to the user
+                #if "isAdmin" in user: 
+                #    if user['isAdmin'] == True: 
+                #        return jsonify({"admin": True}, {"adminInfo" : json_util.dumps(user)})
+
                 return json_util.dumps(user)
             else:
                 return jsonify({"type": "password", "error": "Password Is Incorrect"}), 401

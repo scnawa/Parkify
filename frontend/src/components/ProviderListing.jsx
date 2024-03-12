@@ -36,7 +36,7 @@ const theme = createTheme({
 function ProviderListing(props) {
     const [popoverLocation, setPopOverLocation] = useState(false);
     const [listing, _] = useState(props.listing);
-    const [activated, setActivated] = useState(props.listings.is_active === "True");
+    const [activated, setActivated] = useState(props.listing.is_active === "True");
 
     const navigate = useNavigate();
 

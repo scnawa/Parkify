@@ -33,8 +33,15 @@ function Login(props) {
       
       
       const data = await response.json();
+
       if (data.error) {
         alert(data.error);
+      } else if (data.hasOwnProperty('isAdmin')) {
+        props.setToken(data.email);
+        localStorage.setItem('token', data.email);
+        props.setSID(data.session_id[data.session_id.length-1]);
+        localStorage.setItem('SID', data.session_id[data.session_id.length-1]);
+        navigate('/admindashboard')
       } else {
         props.setToken(data.email);
         localStorage.setItem('token', data.email);
