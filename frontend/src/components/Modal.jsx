@@ -36,7 +36,12 @@ const Modal = ({ isOpen, setnotiLocation, content }) => {
                 <div className="modal-content">
                   <NotificationComponent
                     title="New Notification"
-                    description={`New Listing: 555 York St Sydney${content}`}
+                    description={`New Listing Created: 555 York St Sydney${content}`}
+                    onReadClick={closeModal}
+                  />
+                  <NotificationComponent
+                    title="New Notification"
+                    description={`Mason has rented UNSW space${content}`}
                     onReadClick={closeModal}
                   />
                 <button className="close-modal" onClick={closeModal}>
