@@ -37,7 +37,7 @@ function Login(props) {
         alert(data.error);
       } else {
         props.setToken(data.email);
-
+        props.setSID(data.session_id[data.session_id.length-1]);
         navigate('/');
       }
 

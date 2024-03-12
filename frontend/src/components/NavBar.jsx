@@ -16,6 +16,8 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Menu, MenuItem } from '@mui/material';
 import Modal from './Modal';
+import Logout from './logout';
+
 const theme = createTheme({
 	palette: {
 		green: {
@@ -32,7 +34,8 @@ function NavBar(props) {
 	const [userMenuLocation, setUserMenuLocation] = React.useState(null);
 	const [notiLocation, setnotiLocation] = React.useState(null);
 	const token = props.token;
-
+	const SID = props.SID;
+	const setToken = props.setToken;
 
 	const pages = ['Home', 'Parking', 'Rent out your slot'];
 	const navigate = useNavigate();
@@ -65,15 +68,14 @@ function NavBar(props) {
 	}
 	const profileOnClick = (event) => {
 		setUserMenuLocation(null);
-		// ToDo: navigate the actual page
-		navigate("/");
+		navigate("/profilepage");
 	}
 	const loginOnClick = (event) => {
 		navigate("/login");
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		// ToDo: actual logout
+		Logout(token, SID, setToken);
 		navigate("/");
 	}
 
@@ -84,7 +86,6 @@ function NavBar(props) {
 		setnotiLocation(null);
 		console.log("close");
 		console.log(notiLocation);
-
 	};
 
 

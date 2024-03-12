@@ -14,21 +14,22 @@ import EditListings from './components/EditListings';
 
 const PageList = () => {
   const [token, setToken] = useState("");
+  const [SID, setSID] = useState("");
   const navigate = useNavigate();
   return (
     <>
-      <NavBar token={token}/>
+      <NavBar token={token} SID={SID} setToken={setToken}/>
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings token={token}/>} />
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
 
-        <Route path="/login" element={<Login  token={token} setToken={setToken}/>} />
+        <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
 
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
-        <Route path="/profilepage" element={<ProfilePage/>} />
+        <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
         <Route path="/verify" element={<Verify/>} />
       </Routes>
     </>

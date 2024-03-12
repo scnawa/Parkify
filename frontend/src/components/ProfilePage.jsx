@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+import Logout from './logout';
 import './ProfilePage.css'
 import defaultProfilePicture from '../.././src/assets/user.png'
 
-const ProfilePage = () => {
-
+const ProfilePage = (props) => {
+    // console.log(props);
+    const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
+        name: 'Bob',
+        email: props.token,
         });
-    
-    useEffect(() => {
-        // async/await
-        const userData = {
-            name: 'Dru',
-            email: 'Dru@hotmail.com',
-        };
-
-        // Update the state with user data
-        setFormData(userData);
-    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -41,19 +33,21 @@ const ProfilePage = () => {
 
     const handleDeleteProfile = async () => {
         try {
+            await Logout(props.token, props.SID, props.setToken);
             const response = await fetch('/deleteAccount', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add any additional headers as needed
                 },
                 body: JSON.stringify({
-                    email: formData.email,
+                    email: props.token,
                 }),
             });
     
             if (response.ok) {
                 console.log('Profile deleted successfully!');
+
+                navigate('/')
             } else {
                 console.error('Failed to delete profile. Server response:', response.status, response.statusText);
             }
@@ -65,6 +59,7 @@ const ProfilePage = () => {
     return (
         <div className='container'>
             <div className="left-box">
+                <h3>Profile Image</h3>
                 <div className='profile-picture'>
                     {profilePicture ? (
                         <img src={URL.createObjectURL(profilePicture)} alt="Profile" />
@@ -87,7 +82,6 @@ const ProfilePage = () => {
                     />  
             </div>
             <div className='right-box'>
-                <div className='form-container'>
                     <form onSubmit={handleSubmit}>
                         <label>
                         Name:
@@ -108,23 +102,31 @@ const ProfilePage = () => {
                         />
                         </label>
                         <h3>Add Payment</h3>
-                        <div class="card-number">
-                            <label> BSB: </label>
-                            <input type="text" class="card-number-field"
-                                placeholder="000-000" />
+                        <div class="B-number">
+                            <label> BSB:
+                                <input 
+                                    type="text" 
+                                    class="A-number-field"
+                                    placeholder="000-000" />
+                                </label>
+                            
                         </div>
-                        <div class="date-number">
-                            <label> ACC #: </label>
-                            <input type="text" class="date-number-field"
-                                placeholder="0123456789" />
+                        <div class="A-number">
+                            <label> ACC#: 
+                                <input 
+                                    type="text" 
+                                    class="B-number-field"
+                                    placeholder="0123456789" />
+                                </label>
                         </div>
-                        <button type="submit" className="submit-profile-button">Save Changes</button>
-                    </form>
+                        <button type="submit" className="submit-profile-button">
+                            Save Changes
+                        </button>
+                    </form> 
                     <button onClick={handleDeleteProfile} className="delete-profile-button">
                         Delete Profile
                     </button>
                 </div>
-            </div>
         </div>
         )
     }
