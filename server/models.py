@@ -49,6 +49,25 @@ class User:
             return user['username']
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
+    def setupAdmin(self, userData): 
+        user = { 
+            "username": userData['username'], 
+            "password": userData['password'],
+            "email" : userData["email"], 
+            "session_id": [],
+            "isVerified" : True,
+            "isAdmin": True
+        }
+        user['password'] = pbkdf2_sha256.encrypt(
+            user['password'])
+        #user = db.userbase_data.find_one(userData[])
+        if db.userbase_data.find_one({"email": userData['email']}): 
+            return jsonify({'type': "email", "error": "Email already in use"}), 400 
+        if db.userbase_data.insert_one(user):
+            # debugging 
+            return json_util.dumps({"type": "SUCCESS"})
+        
+
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
         if "isVerified" in userData: 
@@ -59,7 +78,11 @@ class User:
         if user: 
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
-        
+
+            if "isAdmin" in user: 
+                if user['isAdmin'] == True: 
+                    return jsonify({"admin": True})
+                
             if pbkdf2_sha256.verify(userData['password'], user['password']):
                 if user['isVerified'] == False: 
                     return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
@@ -78,6 +101,7 @@ class User:
                 return jsonify({"type": "password", "error": "Password Is Incorrect"}), 401
 
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+
 
     def logout(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})

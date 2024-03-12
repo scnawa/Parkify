@@ -41,6 +41,11 @@ APP.register_error_handler(Exception, defaultHandler)
 def homePage(): 
     return "home"
 
+@APP.route('/setupAdmin', methods = ['POST'])
+def setupAdmin():
+    userData = json.loads(request.data)
+    return config.User().setupAdmin(userData)
+
 @APP.route('/signup', methods=['POST'])
 def signup(): 
     userData = json.loads(request.data)
