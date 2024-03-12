@@ -11,18 +11,20 @@ import Verify from './components/Verify';
 
 import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
+import AllListings from './components/AllListings';
 
 const PageList = () => {
-  const [token, setToken] = useState("");
+  const [token, setToken] = React.useState(localStorage.getItem('token'));
   const navigate = useNavigate();
   return (
     <>
-      <NavBar token={token}/>
+      <NavBar token={token} setToken={setToken}/>
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings token={token}/>} />
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
+        <Route path="/alllistings" element={<AllListings token={token}/>} />
 
         <Route path="/login" element={<Login  token={token} setToken={setToken}/>} />
 

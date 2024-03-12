@@ -74,6 +74,8 @@ function NavBar(props) {
 	const logOut = (event) => {
 		setUserMenuLocation(null);
 		// ToDo: actual logout
+		props.setToken(null);
+		localStorage.removeItem('token');
 		navigate("/");
 	}
 

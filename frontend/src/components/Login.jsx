@@ -37,6 +37,7 @@ function Login(props) {
         alert(data.error);
       } else {
         props.setToken(data.email);
+        localStorage.setItem('token', data.email);
 
         navigate('/');
       }
