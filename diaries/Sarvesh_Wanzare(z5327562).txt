@@ -1,0 +1,27 @@
+Week 1: 
+In the first week, we formed a team of six people and we decided on doing the Car Space Rental Management System. 
+We decided on the backend and frontend teams and the language we would use for the respective ends. 
+Backend is going to be on Python and Frontend on React JS. 
+We decided on The Project Owner as Sarvesh (me) and the Scrum Master (Ridhvik) 
+
+
+Week 2: 
+The second week was more focused on writing the Proposal. 
+We distributed the workload of the proposal between ourselves. 
+I was doing the introduction and the Scrum section, Sinha was doing the software architecture section, Sam, Ady, and Batu 
+were going to do the Storyboards for the user stories and Ridhvik was going to do the Scrum section. 
+Almost everyone was involved in formatting the report. 
+We decided to use Microsoft Word collaborate to make the report. 
+
+Week 3: 
+In the third week, we started thinking about reaching our target for sprint 1. 
+We vetted out some user stories for the first sprint; Initially, we were satisfied with the user stories 
+relating to user authentication but upon insight from tutors, we found out that it was too small a target 
+so we included user stories from the requirement of provider being able to upload their listing and updating their listing. 
+
+Week 4: 
+We were starting to code our way to sprint one. Although we have started a bit later compared to other teams,
+we were pretty much at par with our target for sprint one towards the end of the week. 
+I completed all of the user authentication backend functions in a day and then helped in create listing function 
+and wrote API calls on which the frontend will request from and then set up the database on MongoDB. 
+Ady collaborated with me in designing the database. 
