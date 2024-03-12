@@ -252,11 +252,11 @@ class User:
         all_listings = db.userbase_data.find({},{"_id":0,'listings':1})
         all_active_listings = []
         for listing_dict in all_listings: 
-            #print(listing)
-            for listing in listing_dict['listings']:
-                if listing['is_active'] == "True":  
-                
-                    all_active_listings.append(listing)
+            if bool(listing_dict):
+                for listing in listing_dict['listings']:
+                    if listing['is_active'] == "True":  
+                    
+                        all_active_listings.append(listing)
 
         return json_util.dumps(all_active_listings)
 
