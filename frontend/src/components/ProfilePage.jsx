@@ -11,7 +11,7 @@ const ProfilePage = (token, SID) => {
         name: 'Bob',
         email: 'Bob@hotmail.com',
         });
-
+        
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -38,7 +38,7 @@ const ProfilePage = (token, SID) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: formData.email,
+                    email: token,
                 }),
             });
     
@@ -120,7 +120,7 @@ const ProfilePage = (token, SID) => {
                         <button type="submit" className="submit-profile-button">
                             Save Changes
                         </button>
-                    </form>
+                    </form> 
                     <button onClick={handleDeleteProfile} className="delete-profile-button">
                         Delete Profile
                     </button>
