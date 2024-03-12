@@ -36,8 +36,9 @@ function NavBar(props) {
 	const token = props.token;
 	const SID = props.SID;
 	const setToken = props.setToken;
+	const setSID = props.setSID;
 
-	const pages = ['Home', 'Parking', 'RENT OUT'];
+	const pages = ['HOME', 'MY PARKING SPACES'];
 	const navigate = useNavigate();
 	// TODO: navigate user profile
 	const userMenuOnclick = (event) => {
@@ -53,15 +54,11 @@ function NavBar(props) {
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
 		switch (text) {
-			case "RENT OUT":
+			case "MY PARKING SPACES":
 				navigate("/myListing");
-				break;
-			case "PARKING":
-				navigate("/");
 				break;
 			case "HOME":
 				navigate("/");
-
 				break;
 
 		}
@@ -75,7 +72,7 @@ function NavBar(props) {
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		Logout(token, SID, setToken);
+		Logout(token, SID, setToken, setSID);
 		navigate("/");
 	}
 

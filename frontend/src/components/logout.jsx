@@ -1,4 +1,4 @@
-async function Logout (token, SID, setToken) {
+async function Logout (token, SID, setToken, setSID) {
     try {
       const response = await fetch('/logout', {
         method: 'POST',
@@ -15,6 +15,8 @@ async function Logout (token, SID, setToken) {
       console.log(data)
       if (response.status === 200) {
         setToken(null);
+        setSID(null);
+        localStorage.removeItem('token');
       } else {
         console.error('Logout failed:', data.error);
       }
