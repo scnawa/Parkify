@@ -123,7 +123,9 @@ def get_listing():
     userData = request.headers
     return config.User().get_listing(userData)
 
-
+@APP.route('/getAllListings', methods = ['GET'])
+def get_all_listings(): 
+    return config.User().get_all_listings()
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
