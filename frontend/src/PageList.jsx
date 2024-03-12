@@ -18,7 +18,7 @@ const PageList = () => {
   const navigate = useNavigate();
   return (
     <>
-      <NavBar token={token} SID={SID}/>
+      <NavBar token={token} SID={SID} setToken={setToken}/>
       <Routes>
         <Route path="/"/>
         <Route path="/create-listings" element={<CreateListings token={token}/>} />

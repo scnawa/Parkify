@@ -35,6 +35,7 @@ function NavBar(props) {
 	const [notiLocation, setnotiLocation] = React.useState(null);
 	const token = props.token;
 	const SID = props.SID;
+	const setToken = props.setToken;
 
 	const pages = ['Home', 'Parking', 'Rent out your slot'];
 	const navigate = useNavigate();
@@ -74,8 +75,7 @@ function NavBar(props) {
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		Logout(token, SID);
-		
+		Logout(token, SID, setToken);
 		navigate("/");
 	}
 
