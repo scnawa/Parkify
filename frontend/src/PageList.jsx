@@ -29,7 +29,7 @@ const PageList = () => {
 
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
-        <Route path="/profilepage" element={<ProfilePage token={token} SID={SID}/>}/>
+        <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
         <Route path="/verify" element={<Verify/>} />
       </Routes>
     </>

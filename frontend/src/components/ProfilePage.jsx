@@ -4,14 +4,15 @@ import Logout from './logout';
 import './ProfilePage.css'
 import defaultProfilePicture from '../.././src/assets/user.png'
 
-const ProfilePage = (token, SID) => {
+const ProfilePage = (props) => {
+    // console.log(props);
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(null);
     const [formData, setFormData] = useState({
         name: 'Bob',
         email: 'Bob@hotmail.com',
         });
-        
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -32,19 +33,20 @@ const ProfilePage = (token, SID) => {
 
     const handleDeleteProfile = async () => {
         try {
+            await Logout(props.token, props.SID, props.setToken);
             const response = await fetch('/deleteAccount', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: token,
+                    email: props.token,
                 }),
             });
     
             if (response.ok) {
                 console.log('Profile deleted successfully!');
-                Logout(token, SID)
+
                 navigate('/')
             } else {
                 console.error('Failed to delete profile. Server response:', response.status, response.statusText);
