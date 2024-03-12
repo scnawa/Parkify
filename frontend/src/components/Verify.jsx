@@ -116,7 +116,7 @@ function Verify(props) {
         <Typography variant="h4" gutterBottom color="primary">
           Verify Your Account
         </Typography>
-        <Box component="form" sx={{ mt: 1, display: 'flex', gap: '10px' }}>
+        <Box component="form" sx={{ mt: 1, display: 'flex', flexDirection: 'row', gap: '10px' }}>
           {code.map((num, index) => (
             <TextField
               key={index}
