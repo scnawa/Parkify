@@ -34,7 +34,7 @@ function NavBar(props) {
 	const token = props.token;
 
 
-	const pages = ['Home', 'Parking', 'Rent out your slot'];
+	const pages = ['Home', 'Parking', 'RENT OUT'];
 	const navigate = useNavigate();
 	// TODO: navigate user profile
 	const userMenuOnclick = (event) => {
@@ -50,7 +50,7 @@ function NavBar(props) {
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
 		switch (text) {
-			case "RENT OUT YOUR SLOT":
+			case "RENT OUT":
 				navigate("/myListing");
 				break;
 			case "PARKING":
@@ -105,11 +105,12 @@ function NavBar(props) {
 								fontWeight: 700,
 								letterSpacing: '.2rem',
 								fontFamily: 'future',
+								display: { xs: 'none', sm: 'block', md: 'block' },
 							}}
 						>
 							Parkify
 						</Typography>
-						<Box sx={{ display: { xs: 'none', sm: 'block' }, flexGrow: 1, }}>
+						<Box sx={{ display: { xs: 'block', sm: 'block', md: 'block' }, flexGrow: 1, }}>
 							{pages.map((item) => (
 								<Button key={item} onClick={pageOnClick}
 									sx={{

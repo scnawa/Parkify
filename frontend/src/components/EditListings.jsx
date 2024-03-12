@@ -33,6 +33,7 @@ const uploadFile = (file) => {
     else if (typeof file === 'string' || file instanceof String) {
         return Promise.resolve(file);
     } else {
+        console.log("yes");
         targetFile = file[0];
     }
     const expectedType = ['image/jpeg', 'image/png', 'image/jpg']
@@ -61,7 +62,6 @@ function EditListings(props) {
         // eslint-disable-next-line
     }, [state.token]);
     const handleRemove = (event) => {
-        console.log(listing);
         const fetchDelete = async () => {
             const data = {
                 listings: {
@@ -98,12 +98,15 @@ function EditListings(props) {
     const submitForm = (e) => {
         e.preventDefault();
         uploadFile(listing.image_url).then((url) => {
+            const new_listing = {...listing};
+            new_listing["image_url"] = url;
             const data = {
                 email: state.token,
                 listings: {
-                    ...listing
+                    ...new_listing
                 }
             }
+            console.log(data);
             const fetchListings = async () => {
                 try {
                     const response = await fetch('http://localhost:' + '8080/' + 'update_listing', {
