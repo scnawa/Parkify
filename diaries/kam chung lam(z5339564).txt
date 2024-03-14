@@ -1,0 +1,21 @@
+Week 1: 
+In week one, we formed a group and decided the project topic as car renting system.
+we discussed our position in the team (Sarvesh as project owner and Ridhvik as Scrum Master),
+the language and framework that we design to build our frontend and backend. 
+
+Week2:
+In week two, we start to work on the proposal. we first finsihed all the user stories.
+And each of us take care several of them. And we distributed the work of the proposal.
+me, Ady and batu was working on the story boards, Sinha worked on the software architecture,
+Ridhvik worked on the Scrum section.
+And we collaborate through discord and Microsoft word majorily.
+
+Week3:
+In week three, we start to work on the sprint one. we first decided the actual user stories
+we gonna implement in sprint one.
+
+week4:
+we actually worked on the sprint one. half of the team is focused on the frontend and others worked on the backend.
+And i am implemented the navbar, create listing, edit listing, remove listing, activate lisitng, deactivate listing
+and the page to show provider's lisitng and perform the above functionality.  
+
