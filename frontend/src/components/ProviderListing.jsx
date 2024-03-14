@@ -84,7 +84,7 @@ function ProviderListing(props) {
 
 							}
 							{!activated &&
-                                <Button size="small" color='red' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+                                <Button size="small" color='error' variant="contained" onClick={popoverOnClick}>Live Status</Button>
 
 							}
                                 <PublishPopUp listings={listing} token={props.token}
@@ -93,7 +93,7 @@ function ProviderListing(props) {
                                     />
 
                                 <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
-                                    <Button size="small" color='green' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
+                                    <Button size="small" color='success' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
                                 </Box>
 
                             </Box>
