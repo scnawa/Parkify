@@ -14,10 +14,10 @@ const theme = createTheme({
 function AllProviderListing({ listing }) {
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{ display: 'flex', height: '100%', flexDirection: { xs: 'column', sm: 'row' } }}>
+            <Card sx={{ display: 'flex', height: '100%', flexDirection: 'column', borderRadius: '16px' }}>
                 <CardMedia
                     component="img"
-                    sx={{ width: 151, height: '100%', objectFit: 'cover' }}
+                    sx={{ width: '100%', height: 300, objectFit: 'cover' }} // Adjusted width to 100% and height as needed
                     image={listing.image_url !== '' ? listing.image_url : Background}
                     alt="Parking space"
                 />
@@ -26,7 +26,7 @@ function AllProviderListing({ listing }) {
                         {listing.address}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        ${listing.price}
+                        ${listing.price}/day
                     </Typography>
                     <Box mt={2}>
                         <Button size="small" color="primary" variant="contained">Details</Button>
@@ -36,5 +36,6 @@ function AllProviderListing({ listing }) {
         </ThemeProvider>
     );
 }
+
 
 export default AllProviderListing;

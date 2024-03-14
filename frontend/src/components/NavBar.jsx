@@ -21,7 +21,7 @@ import Logout from './logout';
 const theme = createTheme({
 	palette: {
 		green: {
-			main: '#00897B',
+			main: '#4caf50',
 			light: '#E0F2F1',
 			dark: '#004D40',
 			contrastText: '#CDDC39',

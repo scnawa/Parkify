@@ -165,10 +165,10 @@ function EditListings(props) {
                     <FileInputField color='green' variant="contained" multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" />
                     {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
                     <p></p>
-
-                    <Button  color='green' variant="contained" onClick={(e) => submitForm(e)}>Edit</Button>
-                    <Button  color='green' variant="contained" onClick={handleRemove} sx={{ml:'21px'}}>Remove</Button>
-
+                    <Box> 
+                        <Button  color='success' variant="contained" onClick={(e) => submitForm(e)}>Edit</Button>
+                        <Button  color='success' variant="contained" onClick={handleRemove} sx={{ml:'21px'}}>Remove</Button>
+                    </Box>
                 </Box>
             </Paper>
 
