@@ -99,7 +99,7 @@ function CreateListings(props) {
 				}
 			};
 			return fetchListings();
-		}).then(()=>navigate('/myListing'))
+		}).then(()=>alert("created listing")).then(()=>navigate('/myListing'))
 		.catch((err) => {
 			alert(err);
 			console.error(err);
