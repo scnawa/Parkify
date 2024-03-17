@@ -6,7 +6,7 @@
     width: 60vw;
     height: 90vh;
     padding: 20px;
-    margin: 10vh 20vw;
+    margin: 5vh 20vw;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -82,7 +82,6 @@ input {
 .delete-profile-button {
     background-color: #ff5252;
     margin-top: 10px;
-    margin-left: 20px;
 }
 
 @media (max-width: 768px) {

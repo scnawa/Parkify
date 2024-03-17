@@ -145,10 +145,10 @@ const ProfilePage = (props) => {
                         <button type="submit" className="submit-profile-button">
                             Save Changes
                         </button>
+                        <button onClick={handleDeleteProfile} className="delete-profile-button">
+                            Delete Profile
+                        </button>
                     </form> 
-                    <button onClick={handleDeleteProfile} className="delete-profile-button">
-                        Delete Profile
-                    </button>
                 </div>
         </div>
         )

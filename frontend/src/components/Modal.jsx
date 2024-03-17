@@ -9,9 +9,9 @@ const Modal = ({ isOpen, setnotiLocation, content }) => {
   // useEffect(() => {
   //   setModal(isOpen);
   // }, [isOpen]);
-  const openModal = () => {
+  /* const openModal = () => {
     setnotiLocation(true);
-  }
+  } */
   const closeModal = () => {
     setnotiLocation(false);
   }
@@ -32,7 +32,6 @@ const Modal = ({ isOpen, setnotiLocation, content }) => {
         {/* <NotificationsIcon onClick={openModal} className="btn-modal" /> */}
         {isOpen && (
             <div className="modal">
-              <div onClick={closeModal} className="overlay"></div>
                 <div className="modal-content">
                   <NotificationComponent
                     title="New Notification"

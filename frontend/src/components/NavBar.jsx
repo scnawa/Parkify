@@ -29,6 +29,7 @@ const theme = createTheme({
 	},
 });
 
+const font1 = "'Nunito Sans', sans-serif";
 
 function NavBar(props) {
 	const [userMenuLocation, setUserMenuLocation] = React.useState(null);
