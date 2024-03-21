@@ -201,9 +201,10 @@ function CreateListings(props) {
 							)}
 
 						/>
-						{/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY */}
+						{/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
+						https://react-leaflet.js.org/docs/example-popup-marker/*/}
 						<div style={{ width: "100%", height: "50vh", maxHeight: "600px" }}>
-							<MapContainer center={[40.505, -100.09]} zoom={10} style={{ width: '100%', height: '100%' }}>
+							<MapContainer center={[40.505, -50.09]} zoom={10} style={{ width: '100%', height: '100%' }}>
 								<TileLayer
 									attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
