@@ -19,6 +19,7 @@ import googlemaps
 from operator import length_hint
 import pandas as pd
 import sys
+import stripe
 
 class User: 
     def signup(self, userData): 
@@ -29,17 +30,28 @@ class User:
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
             "session_id": [],
-            "isVerified" : False
+            "isVerified" : False,
+            "payment_id": ""
+
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
         #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
-            return jsonify({'type': "email", "error": "Email already in use"}), 400 
+            return jsonify({'type': "email", "error": "Email already in use"}), 400
+        try:
+
+            user_payment = stripe.Customer.create(
+                name = userData['username'],
+                email = userData["email"],
+            )
+            user['payment_id'] = user_payment.id 
+        except stripe.error as e:
+            return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
 
         if db.userbase_data.insert_one(user):
             # debugging 
-            return json_util.dumps(user)
+            return json_util.dumps(user.email)
 
         return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
@@ -97,7 +109,7 @@ class User:
                 #    if user['isAdmin'] == True: 
                 #        return jsonify({"admin": True}, {"adminInfo" : json_util.dumps(user)})
 
-                return json_util.dumps(user)
+                return json_util.dumps(user.email)
             else:
                 return jsonify({"type": "password", "error": "Password Is Incorrect"}), 401
 
@@ -118,7 +130,8 @@ class User:
 
     def delete_account(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
-        if user: 
+        if user:
+            stripe.Customer.delete(user.payment_id)
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402 
@@ -291,5 +304,8 @@ class User:
         if user:
             return json_util.dumps(user)
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    def pay_booking(self, userData): 
+        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
 
 
