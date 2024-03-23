@@ -19,9 +19,11 @@ import googlemaps
 from operator import length_hint
 import pandas as pd
 import sys
+import geocoder
 
 class User: 
     def signup(self, userData): 
+        latitude, longitude = geocoder.ip('me').latlng
         user = { 
             "username": userData['username'], 
             "password": userData['password'],
@@ -29,7 +31,10 @@ class User:
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
             "session_id": [],
-            "isVerified" : False
+            "recentBookings": [],
+            "isVerified" : False,
+            "latitude": latitude,
+            "longitude": longitude
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -148,7 +153,9 @@ class User:
                 "image_url": userData['listings']['image_url'], 
                 "start_date": "",
                 "end_date": "",
-                "is_active": 'False' 
+                "is_active": 'False',
+                "latitude": helper.calcLatLong(userData['listings']['address'])[0],
+                "longitude": helper.calcLatLong(userData['listings']['address'])[1]
             }
 
             user_listings = user['listings']
@@ -156,6 +163,8 @@ class User:
             filter = {'email': user['email']}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
+            db.listing_data.insert_one(listing)
+
             return json_util.dumps(listing["listing_id"])
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
@@ -293,3 +302,32 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
 
+    def getClosestListings(self, userData): 
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user: 
+            latitude = 0
+            longitude = 0
+            if 'latitude' not in user.keys() or 'longitude' not in user.keys(): 
+                latitude, longitude = geocoder.ip('me').latlng
+            latitude = user["latitude"]
+            longitude = user["longitude"]
+            closestListings = []
+            for listing in db.listing_data: 
+
+                listing_lat = 0
+                listing_long = 0
+                if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
+                    listing_lat, listing_long = geocoder.ip('me').latlng
+                listing_lat = listing["latitude"]
+                listing_long = listing["longitude"]
+
+                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= 10: 
+                    closestListings.append(listing)
+            
+            return closestListings
+
+        return jsonify({"Error": "User does not exist"})
+
+
+
+        
