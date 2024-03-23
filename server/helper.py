@@ -5,7 +5,7 @@ import ssl
 import smtplib
 import random
 import requests
-import geopy
+from geopy.distance import geodesic
 def generateCode():
     return str(random.randrange(100000, 999999))
 
@@ -56,4 +56,4 @@ def calcLatLong(address):
 
 
 def calculateDistance(sourceLat, destLat, sourceLon, destLon): 
-    return geopy.distance.geodesic((sourceLat,sourceLon),(destLat, destLon)).kilometers
+    return geodesic((sourceLat,sourceLon),(destLat, destLon)).kilometers

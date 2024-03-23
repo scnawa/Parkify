@@ -137,5 +137,10 @@ def getUserInfo():
     userData = request.headers
     return config.User().getUserInfo(userData)
 
+@APP.route('/closestListing', methods=['GET'])
+def closestListing(): 
+    userData = json.loads(request.data)
+    return config.User().getClosestListings(userData)
+
 if __name__ == "__main__": 
     APP.run(port = config.port)

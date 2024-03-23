@@ -309,10 +309,11 @@ class User:
             longitude = 0
             if 'latitude' not in user.keys() or 'longitude' not in user.keys(): 
                 latitude, longitude = geocoder.ip('me').latlng
-            latitude = user["latitude"]
-            longitude = user["longitude"]
+            else:
+                latitude = user["latitude"]
+                longitude = user["longitude"]
             closestListings = []
-            for listing in db.listing_data: 
+            for listing in db.listing_data.find({}): 
 
                 listing_lat = 0
                 listing_long = 0
@@ -324,7 +325,7 @@ class User:
                 if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= 10: 
                     closestListings.append(listing)
             
-            return closestListings
+            return json_util.dumps(closestListings)
 
         return jsonify({"Error": "User does not exist"})
 
