@@ -29,6 +29,7 @@ class User:
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
             "session_id": [],
+            "recentBookings": [],
             "isVerified" : False
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -292,4 +293,63 @@ class User:
             return json_util.dumps(user)
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
+    # takes listing off page
+    def hold_listing(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
+        user_listings = user.get('listings')
+        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
 
+        if user:
+
+            if listingFound:
+                listing_no = userData["listings"]["listing_no"] 
+                user_listings[listing_no].update({'is_active': "False"})
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user_listings[listing_no])
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+
+    # puts listing on page
+    def release_listing(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
+        user_listings = user.get('listings')
+        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+
+        if user:
+
+            if listingFound:
+                listing_no = userData["listings"]["listing_no"] 
+                user_listings[listing_no].update({'is_active': "True"})
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'listings': user_listings}}
+                db.userbase_data.update_one(filter, newvalues)
+                return json_util.dumps(user_listings[listing_no])
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+    def create_booking(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
+        user_listings = user.get('listings')
+        booking_list = user["recentBookings"]
+
+        if user:
+            listing_no = userData["listings"]["listing_no"]
+            if userData["listings"]["listing_id"] not in booking_list:
+                booking_list.append(userData["listings"]["listing_id"])
+            user_listings[listing_no].update({'is_active': "False"})
+            filter = {'email': user['email']}
+            newvalues = {"$set" : {'listings': user_listings, 'recentBookings': booking_list}}
+            db.userbase_data.update_one(filter, newvalues)
+            return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+    

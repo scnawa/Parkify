@@ -137,5 +137,21 @@ def getUserInfo():
     userData = request.headers
     return config.User().getUserInfo(userData)
 
+@APP.route('/hold_listing', methods = ['POST'])
+def hold_listing(): 
+    userData = json.loads(request.data)
+    return config.User().hold_listing(userData)
+
+@APP.route('/release_listing', methods = ['POST'])
+def release_listing(): 
+    userData = json.loads(request.data)
+    return config.User().release_listing(userData)
+
+@APP.route('/create_booking', methods = ['POST'])
+def create_booking(): 
+    userData = json.loads(request.data)
+    return config.User().create_booking(userData)
+
+
 if __name__ == "__main__": 
     APP.run(port = config.port)
