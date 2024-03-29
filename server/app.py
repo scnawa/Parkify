@@ -152,6 +152,18 @@ def create_booking():
     userData = json.loads(request.data)
     return config.User().create_booking(userData)
 
+@APP.route('/remove_recentbooking', methods = ['POST'])
+def remove_recentbooking(): 
+    userData = json.loads(request.data)
+    return config.User().remove_recentbooking(userData)
+
+@APP.route('/end_booking', methods = ['POST'])
+def end_booking(): 
+    userData = json.loads(request.data)
+    return config.User().end_booking(userData)
+
+
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
