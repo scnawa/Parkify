@@ -1,0 +1,19 @@
+.page-container {
+    display: flex;
+    justify-content: center;
+}
+
+.page {
+    background-color: aqua;
+    width: 80vw;
+    height: 100vh;
+}
+
+h2 {
+    color: red;
+}
+
+fieldset {
+    border: none;
+    border-top: 1px solid black;
+}

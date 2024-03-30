@@ -12,6 +12,7 @@ import Verify from './components/Verify';
 import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
 import AllListings from './components/AllListings';
+import ListingPage from './components/ListingPage';
 
 const PageList = () => {
 
@@ -27,6 +28,7 @@ const PageList = () => {
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
         <Route path="/alllistings" element={<AllListings token={token}/>} />
+        <Route path="/listing/:listing_id" element={<ListingPage />} />
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
