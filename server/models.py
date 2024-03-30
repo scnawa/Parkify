@@ -20,6 +20,7 @@ from operator import length_hint
 import pandas as pd
 import sys
 import geocoder
+from pygtrie import Trie
 
 class User: 
     def signup(self, userData): 
@@ -450,4 +451,39 @@ class User:
             db.userbase_data.update_one(filter, newvalues)
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+
+    def updateListingDatabase(self): 
+        user_database = db.userbase_data.find({})
+        
+        listings = []
+        for user in user_database: 
+            if 'listings' in user: 
+                for listing in user['listings']: 
+                    listings.append(listing)
+        for listing in listings: 
+            temp = db.listing_data.find_one({"address": listing["address"]}) 
+            if temp is None: 
+                db.listing_data.insert_one(listing)
+
+    def filterByPrice(self, userData): 
+        nearbyListings = json_util.loads(User.getClosestListings(self,userData))
+        if userData['order'] == "ascending": 
+            return json_util.dumps(sorted(nearbyListings, key = lambda x: int(x["price"])))
+        else: 
+            return json_util.dumps(sorted(nearbyListings, key = lambda x:int(x["price"]), reverse = True))
+        
+    def searchForSpace(self, userData): 
+        listings = db.listing_data.find({})
+        trie = Trie()
+        for listing in listings: 
+            print(listing['address'].lower())
+            trie[listing['address'].lower()] = True
+        
+        #searchResults = trie.values(userData['query'])
+        listingResults = []
+        for searchResult in trie.keys(): 
+            listingResults.append(db.listing_data.find({"address": searchResult}))
+        return json_util.dumps(listingResults)
+
 

@@ -168,6 +168,17 @@ def end_booking():
     userData = json.loads(request.data)
     return config.User().end_booking(userData)
 
+@APP.route('/searchForSpace', methods = ['GET'])
+def searchForSpace(): 
+    userData = json.loads(request.data)
+    return config.User().searchForSpace(userData)
+
+@APP.route('/filterByPrice', methods = ['GET'])
+def filterByPrice(): 
+    userData = json.loads(request.data)
+    return config.User().filterByPrice(userData)
+
+
 
 if __name__ == "__main__": 
     APP.run(port = config.port)
