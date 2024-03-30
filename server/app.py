@@ -137,6 +137,12 @@ def getUserInfo():
     userData = request.headers
     return config.User().getUserInfo(userData)
 
+
+@APP.route('/closestListing', methods=['GET'])
+def closestListing(): 
+    userData = json.loads(request.data)
+    return config.User().getClosestListings(userData)
+
 @APP.route('/hold_listing', methods = ['POST'])
 def hold_listing(): 
     userData = json.loads(request.data)
@@ -161,8 +167,6 @@ def remove_recentbooking():
 def end_booking(): 
     userData = json.loads(request.data)
     return config.User().end_booking(userData)
-
-
 
 
 if __name__ == "__main__": 

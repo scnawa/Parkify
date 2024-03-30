@@ -4,7 +4,8 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 import random
-
+import requests
+from geopy.distance import geodesic
 def generateCode():
     return str(random.randrange(100000, 999999))
 
@@ -32,3 +33,27 @@ def sendVerificationEmail(email, username, type):
         smtp.login(senderEmail, senderPass)
         smtp.sendmail(senderEmail, email, emailMessageObj.as_string())
     return verificationCode
+
+
+def calcLatLong(address): 
+    API_KEY = "44278b4afd944530a529b53bc76f7110"
+
+    # Build the API URL
+    url = f"https://api.geoapify.com/v1/geocode/search?text={address}&limit=1&apiKey={API_KEY}"
+
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        result = data["features"][0]
+        latitude = result["geometry"]["coordinates"][1]
+        longitude = result["geometry"]["coordinates"][0]
+        return latitude, longitude
+    else:
+        print(f"Request failed with status code {response.status_code}")
+
+
+
+def calculateDistance(sourceLat, destLat, sourceLon, destLon): 
+    return geodesic((sourceLat,sourceLon),(destLat, destLon)).kilometers
