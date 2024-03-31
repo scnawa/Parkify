@@ -1,6 +1,6 @@
 import {  TextField } from "@mui/material";
 
-function TextInputField({ label, setFunction, value, type, color, variant, multiline }) {
+function TextInputField({ label, setFunction, value, type, color, variant, multiline, disabled }) {
 	return (
 			<TextField
 				onChange={e => setFunction(e.target.value)}
@@ -9,12 +9,11 @@ function TextInputField({ label, setFunction, value, type, color, variant, multi
 				type={type}
 				name={label}
 				label={label}
-
 				fullWidth
 				multiline={multiline}
 				value={value}
 				variant={variant}
-
+				disabled={disabled}
 				InputProps={{ inputProps: { min: 0 } }}
 
 			/>

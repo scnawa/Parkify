@@ -75,10 +75,14 @@ function MyListings(props) {
 		};
 
 		fetchStripeStatus().then((data)=> {
-			if (!data["is_stripe_connected"]) {
-				return Promise.resolve(()=>rentOutInfoOnclick(props));
+			console.log(data);
+			if (data["is_stripe_connected"] == false) {
+				console.log("here2");
+				rentOutInfoOnclick(props);
+				return;
 			} else {
-				return Promise.resolve(fetchListings);
+				console.log("here");
+				return fetchListings();
 			}
 		}).catch(alert);
 	}, []);

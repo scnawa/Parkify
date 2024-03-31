@@ -114,11 +114,12 @@ function CreateListings(props) {
 	}, [address]);
 	const submitForm = (e) => {
 		e.preventDefault();
+		console.log(addressGeo);
 		uploadFile(thumbnail).then((url) => {
 			const data = {
 				email: props.token,
 				listings: {
-					"address": addressGeo,
+					"address": addressGeo.display_name,
 					"price": rate,
 					"quantity": quantity,
 					"details": detail,
@@ -126,6 +127,8 @@ function CreateListings(props) {
 					"image_url": url
 				}
 			}
+			console.log(data);
+
 			const fetchListings = async () => {
 				try {
 					const response = await fetch('http://localhost:' + '8080/' + 'create_listing', {
