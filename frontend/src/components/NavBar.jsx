@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -34,10 +34,12 @@ const font1 = "'Nunito Sans', sans-serif";
 function NavBar(props) {
 	const [userMenuLocation, setUserMenuLocation] = React.useState(null);
 	const [notiLocation, setnotiLocation] = React.useState(null);
+	const [searchQuery, setSearchQuery] = React.useState("");
 	const token = props.token;
 	const SID = props.SID;
 	const setToken = props.setToken;
 	const setSID = props.setSID;
+	const location = useLocation();
 
 	const pages = ['HOME', 'MY PARKING SPACES'];
 	const navigate = useNavigate();
@@ -86,6 +88,29 @@ function NavBar(props) {
 		console.log(notiLocation);
 	};
 
+	const handleSearchSubmit = async (event) => {
+		event.preventDefault();
+		try {
+			const response = await fetch('http://localhost:8080/searchForSpace', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'query': searchQuery, 
+				},
+			});
+
+			const data = await response.json();
+			if (!data.error) {
+				console.log(data);
+				props.setListings(data);
+			} else {
+				alert(data.error);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 
 	// the app bar and menu structure is from https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
 
@@ -109,7 +134,7 @@ function NavBar(props) {
 						>
 							Parkify
 						</Typography>
-						<Box sx={{ display: { xs: 'block', sm: 'block', md: 'block' }, flexGrow: 1, }}>
+						<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, }}>
 							{pages.map((item) => (
 								<Button key={item} onClick={pageOnClick}
 									sx={{
@@ -124,6 +149,40 @@ function NavBar(props) {
 								</Button>
 							))}
 						</Box>
+						{(location.pathname === "/" || location.pathname === "/alllistings") && (
+							<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row', marginLeft: 'auto', marginRight: '30px' }}>
+								<input
+									type="text"
+									placeholder="Search for space..."
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+									style={{ 
+									flexGrow: 1,
+									padding: '10px',
+									marginRight: '8px',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+									outline: 'none',
+									}}
+								/>
+								<Button 
+									type="submit" 
+									variant="contained" 
+									sx={{ 
+									ml: 1, 
+									bgcolor: 'black', 
+									'&:hover': {
+										bgcolor: 'green.main', // lighter green on hover
+									},
+									borderRadius: '4px', 
+									padding: '10px 16px' 
+									}}
+								>
+									Search
+								</Button>
+							</form>
+						)}
+
 						{token && (
 							<>
 								<IconButton

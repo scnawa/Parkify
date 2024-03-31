@@ -140,7 +140,7 @@ def getUserInfo():
 
 @APP.route('/closestListing', methods=['GET'])
 def closestListing(): 
-    userData = json.loads(request.data)
+    userData = request.headers
     return config.User().getClosestListings(userData)
 
 @APP.route('/hold_listing', methods = ['POST'])
@@ -170,12 +170,12 @@ def end_booking():
 
 @APP.route('/searchForSpace', methods = ['GET'])
 def searchForSpace(): 
-    userData = json.loads(request.data)
+    userData = request.headers
     return config.User().searchForSpace(userData)
 
 @APP.route('/filterByPrice', methods = ['GET'])
 def filterByPrice(): 
-    userData = json.loads(request.data)
+    userData = request.headers
     return config.User().filterByPrice(userData)
 
 

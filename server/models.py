@@ -21,6 +21,7 @@ import pandas as pd
 import sys
 import geocoder
 from pygtrie import Trie
+import re
 
 class User: 
     def signup(self, userData): 
@@ -185,6 +186,19 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
+        
+                # updating the same listing within the listings DB so ensure syncronised listings across DBs
+                listing_id = userData["listings"]["listing_id"] 
+                filter = {'listing_id': listing_id}
+                newvalues = {
+                    "$set": {
+                        'start_date': "",
+                        'end_date': "",
+                        'is_active': "False"
+                    }
+                }
+                db.listing_data.update_one(filter, newvalues)
+
                 return json_util.dumps(user)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -204,6 +218,19 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
+
+                # updating the same listing within the listings DB so ensure syncronised listings across DBs
+                listing_id = userData["listings"]["listing_id"] 
+                filter = {'listing_id': listing_id}
+                newvalues = {
+                    "$set": {
+                        'start_date': userData['listings']['start_date'],
+                        'end_date': userData['listings']['end_date'],
+                        'is_active': "True"
+                    }
+                }
+                db.listing_data.update_one(filter, newvalues)
+
                 return json_util.dumps(user)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -227,6 +254,12 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
+
+                # updating the same listing within the listings DB so ensure syncronised listings across DBs
+                listing_id = userData["listings"]["listing_id"]
+                filter = {'listing_id': listing_id}
+                db.listing_data.delete_one(filter)
+
                 return json_util.dumps(user_listings)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -243,7 +276,7 @@ class User:
                 listing = {
                     "address": userData['listings']['address'],
                     "price": userData['listings']['price'],
-                    "quantity": userData['listings']['price'],
+                    "quantity": userData['listings']['quantity'], 
                     "details": userData['listings']['details'],
                     "restrictions": userData['listings']['restrictions'],
                     "image_url": userData['listings']['image_url'], 
@@ -257,6 +290,14 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
+
+                # updating the same listing within the listings DB so ensure syncronised listings across DBs
+                listing_id = userData['listings']['listing_id']
+                filter = {'listing_id': listing_id}
+                newvalues = {"$set": listing}
+                db.listing_data.update_one(filter, newvalues)
+
+
                 return json_util.dumps(user)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -340,8 +381,8 @@ class User:
                 return json_util.dumps("food")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def getClosestListings(self, userData): 
-        user = db.userbase_data.find_one({"email": userData['email']})
+    def getClosestListings(self, headers): 
+        user = db.userbase_data.find_one({"email": headers['email']})
         if user: 
             latitude = 0
             longitude = 0
@@ -351,16 +392,19 @@ class User:
                 latitude = user["latitude"]
                 longitude = user["longitude"]
             closestListings = []
+            print(latitude)
+            print(longitude)
             for listing in db.listing_data.find({}): 
 
                 listing_lat = 0
                 listing_long = 0
                 if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
-                    listing_lat, listing_long = geocoder.ip('me').latlng
-                listing_lat = listing["latitude"]
-                listing_long = listing["longitude"]
+                    listing_lat, listing_long = helper.calcLatLong(listing['address'])
+                else:
+                    listing_lat = listing["latitude"]
+                    listing_long = listing["longitude"]
 
-                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= 10: 
+                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= 50 and listing['is_active'] == "True": 
                     closestListings.append(listing)
             
             return json_util.dumps(closestListings)
@@ -466,24 +510,26 @@ class User:
             if temp is None: 
                 db.listing_data.insert_one(listing)
 
-    def filterByPrice(self, userData): 
-        nearbyListings = json_util.loads(User.getClosestListings(self,userData))
-        if userData['order'] == "ascending": 
+    def filterByPrice(self, headers): 
+        nearbyListings = json_util.loads(User.getClosestListings(self,headers))
+        order = headers["order"]
+        if order == "ascending": 
             return json_util.dumps(sorted(nearbyListings, key = lambda x: int(x["price"])))
         else: 
             return json_util.dumps(sorted(nearbyListings, key = lambda x:int(x["price"]), reverse = True))
         
     def searchForSpace(self, userData): 
         listings = db.listing_data.find({})
-        trie = Trie()
-        for listing in listings: 
-            print(listing['address'].lower())
-            trie[listing['address'].lower()] = True
-        
-        #searchResults = trie.values(userData['query'])
         listingResults = []
-        for searchResult in trie.keys(): 
-            listingResults.append(db.listing_data.find({"address": searchResult}))
+        
+        # regex
+        pattern = re.compile(re.escape(userData['query']), re.IGNORECASE)
+        
+        for listing in listings: 
+            if pattern.search(listing['address']) and listing['is_active'] == "True":
+                listingResults.append(listing) 
+        
         return json_util.dumps(listingResults)
+
 
 
