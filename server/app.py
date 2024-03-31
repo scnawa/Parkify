@@ -184,6 +184,15 @@ def filterByPrice():
 def pay_booking(): 
     userData = request.headers
     return config.User().addPaymentMethod(userData)
+@APP.route('/providerDetails', methods=['POST'])
+def providerDetails(): 
+    userData = request.headers
+    return config.User().providerDetails(userData)
+@APP.route('/userIsprovider', methods=['GET'])
+def userIsprovider(): 
+    userData = request.headers
+    return config.User().userIsprovider(userData)
+
 # @APP.route('/providePaymentDetails', methods=['POST'])
 # def pay_booking(): 
 #     userData = request.headers

@@ -14,6 +14,8 @@ import EditListings from './components/EditListings';
 import AllListings from './components/AllListings';
 import Payment from './components/Payment';
 import PaymentAddedSuccess from './components/PaymentAddedSuccess';
+import ProviderDetailsExpried from './components/ProviderDetailsExpried';
+import ProviderDetailsReturn from './components/ProviderDetailsReturn';
 
 const PageList = (props) => {
 
@@ -33,6 +35,8 @@ const PageList = (props) => {
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
         <Route path="/paymentAddedSuccess" element={<PaymentAddedSuccess  />} />
+        <Route path="/providerDetailsExpired" element={<ProviderDetailsExpried  />} />
+        <Route path="/providerDetailsReturn" element={<ProviderDetailsReturn  />} />
 
         <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
         <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />

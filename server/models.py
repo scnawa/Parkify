@@ -34,13 +34,12 @@ class User:
             "email" : userData["email"], 
             "session_id": [],
             "recentBookings": [],
-
             "isVerified" : False,
             "latitude": latitude,
-            "longitude": longitude
-            "isVerified" : False,
-            "payment_id": ""
-
+            "longitude": longitude,
+            "payment_id": "",
+            "payOut_id": "",
+            "is_stripe_connected": False,
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -53,13 +52,26 @@ class User:
                 name = userData['username'],
                 email = userData["email"],
             )
-            user['payment_id'] = user_payment.id 
+            user['payment_id'] = user_payment.id
+            user_payOut = stripe.Account.create(
+                type="custom",
+                country="AU",
+                email=userData["email"],
+                capabilities={
+                    "card_payments": {"requested": True},
+                    "transfers": {"requested": True},
+                    "au_becs_debit_payments": {"requested": True},
+                },
+            )
+            user['payOut_id'] = user_payOut.id
+
+ 
         except stripe.error as e:
             return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
 
         if db.userbase_data.insert_one(user):
             # debugging 
-            return json_util.dumps(user.email)
+            return json_util.dumps(user)
 
         return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
@@ -139,7 +151,9 @@ class User:
     def delete_account(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
         if user:
-            stripe.Customer.delete(user.payment_id)
+            stripe.Customer.delete(user["payment_id"])
+            stripe.Account.delete(user["payOut_id"])
+
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402 
@@ -397,6 +411,8 @@ class User:
                     "feedback": "",
                     "end_image_url": "", 
                     "total_time": "",
+                    "is_paid": False,
+                    "payment_id": "",
         }
 
         bookingFound = [i for i in booking_list if i["listing_id"] == userData["listings"]["listing_id"]]
@@ -455,6 +471,33 @@ class User:
                     "end_image_url": userData["booking"]["end_image_url"], 
                     "total_time": userData["booking"]["total_time"]
             }
+            paymentMethods = stripe.PaymentMethod.list(
+                customer=user['payment_id'],
+            )
+            if len(paymentMethods.data) <= 0:
+                return jsonify({"type": "payment", "error": "payment failed"}), 402
+
+            paymentMethodId = stripe.PaymentMethod.list[0].id
+            try:
+                stripe.PaymentIntent.create(
+                    amount=end_price,
+                    currency='AUD',
+                    customer=user['payment_id'],
+                    payment_method=paymentMethodId,
+                    error_on_requires_action=True,
+                    confirm=True,
+                )
+                stripe.Transfer.create(
+                    amount=int(end_price * 0.85),
+                    currency="AUD",
+                    destination=provider_user['payOut_id'],
+                )
+
+            # err handling from https://docs.stripe.com/payments/without-card-authentication
+            except stripe.error.CardError as e:
+                return json.dumps({'error': e.user_message}), 200
+
+
             user_listings[listing_no].update({'is_active': "True"})
             booking_list[recentbooking_no].update(booking)
             filter = {'email': user['email']}
@@ -510,6 +553,32 @@ class User:
                 automatic_payment_methods={"enabled": True},
             )
             return jsonify({"client_secret":intent.client_secret})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    # since stripe only provide account link for registered company
+    # i can only use the testing customer key to demostrate the flow
+    # no real detail is added
+    # https://docs.stripe.com/connect/testing#creating-accounts
+    def providerDetails(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            typeOfLink = "account_update" if user["is_stripe_connected"] else "account_onboarding"
+            link = stripe.AccountLink.create(
+                account=user['payOut_id'],
+                refresh_url="https://localhost:3000/providerDetailsExpired",
+                return_url="https://localhost:3000/providerDetailsReturn",
+                type=typeOfLink,
+                collection_options={"fields": "eventually_due"},
+            )
+            if user["is_stripe_connected"]  == False:
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'is_stripe_connected': True}}
+                db.userbase_data.update_one(filter, newvalues)
+            return jsonify({"account_link":link.url})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    def userIsprovider(self,userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            return jsonify({"stripe_connected":user["is_stripe_connected"]})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     # def pay_booking(self, userData): 

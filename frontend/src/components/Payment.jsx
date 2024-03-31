@@ -50,10 +50,6 @@ function Payment(props) {
 
             <Elements stripe={props.stripe} options={options}>
                 <PaymentForm/>
-                {/* <form onSubmit={handleSubmit}>
-                    <PaymentElement />
-                    <button>Submit</button>
-                </form> */}
             </Elements>
             )}
         </div>

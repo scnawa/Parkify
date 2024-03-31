@@ -4,6 +4,7 @@ import ListItem from '@mui/material/ListItem';
 
 import { useNavigate } from "react-router-dom";
 import ProviderListing from "./ProviderListing";
+import { rentOutInfoOnclick } from "./NavBar";
 const theme = createTheme({
 	palette: {
 		yellow: {
@@ -28,6 +29,28 @@ function MyListings(props) {
 			navigate('/login');
 			return
 		}
+		const fetchStripeStatus = async () => {
+			try {
+				const response = await fetch('http://localhost:8080/userIsprovider', {
+					method: 'Get',
+					headers: {
+						'Content-Type': 'application/json',
+						'email': props.token
+					},
+				});
+
+
+				const data = await response.json();
+                if (data.error) {
+                    return Promise.reject(data.error);
+                } else {
+                    return Promise.resolve(data);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+		};
+
 		const fetchListings = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/get_listings', {
@@ -51,7 +74,13 @@ function MyListings(props) {
 			}
 		};
 
-		fetchListings();
+		fetchStripeStatus().then((data)=> {
+			if (!data["is_stripe_connected"]) {
+				return Promise.resolve(()=>rentOutInfoOnclick(props));
+			} else {
+				return Promise.resolve(fetchListings);
+			}
+		}).catch(alert);
 	}, []);
 
 	const createOnClick = () => {
