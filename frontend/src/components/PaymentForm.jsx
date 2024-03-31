@@ -16,6 +16,7 @@ function PaymentForm(props) {
         }
     
         const {error} = await stripe.confirmSetup({
+          // clientSecret:props.clientSecret,
           elements,
           confirmParams: {
             return_url: 'https://localhost:3000/paymentAddedSuccess'

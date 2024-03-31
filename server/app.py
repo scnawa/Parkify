@@ -192,6 +192,10 @@ def providerDetails():
 def userIsprovider(): 
     userData = request.headers
     return config.User().userIsprovider(userData)
+@APP.route('/testPay', methods=['GET'])
+def testPay(): 
+    userData = request.headers
+    return config.User().testPay(userData)
 
 # @APP.route('/providePaymentDetails', methods=['POST'])
 # def pay_booking(): 

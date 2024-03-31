@@ -49,7 +49,7 @@ function Payment(props) {
             {clientSecret && (
 
             <Elements stripe={props.stripe} options={options}>
-                <PaymentForm/>
+                <PaymentForm clientSecret={clientSecret}/>
             </Elements>
             )}
         </div>

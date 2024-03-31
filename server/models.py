@@ -471,24 +471,25 @@ class User:
                     "end_image_url": userData["booking"]["end_image_url"], 
                     "total_time": userData["booking"]["total_time"]
             }
-            paymentMethods = stripe.PaymentMethod.list(
+            paymentMethods = stripe.SetupIntent.list(
                 customer=user['payment_id'],
+                limit=3
             )
             if len(paymentMethods.data) <= 0:
                 return jsonify({"type": "payment", "error": "payment failed"}), 402
 
-            paymentMethodId = stripe.PaymentMethod.list[0].id
+            paymentMethodId = paymentMethods.data[0].payment_method
             try:
                 stripe.PaymentIntent.create(
-                    amount=end_price,
+                    amount=end_price * 100,
                     currency='AUD',
                     customer=user['payment_id'],
                     payment_method=paymentMethodId,
-                    error_on_requires_action=True,
+                    off_session=True,
                     confirm=True,
                 )
                 stripe.Transfer.create(
-                    amount=int(end_price * 0.85),
+                    amount=int(end_price * 0.85 * 100),
                     currency="AUD",
                     destination=provider_user['payOut_id'],
                 )
@@ -508,7 +509,36 @@ class User:
             db.userbase_data.update_one(filter, newvalues)
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
-    
+    def testPay(self, userData):
+        paymentMethods = stripe.SetupIntent.list(
+            customer="cus_PpxZVOFpOPxNHM",
+            limit=3
+        )
+        if len(paymentMethods.data) <= 0:
+            return jsonify({"type": "payment", "error": "payment failed"}), 402
+        paymentMethodId = paymentMethods.data[0].payment_method
+        try:
+            stripe.PaymentIntent.create(
+            amount=200*100,
+            currency='AUD',
+            customer="cus_PpxZVOFpOPxNHM",
+            payment_method=paymentMethodId,
+            off_session=True,
+
+            # error_on_requires_action=True,
+            confirm=True,
+            )
+            stripe.Transfer.create(
+                amount=int(200 * 0.85 * 100),
+                currency="AUD",
+                destination="acct_1P0HeLPa3wzFl1vn",
+            )
+
+        # err handling from https://docs.stripe.com/payments/without-card-authentication
+        except stripe.error.CardError as e:    
+            return json.dumps({'error': e.user_message}), 200
+        return json_util.dumps({"status":"success"})
+
 
     def updateListingDatabase(self): 
         user_database = db.userbase_data.find({})
@@ -551,6 +581,8 @@ class User:
             intent=stripe.SetupIntent.create(
                 customer=user['payment_id'],
                 automatic_payment_methods={"enabled": True},
+                # return_url="https://localhost:3000/paymentAddedSuccess",
+                # confirm=True
             )
             return jsonify({"client_secret":intent.client_secret})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
