@@ -109,7 +109,7 @@ class User:
                 #    if user['isAdmin'] == True: 
                 #        return jsonify({"admin": True}, {"adminInfo" : json_util.dumps(user)})
 
-                return json_util.dumps(user.email)
+                return json_util.dumps(user)
             else:
                 return jsonify({"type": "password", "error": "Password Is Incorrect"}), 401
 
@@ -305,7 +305,34 @@ class User:
             return json_util.dumps(user)
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
-    def pay_booking(self, userData): 
-        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
+    # booking id
+    #
+    def addPaymentMethod(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            intent=stripe.SetupIntent.create(
+                customer=user['payment_id'],
+                automatic_payment_methods={"enabled": True},
+            )
+            return jsonify({"client_secret":intent.client_secret})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    # def pay_booking(self, userData): 
+    #     user = db.userbase_data.find_one({"email": userData['email']})
+    #     if user:
+    #         booking_list = user["recentBookings"]
+    #         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+    #         booking = booking_list[userData.bookingId]
+    #         price = booking[end_price]
+    #         listing_id = booking[listing_id]
+    #         listing = db.userbase_data.find_one({"listings.listing_id": listing_id})
+    #         payment = stripe.PaymentIntent.create(
+    #             amount=price,
+    #             currency="aud",
+    #             automatic_payment_methods={"enabled": True},
+    #             customer=user[payment_id]
+    #         )
+    #         respond = {"price":price, "address": listing.address, "client_secret":payment.client_secret }
+    #         return json_util.dumps(respond)
 
 

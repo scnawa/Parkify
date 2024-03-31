@@ -139,10 +139,19 @@ def getUserInfo():
     userData = request.headers
     return config.User().getUserInfo(userData)
 
-@APP.route('/payment', methods=['POST'])
+@APP.route('/addPaymentMethod', methods=['POST'])
 def pay_booking(): 
     userData = request.headers
-    return config.User().getUserInfo(userData)
+    return config.User().addPaymentMethod(userData)
+# @APP.route('/providePaymentDetails', methods=['POST'])
+# def pay_booking(): 
+#     userData = request.headers
+#     return config.User().providePaymentDetails(userData)
+
+# @APP.route('/payment', methods=['POST'])
+# def pay_booking(): 
+#     userData = request.headers
+#     return config.User().pay_booking(userData)
 
 
 if __name__ == "__main__": 
