@@ -35,6 +35,7 @@ function Verify(props) {
         });
         const data = await response.json();
         setConfirmedCode(data);
+        console.log(data)
       } catch (error) {
         console.error('An error occurred during verification:', error);
       }
