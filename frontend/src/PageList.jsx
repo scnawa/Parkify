@@ -12,8 +12,10 @@ import Verify from './components/Verify';
 import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
 import AllListings from './components/AllListings';
+import Payment from './components/Payment';
+import PaymentAddedSuccess from './components/PaymentAddedSuccess';
 
-const PageList = () => {
+const PageList = (props) => {
 
   const [token, setToken] = React.useState(localStorage.getItem('token'));
   const [SID, setSID] = React.useState(localStorage.getItem('SID'));
@@ -30,8 +32,12 @@ const PageList = () => {
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
+        <Route path="/paymentAddedSuccess" element={<PaymentAddedSuccess  />} />
+
         <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
         <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
+        <Route path="/payment" element={<Payment token={token} stripe={props.stripe} setToken={setToken} SID={SID} setSID={setSID}/>} />
+
       </Routes>
     </>
   );

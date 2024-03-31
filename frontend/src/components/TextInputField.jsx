@@ -7,7 +7,6 @@ function TextInputField({ label, setFunction, value, type, color, variant, multi
 				required
 				color={color}
 				type={type}
-				sx={{ mb: 3 }}
 				name={label}
 				label={label}
 

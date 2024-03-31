@@ -21,6 +21,7 @@ import pandas as pd
 import sys
 import geocoder
 from pygtrie import Trie
+import stripe
 
 class User: 
     def signup(self, userData): 
@@ -37,16 +38,28 @@ class User:
             "isVerified" : False,
             "latitude": latitude,
             "longitude": longitude
+            "isVerified" : False,
+            "payment_id": ""
+
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
         #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
-            return jsonify({'type': "email", "error": "Email already in use"}), 400 
+            return jsonify({'type': "email", "error": "Email already in use"}), 400
+        try:
+
+            user_payment = stripe.Customer.create(
+                name = userData['username'],
+                email = userData["email"],
+            )
+            user['payment_id'] = user_payment.id 
+        except stripe.error as e:
+            return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
 
         if db.userbase_data.insert_one(user):
             # debugging 
-            return json_util.dumps(user)
+            return json_util.dumps(user.email)
 
         return jsonify({'type': "system error", "error": "Signup failed due to unforeseen circumstances"}), 400
     
@@ -125,7 +138,8 @@ class User:
 
     def delete_account(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
-        if user: 
+        if user:
+            stripe.Customer.delete(user.payment_id)
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402 
@@ -485,5 +499,35 @@ class User:
         for searchResult in trie.keys(): 
             listingResults.append(db.listing_data.find({"address": searchResult}))
         return json_util.dumps(listingResults)
+
+    # booking id
+    #
+    def addPaymentMethod(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            intent=stripe.SetupIntent.create(
+                customer=user['payment_id'],
+                automatic_payment_methods={"enabled": True},
+            )
+            return jsonify({"client_secret":intent.client_secret})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    # def pay_booking(self, userData): 
+    #     user = db.userbase_data.find_one({"email": userData['email']})
+    #     if user:
+    #         booking_list = user["recentBookings"]
+    #         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+    #         booking = booking_list[userData.bookingId]
+    #         price = booking[end_price]
+    #         listing_id = booking[listing_id]
+    #         listing = db.userbase_data.find_one({"listings.listing_id": listing_id})
+    #         payment = stripe.PaymentIntent.create(
+    #             amount=price,
+    #             currency="aud",
+    #             automatic_payment_methods={"enabled": True},
+    #             customer=user[payment_id]
+    #         )
+    #         respond = {"price":price, "address": listing.address, "client_secret":payment.client_secret }
+    #         return json_util.dumps(respond)
 
 

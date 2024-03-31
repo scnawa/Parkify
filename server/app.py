@@ -10,6 +10,7 @@ import config
 from pymongo import MongoClient
 import certifi
 import helper
+import stripe
 
 
 # Accessing the database
@@ -18,6 +19,7 @@ cluster = "mongodb+srv://parkifybackendteam:hello123@userbase.zylv2bc.mongodb.ne
 client = MongoClient(cluster, tlsCAFile=ca)
 db = client.userbase
 
+stripe.api_key = "sk_test_51OxR4GBZWJO5ZDijvkSWr3V71apvw6HNRDyoVJg6Z7zVRTjk78SHGFxTcn0oUJAEViWE35ppf9nlmeKN9aQsoFo500wUemOwNF"
 
 
 def defaultHandler(err):
@@ -178,6 +180,19 @@ def filterByPrice():
     userData = json.loads(request.data)
     return config.User().filterByPrice(userData)
 
+@APP.route('/addPaymentMethod', methods=['POST'])
+def pay_booking(): 
+    userData = request.headers
+    return config.User().addPaymentMethod(userData)
+# @APP.route('/providePaymentDetails', methods=['POST'])
+# def pay_booking(): 
+#     userData = request.headers
+#     return config.User().providePaymentDetails(userData)
+
+# @APP.route('/payment', methods=['POST'])
+# def pay_booking(): 
+#     userData = request.headers
+#     return config.User().pay_booking(userData)
 
 
 if __name__ == "__main__": 
