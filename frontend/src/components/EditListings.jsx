@@ -153,8 +153,8 @@ function EditListings(props) {
             >
 				<Typography>Edit Listings</Typography>
 
-				<Box component="form" sx={{ mt: 3  }}>
-                    <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="outlined" disabled/>
+				<Box component="form" sx={{ mt: 1, rowGap: "20px" }}>
+                    <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="filled" disabled/>
                     <TextInputField label="Rate:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
                     <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" />
 

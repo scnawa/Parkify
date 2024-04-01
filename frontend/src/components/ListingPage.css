@@ -1,0 +1,76 @@
+body {
+    overflow: auto; /* or scroll, hidden, visible, depending on your requirement */
+}
+
+.page-container {
+    display: flex;
+    justify-content: center;
+}
+
+.page {
+    background-color: aqua;
+    width: 80vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    margin-top: 3vh;
+}
+
+img {
+    width: 40vw;
+    height: auto;
+}
+.left-box {
+    background-color: aliceblue;
+    flex: 2;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.details-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 40vw;
+    margin-top: 2vh;
+    border-bottom: 1px solid #ccc;
+}
+
+.restrictions-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 40vw;
+    margin-top: 2vh;
+    border-bottom: 1px solid #ccc;
+}
+
+.right-box {
+    background-color: aquamarine;
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.price-box {
+    background-color: rgb(182, 176, 176);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1vh;
+    padding-bottom: 10px;
+}
+
+.top-price-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ccc;
+}
+
+.booking-box {
+    background-color: aqua;
+}
+

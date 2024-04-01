@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
 
 const theme = createTheme({
@@ -103,7 +103,10 @@ function AllListings(props) {
                 <Grid container spacing={4}>
                     {listings.map((listing) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={listing.listing_id}>
-                            <AllProviderListing listing={listing} />
+                            {/* <AllProviderListing listing={listing} /> */}
+                            <Link to={'/listing/'+ listing.listing_id} style={{ textDecoration: 'none' }} target="_blank">
+                                <AllProviderListing listing={listing} />
+                            </Link>
                         </Grid>
                     ))}
                 </Grid>
