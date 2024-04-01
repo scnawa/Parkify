@@ -90,7 +90,7 @@ function ProviderListing(props) {
                                 <PublishPopUp listings={listing} token={props.token}
                                     popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
                                     popoverOnClose={popoverOnClose} activated={activated} setActivated={setActivated}
-                                    />
+                                />
 
                                 <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
                                     <Button size="small" color='success' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
