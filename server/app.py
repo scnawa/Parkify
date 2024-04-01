@@ -183,8 +183,5 @@ def get_specific_listing():
     userData = json.loads(request.data)
     return config.User().get_specific_listing(userData)
 
-
-
-
 if __name__ == "__main__": 
     APP.run(port = config.port)

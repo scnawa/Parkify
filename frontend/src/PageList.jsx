@@ -32,10 +32,10 @@ const PageList = () => {
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/listing/:listing_id" element={<ListingPage />} />
-        <Route path="/book" element={<Booking />}/>
-        <Route path="/timer" element={<TimerPage/>}/>
-        <Route path="/park-end" element={<ParkEnd />}/>
+        <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID}/>} />
+        <Route path="/book" element={<Booking token={token} SID={SID}/>}/>
+        <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
+        <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />

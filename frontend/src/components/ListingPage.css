@@ -74,27 +74,3 @@ img {
     background-color: aqua;
 }
 
-.title-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    margin-top: 5vh;
-    height: 4vh;
-}
-
-.start-box {
-    background-color: aliceblue;
-    flex: 1;
-    padding-top: 4px;
-}
-
-.end-box {
-    background-color: antiquewhite;
-    flex: 1;
-    padding-top: 4px;
-}
-
-.date-box {
-    display: flex;
-    flex-direction: row;
-}

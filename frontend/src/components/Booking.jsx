@@ -39,6 +39,10 @@ function Booking() {
         navigate('/timer');
     };
 
+    const handleCancel = () => {
+        navigate('/');
+    };
+
     const releaseListing = async () => {
         console.log("release listing")
         try {
@@ -66,6 +70,7 @@ function Booking() {
         <div>
             <h2>Timer: {formatTime(timer)}</h2>
             <button onClick={handleIamHereClick}>I am here</button>
+            <button onClick={handleCancel}>Cancel</button>
         </div>
     );
 }
