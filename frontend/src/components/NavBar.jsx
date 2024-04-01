@@ -30,6 +30,33 @@ const theme = createTheme({
 });
 
 const font1 = "'Nunito Sans', sans-serif";
+export function rentOutInfoOnclick(props) {
+	console.log("here", props);
+	const fetchAccountLink = async () => {
+		try {
+			const response = await fetch('http://localhost:8080/providerDetails', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'email': props.token
+				},
+			});
+
+			const data = await response.json();
+			if (data.error) {
+				return Promise.reject(data.error);
+			} else {
+				return Promise.resolve(data);
+			}
+		} catch (error) {
+			return Promise.reject(error);
+		}
+	};
+	fetchAccountLink().then((data) => {
+		let link = data["account_link"];
+		window.location.href = link;
+	}).catch(alert);
+}
 
 function NavBar(props) {
 	const [userMenuLocation, setUserMenuLocation] = React.useState(null);
@@ -217,6 +244,8 @@ function NavBar(props) {
 									onClose={userMenuClose}
 								>
 									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
+									<MenuItem onClick={()=>rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
+
 									<MenuItem onClick={logOut}>Log out</MenuItem>
 								</Menu>
 							</>

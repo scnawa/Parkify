@@ -53,7 +53,6 @@ const ProfilePage = (props) => {
         const file = e.target.files[0];
         setProfilePicture(file);
     };
-
     const handleDeleteProfile = async () => {
         try {
             await Logout(props.token, props.SID, props.setToken);
@@ -124,32 +123,16 @@ const ProfilePage = (props) => {
                             onChange={handleInputChange}
                         />
                         </label>
-                        <h3>Add Payment</h3>
-                        <div class="B-number">
-                            <label> BSB:
-                                <input 
-                                    type="text" 
-                                    class="A-number-field"
-                                    placeholder="000-000" />
-                                </label>
-                            
-                        </div>
-                        <div class="A-number">
-                            <label> ACC#: 
-                                <input 
-                                    type="text" 
-                                    class="B-number-field"
-                                    placeholder="0123456789" />
-                                </label>
-                        </div>
                         <button type="submit" className="submit-profile-button">
                             Save Changes
                         </button>
                         <button onClick={handleDeleteProfile} className="delete-profile-button">
                             Delete Profile
                         </button>
+
                     </form> 
                 </div>
+
         </div>
         )
     }
