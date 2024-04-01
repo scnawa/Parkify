@@ -226,9 +226,9 @@ def testPay():
 # def pay_booking(): 
 #     userData = request.headers
 #     return config.User().pay_booking(userData)
-@APP.route('/get_specific_listing', methods = ['GET'])
+@APP.route('/getSpecificListing', methods = ['GET'])
 def get_specific_listing(): 
-    userData = json.loads(request.data)
+    userData = request.headers
     return config.User().get_specific_listing(userData)
 
 if __name__ == "__main__": 

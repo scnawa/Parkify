@@ -22,11 +22,8 @@ import sys
 import geocoder
 from pygtrie import Trie
 import re
-<<<<<<< Updated upstream
 import stripe
-=======
 import datetime
->>>>>>> Stashed changes
 
 class User: 
     def signup(self, userData): 
@@ -780,11 +777,12 @@ class User:
     #         return json_util.dumps(respond)
 
 
-    def get_specific_listing(self, userData):
+    def get_specific_listing(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        print(headers)
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        provider_user = db.listing_data.find_one({"listing_id": userData["listings"]["listing_id"]})
+        provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
 
         if user:
             return json_util.dumps(provider_user)

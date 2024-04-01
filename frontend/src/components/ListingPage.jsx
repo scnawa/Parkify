@@ -9,19 +9,19 @@ function ListingPage(props) {
     const [error, setError] = useState(null);
     console.log(listing_id);
     useEffect(() => {
-        const abortController = new AbortController();
-        const signal = abortController.signal;
+/*         const abortController = new AbortController();
+        const signal = abortController.signal; */
 
         const fetchListing = async () => {
             try {
-                const response = await fetch('/get_specific_listing', {
+                const response = await fetch('/getSpecificListing', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'email': props.token,
-                        'listing_id': listing_id
+                        'listingId': listing_id
                     },
-                    signal: signal
+                    /* signal: signal */
                 });
                 const data = await response.json();
                 if (data.error) {
@@ -44,9 +44,9 @@ function ListingPage(props) {
         fetchListing();
 
         // Cleanup function to abort fetch on component unmount
-        return () => {
+       /*  return () => {
             abortController.abort();
-        };
+        }; */
     }, [listing_id]);
     
     const handleBookNow = async () => {
