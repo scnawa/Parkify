@@ -22,7 +22,11 @@ import sys
 import geocoder
 from pygtrie import Trie
 import re
+<<<<<<< Updated upstream
 import stripe
+=======
+import datetime
+>>>>>>> Stashed changes
 
 class User: 
     def signup(self, userData): 
@@ -169,7 +173,6 @@ class User:
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
     
-
     
     def create_listing(self, userData):
         # check if the user exists
@@ -390,7 +393,10 @@ class User:
                 filter = {"listings.listing_id": userData["listings"]["listing_id"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
-                return json_util.dumps("food")
+                filter = {"listing_id": userData["listings"]["listing_id"]}
+                newvalues = {"$set" : user_listings[listing_no]}
+                db.listing_data.update_one(filter, newvalues)
+                return json_util.dumps()
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
 
@@ -409,7 +415,10 @@ class User:
                 filter = {"listings.listing_id": userData["listings"]["listing_id"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
-                return json_util.dumps("food")
+                filter = {"listing_id": userData["listings"]["listing_id"]}
+                newvalues = {"$set" : user_listings[listing_no]}
+                db.listing_data.update_one(filter, newvalues)
+                return json_util.dumps()
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def getClosestListings(self, headers): 
@@ -454,6 +463,7 @@ class User:
                     "address": userData['listings']['address'],
                     "listing_id": userData["listings"]["listing_id"],
                     "recentbooking_no": len(user["recentBookings"]),
+                    "start_time": "",
                     "end_price": "",
                     "feedback": "",
                     "end_image_url": "", 
@@ -475,6 +485,9 @@ class User:
             filter = {"listings.listing_id": userData["listings"]["listing_id"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
+            filter = {"listing_id": userData["listings"]["listing_id"]}
+            newvalues = {"$set" : user_listings[listing_no]}
+            db.listing_data.update_one(filter, newvalues)
             return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
@@ -512,7 +525,10 @@ class User:
             listing_no = userData["listings"]["listing_no"]
             recentbooking_no = userData["booking"]["recentbooking_no"]
             end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
+            now = datetime.now()
+            start_time = now.strftime("%H:%M:%S")
             booking = {
+                    "start_time": start_time,
                     "end_price": end_price,
                     "feedback": userData["booking"]["feedback"],
                     "end_image_url": userData["booking"]["end_image_url"], 
@@ -554,8 +570,12 @@ class User:
             filter = {"listings.listing_id": userData["booking"]["listing_id"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
+            filter = {"listing_id": userData["listings"]["listing_id"]}
+            newvalues = {"$set" : user_listings[listing_no]}
+            db.listing_data.update_one(filter, newvalues)
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
     def testPay(self, userData):
         paymentMethods = stripe.PaymentMethod.list(
             customer="cus_PpxZVOFpOPxNHM",
@@ -764,11 +784,8 @@ class User:
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
-        user_listings = provider_user.get('listings')
-
+        provider_user = db.listing_data.find_one({"listing_id": userData["listings"]["listing_id"]})
 
         if user:
-            listing_no = userData["listings"]["listing_no"]
-            return json_util.dumps(user_listings[listing_no])
+            return json_util.dumps(provider_user)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
