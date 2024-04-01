@@ -538,8 +538,6 @@ class User:
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
         user_listings = provider_user.get('listings')
 
-        print(user_listings)
-
 
         if user:
             listing_no = userData["listings"]["listing_no"]
