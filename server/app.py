@@ -178,6 +178,12 @@ def filterByPrice():
     userData = request.headers
     return config.User().filterByPrice(userData)
 
+@APP.route('/get_specific_listing', methods = ['GET'])
+def get_specific_listing(): 
+    userData = json.loads(request.data)
+    return config.User().get_specific_listing(userData)
+
+
 
 
 if __name__ == "__main__": 

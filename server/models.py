@@ -495,7 +495,6 @@ class User:
             db.userbase_data.update_one(filter, newvalues)
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
-    
 
     def updateListingDatabase(self): 
         user_database = db.userbase_data.find({})
@@ -532,4 +531,16 @@ class User:
         return json_util.dumps(listingResults)
 
 
+    def get_specific_listing(self, userData):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": userData['email']})
+        # check if the listing exists
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+        user_listings = provider_user.get('listings')
 
+
+        if user:
+            listing_no = userData["listings"]["listing_no"]
+            return json_util.dumps(user_listings[listing_no])
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
