@@ -126,6 +126,13 @@ class User:
 
     def delete_account(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
+
+        # deleting the same listing within the listings DB so ensure syncronised listings across DBs
+        listing_ids = [listing['listing_id'] for listing in user.get('listings', [])]
+        if listing_ids:
+            for listing_id in listing_ids:
+                db.listing_data.delete_one({"listing_id": listing_id})
+
         if user: 
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
@@ -496,18 +503,19 @@ class User:
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
-    def updateListingDatabase(self): 
-        user_database = db.userbase_data.find({})
-        
-        listings = []
-        for user in user_database: 
-            if 'listings' in user: 
-                for listing in user['listings']: 
-                    listings.append(listing)
-        for listing in listings: 
-            temp = db.listing_data.find_one({"address": listing["address"]}) 
-            if temp is None: 
-                db.listing_data.insert_one(listing)
+
+    #def updateListingDatabase(self): 
+    #    user_database = db.userbase_data.find({})
+    #    
+    #    listings = []
+    #    for user in user_database: 
+    #        if 'listings' in user: 
+    #            for listing in user['listings']: 
+    #                listings.append(listing)
+    #    for listing in listings: 
+    #        temp = db.listing_data.find_one({"address": listing["address"]}) 
+    #        if temp is None: 
+    #            db.listing_data.insert_one(listing)
 
     def filterByPrice(self, headers): 
         nearbyListings = json_util.loads(User.getClosestListings(self,headers))
