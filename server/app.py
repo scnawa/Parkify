@@ -192,6 +192,23 @@ def providerDetails():
 def userIsprovider(): 
     userData = request.headers
     return config.User().userIsprovider(userData)
+@APP.route('/allCardList', methods=['GET'])
+def allCardList(): 
+    userData = request.headers
+    return config.User().allCardList(userData)
+@APP.route('/setDefaultCard', methods=['POST'])
+def setDefaultCard(): 
+    userData = request.headers
+    return config.User().setDefaultCard(userData)
+@APP.route('/removeCard', methods=['POST'])
+def removeCard(): 
+    userData = request.headers
+    return config.User().removeCard(userData)
+@APP.route('/getDefaultCard', methods=['GET'])
+def getDefaultCard(): 
+    userData = request.headers
+    return config.User().getDefaultCard(userData)
+
 @APP.route('/testPay', methods=['GET'])
 def testPay(): 
     userData = request.headers

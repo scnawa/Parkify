@@ -39,6 +39,7 @@ class User:
             "longitude": longitude,
             "payment_id": "",
             "payOut_id": "",
+            "default_payment_id":"",
             "is_stripe_connected": False,
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -151,8 +152,10 @@ class User:
     def delete_account(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
         if user:
-            stripe.Customer.delete(user["payment_id"])
-            stripe.Account.delete(user["payOut_id"])
+            if user["payment_id"] != "":
+                stripe.Customer.delete(user["payment_id"])
+            if user["payOut_id"] != "":
+                stripe.Account.delete(user["payOut_id"])
 
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
@@ -536,7 +539,7 @@ class User:
 
         # err handling from https://docs.stripe.com/payments/without-card-authentication
         except stripe.error.CardError as e:    
-            return json.dumps({'error': e.user_message}), 200
+            return json.dumps({'error': e.user_message}), 400
         return json_util.dumps({"status":"success"})
 
 
@@ -573,8 +576,7 @@ class User:
             listingResults.append(db.listing_data.find({"address": searchResult}))
         return json_util.dumps(listingResults)
 
-    # booking id
-    #
+    
     def addPaymentMethod(self, userData):
         user = db.userbase_data.find_one({"email": userData['email']})
         if user:
@@ -586,9 +588,7 @@ class User:
             )
             return jsonify({"client_secret":intent.client_secret})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
-    # since stripe only provide account link for registered company
-    # i can only use the testing customer key to demostrate the flow
-    # no real detail is added
+    
     # https://docs.stripe.com/connect/testing#creating-accounts
     def providerDetails(self, userData):
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -611,6 +611,89 @@ class User:
         user = db.userbase_data.find_one({"email": userData['email']})
         if user:
             return jsonify({"stripe_connected":user["is_stripe_connected"]})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    def allCardList(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+
+        if user:
+            respond = stripe.PaymentMethod.list(
+                customer=user['payment_id'],
+            )
+            data = respond.data
+            if (len(data) != 0) and (user['default_payment_id'] == ""):
+                user['default_payment_id'] = data[0].id
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'default_payment_id': data[0].id}}
+                db.userbase_data.update_one(filter, newvalues)
+
+
+            return jsonify({"defualt_payment": user['default_payment_id'], "payments": data, })
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    def setDefaultCard(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            try:
+
+                card_id = userData['default_card']
+                respond = stripe.Customer.retrieve_payment_method(
+                    userData['payment_id'],
+                    card_id,
+                )
+                user['default_payment_id'] = card_id
+                filter = {'email': user['email']}
+                newvalues = {"$set" : {'default_payment_id': card_id}}
+                db.userbase_data.update_one(filter, newvalues)
+            except stripe.error as e:    
+                return json.dumps({'error': e.user_message}), 400
+            return jsonify({"defualt_payment": user['default_payment_id']})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    def removeCard(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            try:
+                card_id = userData['card_id']
+                respond = stripe.PaymentMethod.list(
+                    customer=user['payment_id'],
+                )
+                data = respond.data
+                match_data = list(filter(lambda x: x.id == card_id, data))
+                if len(match_data) == 0:
+                    return json.dumps({'error': "No matched card_id"}), 400
+                other_cards = list(filter(lambda x: x.id != card_id, data))
+                stripe.PaymentMethod.detach(card_id)
+                if user['default_payment_id'] == card_id:
+                    new_default = ""
+                    if  len(other_cards) != 0:
+                        new_default = other_cards[0].id
+                    user['default_payment_id'] = new_default
+                    filter = {'email': user['email']}
+                    newvalues = {"$set" : {'default_payment_id': new_default}}
+                    db.userbase_data.update_one(filter, newvalues)
+            except stripe.error as e:    
+                return json.dumps({'error': e.user_message}), 400
+            return jsonify({"defualt_payment": user['default_payment_id'], "cards":other_cards})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    def getDefaultCard(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        if user:
+            try:
+                if user['default_payment_id'] != "":
+                    return jsonify({"defualt_payment": user['default_payment_id']})
+                respond = stripe.PaymentMethod.list(
+                    customer=user['payment_id'],
+                )
+                data = respond.data
+                if (len(data) != 0) and (user['default_payment_id'] == ""):
+                    user['default_payment_id'] = data[0].id
+                    filter = {'email': user['email']}
+                    newvalues = {"$set" : {'default_payment_id': data[0].id}}
+                    db.userbase_data.update_one(filter, newvalues)
+                    return jsonify({"defualt_payment": user['default_payment_id']})
+                return jsonify({"type": "User", "error": "User Does Not have a default payment method"}), 402
+
+            except stripe.error as e:    
+                return json.dumps({'error': e.user_message}), 400
+            return jsonify({"defualt_payment": user['default_payment_id'], "cards":other_cards})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     # def pay_booking(self, userData): 
