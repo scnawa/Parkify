@@ -12,6 +12,10 @@ import Verify from './components/Verify';
 import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
 import AllListings from './components/AllListings';
+import ListingPage from './components/ListingPage';
+import Booking from './components/Booking';
+import TimerPage from './components/TimerPage';
+import ParkEnd from './components/ParkEnd';
 import Payment from './components/Payment';
 import PaymentAddedSuccess from './components/PaymentAddedSuccess';
 import ProviderDetailsExpried from './components/ProviderDetailsExpried';
@@ -34,6 +38,10 @@ const PageList = (props) => {
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
+        <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID}/>} />
+        <Route path="/book" element={<Booking token={token} SID={SID}/>}/>
+        <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
+        <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />
