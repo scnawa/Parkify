@@ -7,7 +7,6 @@ function ListingPage(props) {
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
     const [error, setError] = useState(null);
-    console.log(listing_id);
     useEffect(() => {
 /*         const abortController = new AbortController();
         const signal = abortController.signal; */
@@ -48,16 +47,25 @@ function ListingPage(props) {
             abortController.abort();
         }; */
     }, [listing_id]);
-    
     const handleBookNow = async () => {
         console.log("booking")
+        const ListingNo = listing.listing_no;
+        const data = {
+            "email": props.token,
+            "listingId": listing_id,
+            "listingNo": ListingNo
+        }
         try {
             const response = await fetch('/hold_listing', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }, 
+                body: JSON.stringify(data),
             });
 
             if (response.ok) {
-                navigate('/book');
+                navigate('/book', { state: { listing_id, ListingNo} });
                 console.log("booked")
             } else {
                 alert("Failed to book")

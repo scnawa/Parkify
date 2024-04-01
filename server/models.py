@@ -383,45 +383,47 @@ class User:
 
     # takes listing off page
     def hold_listing(self, userData):
+        
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
 
 
         if user:
-                listing_no = userData["listings"]["listing_no"] 
+                listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
-                filter = {"listings.listing_id": userData["listings"]["listing_id"]}
+                filter = {"listings.listing_id": userData["listingId"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
-                filter = {"listing_id": userData["listings"]["listing_id"]}
+                filter = {"listing_id": userData["listingId"]}
                 newvalues = {"$set" : user_listings[listing_no]}
                 db.listing_data.update_one(filter, newvalues)
-                return json_util.dumps()
+                return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
 
     # puts listing on page
     def release_listing(self, userData):
+        # print(userData)
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
 
 
         if user:
-                listing_no = userData["listings"]["listing_no"] 
+                listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "True"})
-                filter = {"listings.listing_id": userData["listings"]["listing_id"]}
+                filter = {"listings.listing_id": userData["listingId"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
-                filter = {"listing_id": userData["listings"]["listing_id"]}
+                filter = {"listing_id": userData["listingId"]}
                 newvalues = {"$set" : user_listings[listing_no]}
                 db.listing_data.update_one(filter, newvalues)
-                return json_util.dumps()
+                return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def getClosestListings(self, headers): 
@@ -456,6 +458,7 @@ class User:
       
     def create_booking(self, userData):
         # check if the user exists
+        print(userData)
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
@@ -786,7 +789,6 @@ class User:
 
     def get_specific_listing(self, headers):
         # check if the user exists
-        print(headers)
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})

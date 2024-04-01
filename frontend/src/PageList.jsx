@@ -28,6 +28,7 @@ const PageList = (props) => {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
   const [SID, setSID] = React.useState(localStorage.getItem('SID'));
   const [listings, setListings] = useState([]);
+  const [listingDetails, setListingDetails] = useState([]);
   const navigate = useNavigate();
   return (
     <>
@@ -38,7 +39,7 @@ const PageList = (props) => {
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings />} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID}/>} />
+        <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID} listingDetails={listingDetails}/>} />
         <Route path="/book" element={<Booking token={token} SID={SID}/>}/>
         <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
         <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>

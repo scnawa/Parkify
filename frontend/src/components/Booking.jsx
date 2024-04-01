@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function Booking() {
+function Booking( props ) {
     const navigate = useNavigate(); 
+    const location = useLocation();
+    const { listing_id, ListingNo} = location.state || {};
     const [timer, setTimer] = useState(600);
     useEffect(() => {
         const storedStartTime = localStorage.getItem('bookingStartTime');
@@ -41,13 +43,23 @@ function Booking() {
 
     const handleCancel = () => {
         navigate('/');
+        releaseListing();
     };
 
     const releaseListing = async () => {
         console.log("release listing")
+        const data = {
+            "email": props.token,
+            "listingId": listing_id,
+            "listingNo": ListingNo
+        }
         try {
             const response = await fetch('/release_listing', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }, 
+                body: JSON.stringify(data),
             });
 
             if (response.ok) {
