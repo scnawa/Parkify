@@ -17,6 +17,7 @@ import PaymentAddedSuccess from './components/PaymentAddedSuccess';
 import ProviderDetailsExpried from './components/ProviderDetailsExpried';
 import ProviderDetailsReturn from './components/ProviderDetailsReturn';
 import TestPayment from './components/TestPayment';
+import ManagePayment from './components/ManagePayment';
 
 const PageList = (props) => {
 
@@ -39,6 +40,7 @@ const PageList = (props) => {
         <Route path="/providerDetailsExpired" element={<ProviderDetailsExpried  />} />
         <Route path="/providerDetailsReturn" element={<ProviderDetailsReturn  />} />
         <Route path="/testPayment" element={<TestPayment/>} />
+        <Route path="/managePayment" element={<ManagePayment/>} />
 
         <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
         <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />

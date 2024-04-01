@@ -198,12 +198,15 @@ def allCardList():
     return config.User().allCardList(userData)
 @APP.route('/setDefaultCard', methods=['POST'])
 def setDefaultCard(): 
-    userData = request.headers
-    return config.User().setDefaultCard(userData)
+    headers = request.headers
+    userData = json.loads(request.data)
+
+    return config.User().setDefaultCard(headers, userData)
 @APP.route('/removeCard', methods=['POST'])
 def removeCard(): 
-    userData = request.headers
-    return config.User().removeCard(userData)
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().removeCard(headers, userData)
 @APP.route('/getDefaultCard', methods=['GET'])
 def getDefaultCard(): 
     userData = request.headers
