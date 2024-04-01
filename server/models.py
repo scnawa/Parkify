@@ -519,7 +519,7 @@ class User:
         )
         if len(paymentMethods.data) <= 0:
             return jsonify({"type": "payment", "error": "payment failed"}), 402
-        paymentMethodId = paymentMethods.data[0].payment_method
+        paymentMethodId = paymentMethods.data[0].id
         try:
             stripe.PaymentIntent.create(
             amount=200*100,

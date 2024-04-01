@@ -19,9 +19,17 @@ async function Logout (token, SID, setToken, setSID) {
         localStorage.removeItem('token');
       } else {
         console.error('Logout failed:', data.error);
+        setToken(null);
+        setSID(null);
+        localStorage.removeItem('token');
+  
       }
     } catch (error) {
       console.error('An error occurred during logout:', error);
+      setToken(null);
+      setSID(null);
+      localStorage.removeItem('token');
+
     }
   };
 

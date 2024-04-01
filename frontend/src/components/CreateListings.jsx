@@ -81,6 +81,7 @@ function CreateListings(props) {
 	const [thumbnail, setThumbnail] = React.useState([]);
 	const [images, setImages] = React.useState([]);
 	const loaded = React.useRef(false);
+	console.log(addressGeo);
 
 	const navigate = useNavigate();
 	React.useEffect(() => {
