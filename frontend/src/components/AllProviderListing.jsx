@@ -26,7 +26,7 @@ function AllProviderListing({ listing }) {
                         {listing.address}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        ${listing.price}/day
+                        ${listing.price}/hr
                     </Typography>
                     <Box mt={2}>
                         <Button size="small" color="primary" variant="contained">Details</Button>
