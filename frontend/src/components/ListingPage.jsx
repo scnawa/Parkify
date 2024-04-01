@@ -4,6 +4,7 @@ import './ListingPage.css'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 
 function ListingPage() {
@@ -69,11 +70,11 @@ function ListingPage() {
         setListing(hardcodedListing);
     }, []);
     
-    const handleStartDateChange = (date) => {
+    const handleStartTimeChange = (date) => {
         setStart(date);
     };
 
-    const handleEndDateChange = (date) => {
+    const handleEndTimeChange = (date) => {
         setEnd(date);
     };
 
@@ -103,18 +104,24 @@ function ListingPage() {
                             </div>
                                 <div className="booking-box">
                                     <div className="title-box">
-                                        <div className="start-box">Start Date:</div>
-                                        <div className="end-box">End Date:</div>
+                                        <div className="start-box">Start Time:</div>
+                                        <div className="end-box">End Time:</div>
                                     </div>
                                     <div className="date-box">
                                         <div>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DatePicker value={start} onChange={handleStartDateChange} />
+                                                <TimePicker
+                                                    value={start}
+                                                    onChange={handleStartTimeChange}
+                                                    />
                                             </LocalizationProvider>
                                         </div>
                                         <div>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DatePicker value={end} onChange={handleEndDateChange} />
+                                                <TimePicker
+                                                    value={end}
+                                                    onChange={handleEndTimeChange}
+                                                    />
                                             </LocalizationProvider>
                                         </div>
                                     </div>
