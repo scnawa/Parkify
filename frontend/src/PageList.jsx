@@ -13,6 +13,9 @@ import MyListings from './components/MyListings';
 import EditListings from './components/EditListings';
 import AllListings from './components/AllListings';
 import ListingPage from './components/ListingPage';
+import Booking from './components/Booking';
+import TimerPage from './components/TimerPage';
+import ParkEnd from './components/ParkEnd';
 
 const PageList = () => {
 
@@ -30,6 +33,9 @@ const PageList = () => {
         <Route path="/editListings" element={<EditListings />} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
         <Route path="/listing/:listing_id" element={<ListingPage />} />
+        <Route path="/book" element={<Booking />}/>
+        <Route path="/timer" element={<TimerPage/>}/>
+        <Route path="/park-end" element={<ParkEnd />}/>
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />

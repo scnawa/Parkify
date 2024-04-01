@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import './ListingPage.css'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -8,6 +8,8 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 
 function ListingPage() {
+
+    const navigate = useNavigate(); 
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
     const [error, setError] = useState(null);
@@ -26,7 +28,6 @@ function ListingPage() {
         restrictions: "no pets",
         image_url: ""
     };
-    console.log(start, end);
     /* useEffect(() => {
         const abortController = new AbortController();
         const signal = abortController.signal;
@@ -70,14 +71,33 @@ function ListingPage() {
         setListing(hardcodedListing);
     }, []);
     
-    const handleStartTimeChange = (date) => {
+    const handleBookNow = async () => {
+        console.log("booking")
+        try {
+            const response = await fetch('/hold_listing', {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                navigate('/book');
+                console.log("booked")
+            } else {
+                alert("Failed to book");
+                console.error('Failed to hold listing');
+            }
+        } catch (error) {
+            console.error('API call failed:', error);
+        }
+    };
+
+    /* const handleStartTimeChange = (date) => {
         setStart(date);
     };
 
     const handleEndTimeChange = (date) => {
         setEnd(date);
     };
-
+ */
 
     return (
         <div>
@@ -103,11 +123,11 @@ function ListingPage() {
                                 <div>Availability:</div>
                             </div>
                                 <div className="booking-box">
-                                    <div className="title-box">
+                                    {/* <div className="title-box">
                                         <div className="start-box">Start Time:</div>
                                         <div className="end-box">End Time:</div>
-                                    </div>
-                                    <div className="date-box">
+                                    </div> */}
+                                    {/* <div className="date-box">
                                         <div>
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <TimePicker
@@ -124,10 +144,10 @@ function ListingPage() {
                                                     />
                                             </LocalizationProvider>
                                         </div>
-                                    </div>
-                                    <button>Book Now</button> {/**button to head to payhment page */}
+                                    </div> */}
+                                    <button onClick={handleBookNow}>Book Now</button> {/**button to head to payhment page */}
                                 </div>
-                        </div>
+                            </div>
                     </div>
                 </div>    
             ) : (
