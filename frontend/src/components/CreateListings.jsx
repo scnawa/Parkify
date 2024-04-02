@@ -178,7 +178,7 @@ function CreateListings(props) {
 				>
 					<Typography>Create Listings</Typography>
 
-					<Box component="form" sx={{ mt: 1, rowGap: "20px" }}>
+					<Box component="form" sx={{ mt: 1, rowGap: "50px" }}>
 						{/* the below Autocomplete code is from https://mui.com/material-ui/react-autocomplete/#free-solo */}
 						<Autocomplete
 							sx={{ width: '100%' }}

@@ -1,13 +1,13 @@
 body {
-    overflow: auto; /* or scroll, hidden, visible, depending on your requirement */
+    overflow: auto;
 }
 
-.page-container {
+.listing-page-container {
     display: flex;
     justify-content: center;
 }
 
-.page {
+.listing-page {
     background-color: aqua;
     width: 80vw;
     height: 100vh;
@@ -20,11 +20,13 @@ img {
     width: 40vw;
     height: auto;
 }
-.left-box {
+
+.listing-left-box {
     background-color: aliceblue;
     flex: 2;
     display: flex;
     justify-content: flex-start;
+    flex-direction: column;
 }
 
 .details-box {
@@ -45,11 +47,12 @@ img {
     border-bottom: 1px solid #ccc;
 }
 
-.right-box {
+.listing-right-box {
     background-color: aquamarine;
     flex: 1;
     display: flex;
     justify-content: flex-start;
+    flex-direction: column;
 }
 
 .price-box {

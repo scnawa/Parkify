@@ -22,6 +22,7 @@ import ProviderDetailsExpried from './components/ProviderDetailsExpried';
 import ProviderDetailsReturn from './components/ProviderDetailsReturn';
 import TestPayment from './components/TestPayment';
 import ManagePayment from './components/ManagePayment';
+import History from './components/History';
 
 const PageList = (props) => {
 
@@ -44,6 +45,7 @@ const PageList = (props) => {
         <Route path="/book" element={<Booking token={token} SID={SID}/>}/>
         <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
         <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
+        <Route path="/history" element={<History token={token} SID={SID}/>} />
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/admindashboard" element={<AdminDashboard  />} />

@@ -79,8 +79,8 @@ const ProfilePage = (props) => {
     };
 
     return (
-        <div className='container'>
-            <div className="left-box">
+        <div className='profile-container'>
+            <div className="left-box-profile">
                 <h3>Profile Image</h3>
                 <div className='profile-picture'>
                     {profilePicture ? (
@@ -103,7 +103,7 @@ const ProfilePage = (props) => {
                         style={{ display: 'none' }}
                     />  
             </div>
-            <div className='right-box'>
+            <div className='right-box-profile'>
                     <form onSubmit={handleSubmit}>
                         <label>
                         Name:

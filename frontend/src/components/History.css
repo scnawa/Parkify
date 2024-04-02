@@ -1,0 +1,8 @@
+.history-page-container {
+    width: 80vw;
+    height: 80vh;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    padding: 20px; 
+    margin: 10vh 10vw; 
+}

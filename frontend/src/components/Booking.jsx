@@ -32,14 +32,17 @@ function Booking( props ) {
         if (timer === 0) {
             console.log("api call")
             releaseListing();
-            localStorage.clear();
+            localStorage.clearItem("bookingStartTime");
             navigate("/")
         }
     }, [timer]);
 
     const handleIamHereClick = () => {
+        //createBooking();
         const data = {
-            //pass real data
+            "email": props.token,
+            "listingId": listing_id,
+            "listingNo": ListingNo
         }
         // testing data
         // const data = {
@@ -82,7 +85,7 @@ function Booking( props ) {
     };
 
     const releaseListing = async () => {
-        console.log("release listing")
+        //console.log("release listing")
         const data = {
             "email": props.token,
             "listingId": listing_id,
@@ -106,6 +109,30 @@ function Booking( props ) {
             console.error('API call failed:', error);
         }
     };
+
+    /* const createBooking = async() => {
+        const userData = {
+            "email": props.token,
+            "listingId": listing_id,
+        }
+        try {
+          const response = await fetch('/create_booking', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+          });
+      
+          if (!response.ok) {
+            throw new Error('Failed to create booking');
+          } 
+          const responseData = await response.json();
+          console.log(responseData);
+        } catch (error) {
+          console.error('Error creating booking:', error.message);
+        }
+      } */
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);

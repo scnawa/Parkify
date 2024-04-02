@@ -7,6 +7,7 @@ function ParkEnd() {
     const location = useLocation();
     const timer = location.state ? location.state.timer : 0;
     const navigate = useNavigate(); 
+    const { listing_id, ListingNo} = location.state || {};
 
     React.useEffect(() => {
 		if (!token) {
@@ -37,7 +38,9 @@ function ParkEnd() {
     //     },
     // };
     const data = {
-        // pass real data
+        "listingId": listing_id,
+        "listingNo": ListingNo,
+        //"price": price,
     }
     const handlePayment = () => {
         console.log(data);
