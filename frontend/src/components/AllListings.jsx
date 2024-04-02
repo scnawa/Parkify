@@ -45,6 +45,17 @@ function AllListings(props) {
         .catch(error => console.error(error));
     }, []);
 
+    // we leverage reacts design here. the useffects are ran before the initial render is complete
+    // meaning that any variable changes (such as initialistings loaded = true) are not reflected
+    // and done UNTIL the useffects and initial render are fully finished. Hence we can use this
+    // fact to ensure that the listings first appear as normal and the stuff to do with 
+    // showing the listings for a search (which is done below, in the useffect where 
+    // the search function in a different file changes props.listing to the new 
+    // searched listings) only appears when props.listing is changed and not when
+    // we are on initial render. initiallistingsload will be set to true AFTER
+    // the useffects are finished AND the initial render is finished, meaning
+    // that the below on initial will never run. hence we leverage how react is 
+    // designed to achieve this.
     useEffect(() => {
         if (initialListingsLoaded) {
             setListings(props.listings);
