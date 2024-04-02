@@ -466,7 +466,6 @@ class User:
         booking_list = user["recentBookings"]
 
         booking = {
-                    "address": userData['listings']['address'],
                     "listing_id": userData["listings"]["listing_id"],
                     "recentbooking_no": len(user["recentBookings"]),
                     "start_time": "",
