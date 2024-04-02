@@ -99,7 +99,8 @@ function CreateListings(props) {
 				format: 'json',
 				limit: 5,
 				addressdetails: 1,
-				polygon_geojson: 1
+				polygon_geojson: 1,
+				countrycodes:["AU"],
 			}
 			const mapQuery = new URLSearchParams(mapParameter).toString();
 			fetch(`${mapApi}${mapQuery}`, { method: "GET", redirect: "follow" }).then((respond) => {
