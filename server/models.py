@@ -525,27 +525,28 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def end_booking(self, headers, userData):
+    
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["booking"]["listing_id"]})
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+        
         user_listings = provider_user.get('listings')
 
         booking_list = user["recentBookings"]
 
 
         if user:
-            listing_no = userData["listings"]["listing_no"]
-            recentbooking_no = userData["booking"]["recentbooking_no"]
-            end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
+            listing_no = userData["listingNo"]
+            end_price = int(userData["totalTime"]) * int(user_listings[listing_no]['price'])
             booking = {
                     "end_price": end_price,
-                    "feedback": userData["booking"]["feedback"],
-                    "end_image_url": userData["booking"]["end_image_url"], 
-                    "total_time": userData["booking"]["total_time"]
+                    "feedback": userData["feedback"],
+                    "end_image_url": userData["end_image_url"], 
+                    "total_time": userData["totalTime"]
             }
             paymentMethods = stripe.PaymentMethod.list(
-                customer=user['payment_id'],
+                customer=user["payment_id"],
                 limit=3
             )
             if len(paymentMethods.data) <= 0 or user['default_payment_id'] == "":
@@ -573,21 +574,21 @@ class User:
 
 
             user_listings[listing_no].update({'is_active': "True"})
-            booking_list[recentbooking_no].update(booking)
+            booking_list[-1].update(booking)
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listings.listing_id": userData["booking"]["listing_id"]}
+            filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
             print(userData["listings"])
-            filter = {"listing_id": userData["listings"]["listing_id"]}
+            filter = {"listing_id": userData["listingId"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
             return json_util.dumps(end_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def testPay(self, userData):
+    """ def testPay(self, userData):
         paymentMethods = stripe.PaymentMethod.list(
             customer="cus_PpxZVOFpOPxNHM",
             limit=3
@@ -615,7 +616,7 @@ class User:
         # err handling from https://docs.stripe.com/payments/without-card-authentication
         except stripe.error.CardError as e:    
             return json.dumps({'error': e.user_message}), 400
-        return json_util.dumps({"status":"success"})
+        return json_util.dumps({"status":"success"}) """
 
 
 
