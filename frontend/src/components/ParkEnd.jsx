@@ -27,6 +27,7 @@ const uploadFile = (file) => {
 function ParkEnd() {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [feedback, setFeedback] = useState('');
+    const [promo, setPromo] = useState('')
 
     const [thumbnail, setThumbnail] = useState([]);
 	const [image, setImages] = useState([]);
@@ -72,7 +73,8 @@ function ParkEnd() {
                 "listingNo": ListingNo,
                 "totalTime": timer,
                 "feedback": feedback,
-                "endImageUrl": url
+                "endImageUrl": url,
+                "promoCode": promo
             }
             console.log(data);
             const fetchEndBooking = async () => {
@@ -111,10 +113,10 @@ function ParkEnd() {
         setFeedback(event.target.value);
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        setThumbnail(file);
+    const handlePromoChange = (event) => {
+        setPromo(event.target.value);
     };
+
     return (
         <div>
             <h1>Parking has Ended</h1>
@@ -123,7 +125,7 @@ function ParkEnd() {
                 <textarea value={feedback} onChange={handleFeedbackChange}></textarea>
             <p>Upload empty spot</p>
             <FileInputField multiple={false} setImage={setThumbnail} content="Upload Thumbnail" />
-            <p>Enter Promo Code<input type="text"></input></p>
+            <p>Enter Promo Code<input type="text" value={promo} onChange={handlePromoChange}></input></p>
             <p>Duration: {formatTime(timer)}</p>
             <button onClick={handlePayment}>Pay</button>
         </div>

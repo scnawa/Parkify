@@ -1,5 +1,6 @@
 from copyreg import constructor
 import json
+import math
 from operator import truediv
 from pickle import FALSE, TRUE
 import this
@@ -528,22 +529,21 @@ class User:
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["booking"]["listing_id"]})
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
         booking_list = user["recentBookings"]
         if user:
-            listing_no = userData["listings"]["listing_no"]
-            recentbooking_no = userData["booking"]["recentbooking_no"]
-            end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
+            listing_no = userData["listingNo"]
+            end_price = math.ceil(int(userData["totalTime"])/3600) * int(user_listings[listing_no]["price"])
             discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
             now = datetime.datetime.now()
             start_time = now.strftime("%H:%M:%S")
             booking = {
                     "start_time": start_time,
                     "end_price": discounted_price,
-                    "feedback": userData["booking"]["feedback"],
-                    "end_image_url": userData["booking"]["end_image_url"], 
-                    "total_time": userData["booking"]["total_time"]
+                    "feedback": userData["feedback"],
+                    "end_image_url": userData["endImageUrl"], 
+                    "total_time": userData["totalTime"]
             }
             paymentMethods = stripe.PaymentMethod.list(
                 customer=user['payment_id'],
@@ -573,15 +573,14 @@ class User:
                 return json.dumps({'error': e.user_message}), 200
 
             user_listings[listing_no].update({'is_active': "True"})
-            booking_list[recentbooking_no].update(booking)
+            booking_list[-1].update(booking)
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listings.listing_id": userData["booking"]["listing_id"]}
+            filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            print(userData["listings"])
-            filter = {"listing_id": userData["listings"]["listing_id"]}
+            filter = {"listing_id": userData["listingId"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
             return json_util.dumps(discounted_price)
@@ -822,10 +821,11 @@ class User:
 
             if promo_code and promo_code.isalnum():
                 #the last two digits 
-                with open("promoCodes.txt", "r") as file: 
+                with open("capstone-project-3900w09a_parkify\server\promoCodes.txt", "r") as file: 
                     for promo in file: 
                         if promo_code == promo.strip():
-                            discount_percentage = int(promo_code[-2:0]) 
+                            print(promo_code[-2:])
+                            discount_percentage = int(promo_code[-2:]) 
                             discounted_price = booking_price - (booking_price * discount_percentage / 100)
                             return discounted_price
                 return booking_price

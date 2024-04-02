@@ -71,7 +71,7 @@ def sendConfirmationEmail(email, username, amount):
 
     subject = 'Parkify - Payment Receipt'
     body = "Hi " + username + ",\nThank you for using Parkify!\n\nYour bill for the booking is: $" + \
-        amount + "\n\nCheers,\nThe Parkify Team"
+        str(amount) + "\n\nCheers,\nThe Parkify Team"
 
     emailMessageObj = EmailMessage()
     emailMessageObj['From'] = senderEmail
