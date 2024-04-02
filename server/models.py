@@ -43,6 +43,7 @@ class User:
             "payOut_id": "",
             "default_payment_id":"",
             "is_stripe_connected": False,
+            "pre_booking_time": ""
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -390,8 +391,12 @@ class User:
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
 
+        now = datetime.datetime.now()
+        start_time = now.strftime("%H:%M:%S")
+
 
         if user:
+                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": start_time}})
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
                 filter = {"listings.listing_id": userData["listingId"]}
@@ -465,10 +470,13 @@ class User:
         user_listings = provider_user.get('listings')
         booking_list = user["recentBookings"]
 
+        now = datetime.datetime.now()
+        start_time = now.strftime("%H:%M:%S")
+
         booking = {
                     "listing_id": userData["listings"]["listing_id"],
                     "recentbooking_no": len(user["recentBookings"]),
-                    "start_time": "",
+                    "start_time": start_time,
                     "end_price": "",
                     "feedback": "",
                     "end_image_url": "", 
@@ -530,12 +538,7 @@ class User:
             listing_no = userData["listings"]["listing_no"]
             recentbooking_no = userData["booking"]["recentbooking_no"]
             end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
-            # https://stackoverflow.com/questions/50639415/attributeerror-module-datetime-has-no-attribute-now
-            # data.now() doesn't work
-            now = datetime.datetime.now()
-            start_time = now.strftime("%H:%M:%S")
             booking = {
-                    "start_time": start_time,
                     "end_price": end_price,
                     "feedback": userData["booking"]["feedback"],
                     "end_image_url": userData["booking"]["end_image_url"], 
