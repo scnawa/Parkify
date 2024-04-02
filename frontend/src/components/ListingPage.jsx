@@ -144,7 +144,7 @@ function ListingPage(props) {
                         <div className="listing-right-box">
                             <div className="price-box">
                                 <div className="top-price-box"><h3>Price: ${listing.price}.00/hr</h3></div>
-                                <div>Availability:</div>
+                                <div>Parking space is avaliable</div>
                             </div>
                                 <div className="booking-box">
                                     <button onClick={handleBookNow}>Book Now</button>

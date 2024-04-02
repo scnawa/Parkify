@@ -32,7 +32,7 @@ function Booking( props ) {
         if (timer === 0) {
             console.log("api call")
             releaseListing();
-            localStorage.clear();
+            localStorage.clearItem("bookingStartTime");
             navigate("/")
         }
     }, [timer]);
@@ -85,7 +85,7 @@ function Booking( props ) {
     };
 
     const releaseListing = async () => {
-        console.log("release listing")
+        //console.log("release listing")
         const data = {
             "email": props.token,
             "listingId": listing_id,
