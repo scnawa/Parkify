@@ -28,9 +28,6 @@ function AllProviderListing({ listing }) {
                     <Typography variant="body2" color="text.secondary">
                         ${listing.price}/hr
                     </Typography>
-                    <Box mt={2}>
-                        <Button size="small" color="primary" variant="contained">Details</Button>
-                    </Box>
                 </CardContent>
             </Card>
         </ThemeProvider>

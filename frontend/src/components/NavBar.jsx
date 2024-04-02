@@ -203,7 +203,7 @@ function NavBar(props) {
 									ml: 1, 
 									bgcolor: 'black', 
 									'&:hover': {
-										bgcolor: 'green.main', // lighter green on hover
+										bgcolor: 'black', // lighter green on hover
 									},
 									borderRadius: '4px', 
 									padding: '10px 16px' 

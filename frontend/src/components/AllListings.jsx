@@ -18,6 +18,7 @@ function AllListings(props) {
     const [listings, setListings] = useState([]);
     const [priceOrder, setPriceOrder] = useState(''); 
     const [distance, setDistance] = useState('10');
+    const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -36,6 +37,7 @@ function AllListings(props) {
             if (!data.error) {
                 console.log(data)
                 setListings(data);
+                setInitialListingsLoaded(true)
             } else {
                 alert(data.error);
             }
@@ -44,9 +46,11 @@ function AllListings(props) {
     }, []);
 
     useEffect(() => {
+        if (initialListingsLoaded) {
             setListings(props.listings);
             setPriceOrder('');
             setDistance('')
+        }
     }, [props.listings]);
 
     
@@ -120,7 +124,15 @@ function AllListings(props) {
                                     <MenuItem value="descending">High to Low</MenuItem>
                                 </Select>
                             </FormControl>
-                            <Button type="submit" variant="contained">Apply</Button>
+                            <Button type="submit" sx={{ 
+									ml: 1, 
+									bgcolor: 'black', 
+									'&:hover': {
+										bgcolor: 'black', // lighter green on hover
+									},
+									borderRadius: '4px', 
+									padding: '10px 16px' 
+									}} variant="contained">Apply</Button>
                         </form>
                     </Box>
                 </Box>
