@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Grid, Typography, TextField, Button, Avatar, Stack } from '@mui/material';
 import Logout from './logout';
 import GetUser from './GetUser';
-import './ProfilePage.css'
-import defaultProfilePicture from '../.././src/assets/user.png'
-
+import defaultProfilePicture from '../../src/assets/user.png';
 
 const ProfilePage = (props) => {
-    //console.log(props);
-    //const [user, setUser] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: props.token,
     });
+    const navigate = useNavigate();
+    const [profilePicture, setProfilePicture] = useState(defaultProfilePicture);
 
     useEffect(() => {
         const fetchData = async () => {
           try {
             const userData = await GetUser(props.token);
-            //console.log(userData.username);
-            //setUser(userData.username);
             setFormData({
                 ...formData,
                 name: userData.username,  
@@ -30,29 +27,26 @@ const ProfilePage = (props) => {
         };
     
         fetchData();
-      }, [props.token]);
+    }, [props.token]);
 
-
-    //console.log(user);
-    const navigate = useNavigate();
-    const [profilePicture, setProfilePicture] = useState(null);
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        };
+    };
     
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Create FormData object to send mixed content (text + files)
-        // Append profile picture if selected
-        // await async
         console.log('Form submitted:', formData);
-        };
+        // add fetch request to change backend data here
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        setProfilePicture(file);
+        if (file) {
+            setProfilePicture(URL.createObjectURL(file));
+        }
     };
+
     const handleDeleteProfile = async () => {
         try {
             await Logout(props.token, props.SID, props.setToken);
@@ -79,62 +73,76 @@ const ProfilePage = (props) => {
     };
 
     return (
-        <div className='profile-container'>
-            <div className="left-box-profile">
-                <h3>Profile Image</h3>
-                <div className='profile-picture'>
-                    {profilePicture ? (
-                        <img src={URL.createObjectURL(profilePicture)} alt="Profile" />
-                    ) : (
-                        <img src={defaultProfilePicture} alt="Profile"/>
-                    )}
-                </div>
-                <button
-                        className="upload-button"
-                        onClick={() => document.getElementById('profileImageInput').click()}
-                    >
-                        Change Image
-                    </button>
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <Stack spacing={4} alignItems="center">
+                <Typography variant="h4" gutterBottom>
+                    Profile
+                </Typography>
+                <Avatar
+                    src={profilePicture}
+                    alt="Profile"
+                    sx={{ width: 150, height: 150, mb: 2 }}
+                />
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="success"
+                    sx={{ bgcolor: 'green' }}
+                >
+                    Change Image
                     <input
                         type="file"
                         accept="image/*"
-                        id="profileImageInput"
+                        hidden
                         onChange={handleImageChange}
-                        style={{ display: 'none' }}
-                    />  
-            </div>
-            <div className='right-box-profile'>
-                    <form onSubmit={handleSubmit}>
-                        <label>
-                        Name:
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                        />
-                        </label>
-                        <label>
-                        Email:
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                        />
-                        </label>
-                        <button type="submit" className="submit-profile-button">
+                    />
+                </Button>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="name"
+                        label="Name"
+                        name="name"
+                        autoComplete="name"
+                        autoFocus
+                        value={formData.name}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email"
+                        name="email"
+                        autoComplete="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                    <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="success"
+                            sx={{ flexGrow: 1 }}
+                        >
                             Save Changes
-                        </button>
-                        <button onClick={handleDeleteProfile} className="delete-profile-button">
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={handleDeleteProfile}
+                            sx={{ flexGrow: 1 }}
+                        >
                             Delete Profile
-                        </button>
-
-                    </form> 
-                </div>
-
-        </div>
-        )
-    }
+                        </Button>
+                    </Stack>
+                </Box>
+            </Stack>
+        </Box>
+    );
+}
 
 export default ProfilePage;
