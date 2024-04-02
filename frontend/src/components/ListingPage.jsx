@@ -11,10 +11,11 @@ function ListingPage(props) {
     const [defaultPayment, setDefaultPayment] = useState(null);
 
     const [error, setError] = useState(null);
-    console.log(props);
+    // console.log(props);
     useEffect(() => {
 /*         const abortController = new AbortController();
         const signal = abortController.signal; */
+        // console.log(props);
         const fetchPayment = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/getDefaultCard', {
@@ -43,6 +44,7 @@ function ListingPage(props) {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
+                        'email': props.token,
                         'listingId': listing_id
                     },
                     /* signal: signal */
@@ -53,7 +55,7 @@ function ListingPage(props) {
                     console.log(error)
                 } else {
                     setListing(data);
-                    console.log(data);
+                    // console.log(data);
                 }
             } catch (error) {
                 if (error.name === 'AbortError') {
@@ -123,9 +125,9 @@ function ListingPage(props) {
         <div>
             {error && <div>Error: {error}</div>}
             {listing ? (
-                <div className="page-container">    
-                    <div className="page">
-                        <div className="left-box">
+                <div className="listing-page-container">    
+                    <div className="listing-page">
+                        <div className="listing-left-box">
                             <h2>{listing.address}</h2>
                             <img src="" alt="Parking space"></img>
                             <div className="details-box">
@@ -137,7 +139,7 @@ function ListingPage(props) {
                                 <p>{listing.restrictions}</p>
                             </div>
                         </div>
-                        <div className="right-box">
+                        <div className="listing-right-box">
                             <div className="price-box">
                                 <div className="top-price-box"><h3>Price: ${listing.price}.00/hr</h3></div>
                                 <div>Availability:</div>

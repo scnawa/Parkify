@@ -798,8 +798,9 @@ class User:
 
     def get_specific_listing(self, headers):
         # user should be able to view listing before login in
+        print(headers)
         # check if the user exists
-        # user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
         return json_util.dumps(provider_user)

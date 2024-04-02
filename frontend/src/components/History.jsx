@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './History.css'
 
 const History = ( props ) => {
   const [bookings, setBookings] = useState([]);
@@ -29,7 +30,9 @@ const History = ( props ) => {
 
   return (
     <div>
-      <h2>Booking History</h2>
+      <div className='history-page-container'>
+
+      </div>
     </div>
   );
 };
