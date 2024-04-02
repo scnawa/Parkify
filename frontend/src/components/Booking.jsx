@@ -8,7 +8,7 @@ function Booking( props ) {
     const [timer, setTimer] = useState(600);
     useEffect(() => {
         const storedStartTime = localStorage.getItem('bookingStartTime');
-
+        const startTime = Date.now();
         if (storedStartTime) {
             const startTime = parseInt(storedStartTime, 10);
             const currentTime = Date.now();
@@ -17,7 +17,7 @@ function Booking( props ) {
 
             setTimer(remainingTime);
         } else {
-            const startTime = Date.now();
+            
             localStorage.setItem('bookingStartTime', startTime.toString());
         }
 
@@ -30,7 +30,6 @@ function Booking( props ) {
 
     useEffect(() => {
         if (timer === 0) {
-            console.log("api call")
             releaseListing();
             localStorage.removeItem("bookingStartTime");
             navigate("/")
