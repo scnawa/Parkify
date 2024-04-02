@@ -31,6 +31,7 @@ const PageList = (props) => {
   const [listings, setListings] = useState([]);
   const [listingDetails, setListingDetails] = useState([]);
   const navigate = useNavigate();
+  console.log(token, localStorage.getItem('token'));
   return (
     <>
       <NavBar token={token} SID={SID} setToken={setToken} setSID={setSID} setListings={setListings}/>

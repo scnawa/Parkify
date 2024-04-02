@@ -517,9 +517,9 @@ class User:
             return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def end_booking(self, userData):
+    def end_booking(self, headers, userData):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["booking"]["listing_id"]})
         user_listings = provider_user.get('listings')
@@ -531,7 +531,9 @@ class User:
             listing_no = userData["listings"]["listing_no"]
             recentbooking_no = userData["booking"]["recentbooking_no"]
             end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
-            now = datetime.now()
+            # https://stackoverflow.com/questions/50639415/attributeerror-module-datetime-has-no-attribute-now
+            # data.now() doesn't work
+            now = datetime.datetime.now()
             start_time = now.strftime("%H:%M:%S")
             booking = {
                     "start_time": start_time,
@@ -576,6 +578,7 @@ class User:
             filter = {"listings.listing_id": userData["booking"]["listing_id"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
+            print(userData["listings"])
             filter = {"listing_id": userData["listings"]["listing_id"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
@@ -681,7 +684,13 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
         user = db.userbase_data.find_one({"email": userData['email']})
+
         if user:
+            account = stripe.Account.retrieve(user['payOut_id'])
+            print(account)
+            if not account.payouts_enabled:
+                return jsonify({"type": "User", "error": "Please provide or update provider details"}), 402
+
             return jsonify({"stripe_connected":user["is_stripe_connected"]})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def allCardList(self, userData):
@@ -788,11 +797,9 @@ class User:
 
 
     def get_specific_listing(self, headers):
+        # user should be able to view listing before login in
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        # user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
-
-        if user:
-            return json_util.dumps(provider_user)
-        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        return json_util.dumps(provider_user)

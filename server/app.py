@@ -166,9 +166,10 @@ def remove_recentbooking():
     return config.User().remove_recentbooking(userData)
 
 @APP.route('/end_booking', methods = ['POST'])
-def end_booking(): 
+def end_booking():
+    headers = request.headers
     userData = json.loads(request.data)
-    return config.User().end_booking(userData)
+    return config.User().end_booking(headers, userData)
 
 @APP.route('/searchForSpace', methods = ['GET'])
 def searchForSpace(): 
