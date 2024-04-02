@@ -461,13 +461,13 @@ class User:
         print(userData)
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
         booking_list = user["recentBookings"]
 
         booking = {
-                    "address": userData['listings']['address'],
-                    "listing_id": userData["listings"]["listing_id"],
+                    "address": userData['address'],
+                    "listing_id": userData["listing_Id"],
                     "recentbooking_no": len(user["recentBookings"]),
                     "start_time": "",
                     "end_price": "",
