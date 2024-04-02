@@ -25,6 +25,7 @@ function Booking( props ) {
                 console.log(preTimer);
                 //get current time
                 const currentTime = Date.now();
+                console.log(currentTime);
 
                 const [hoursStr, minutesStr, secondsStr] = preTimer.split(':');
                 const preHours = parseInt(hoursStr);
@@ -32,9 +33,7 @@ function Booking( props ) {
                 const preSeconds = parseInt(secondsStr);
                 const preTime = new Date();
                 preTime.setHours(preHours, preMinutes, preSeconds, 0); 
-
-                const timeDifference = Math.round((currentTime - preTime)/(3600));
-                console.log(timeDifference)
+                const timeDifference = Math.round((preTime.getTime() + 600000 - currentTime)/(1000));
                 setTimer(timeDifference);
               } catch (error) {
                 console.error('Error getting time info:', error.message);

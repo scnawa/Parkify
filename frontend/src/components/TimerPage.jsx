@@ -5,12 +5,43 @@ function TimerPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [timer, setTimer] = useState(0);
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
+
     const { listing_id, ListingNo} = location.state || {};
     useEffect(() => {
         const intervalId = setInterval(() => {
             setTimer((prevTimer) => prevTimer + 1);
         }, 1000);
+        const fetchBooking = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/getBookingTime', {
+                    method: 'GET',
+                    headers: {
+                        'email': token,
+                        'Content-Type': 'application/json',
+                    },
+                });
 
+                const res = await response.json();
+                if (res.error) {
+                    return Promise.reject(res.error);
+                } else {
+                    return Promise.resolve(res);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        };
+        fetchBooking().then((data) => {
+            const [hoursStr, minutesStr, secondsStr] = data.split(':');
+            const preHours = parseInt(hoursStr);
+            const preMinutes = parseInt(minutesStr);
+            const preSeconds = parseInt(secondsStr);
+            const preTime = new Date();
+            preTime.setHours(preHours, preMinutes, preSeconds, 0); 
+            setTimer(Math.round((Date.now() - preTime)/(1000)));
+            return;
+        })
         return () => {
             clearInterval(intervalId);
         };
