@@ -525,38 +525,37 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def end_booking(self, headers, userData):
-        # print(userData)
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        print(userData["listingId"])
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        print(type(provider_user))
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["booking"]["listing_id"]})
         user_listings = provider_user.get('listings')
-
         booking_list = user["recentBookings"]
-
-
         if user:
-            listing_no = userData["listingNo"]
-            end_price = int(userData["totalTime"]) * int(user_listings[listing_no]['price'])
+            listing_no = userData["listings"]["listing_no"]
+            recentbooking_no = userData["booking"]["recentbooking_no"]
+            end_price = int(userData["booking"]["total_time"]) * int(userData['listings']['price'])
+            discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
+            now = datetime.datetime.now()
+            start_time = now.strftime("%H:%M:%S")
             booking = {
-                    "end_price": end_price,
-                    "feedback": userData["feedback"],
-                    "endImageUrl": userData["endImageUrl"], 
-                    "total_time": userData["totalTime"]
+                    "start_time": start_time,
+                    "end_price": discounted_price,
+                    "feedback": userData["booking"]["feedback"],
+                    "end_image_url": userData["booking"]["end_image_url"], 
+                    "total_time": userData["booking"]["total_time"]
             }
             paymentMethods = stripe.PaymentMethod.list(
-                customer=user["payment_id"],
+                customer=user['payment_id'],
                 limit=3
             )
             if len(paymentMethods.data) <= 0 or user['default_payment_id'] == "":
                 return jsonify({"type": "payment", "error": "payment failed"}), 402
-
+ 
             paymentMethodId = user['default_payment_id']
             try:
                 stripe.PaymentIntent.create(
-                    amount=end_price * 100,
+                    amount=int(discounted_price * 100),
                     currency='AUD',
                     customer=user['payment_id'],
                     payment_method=paymentMethodId,
@@ -564,28 +563,28 @@ class User:
                     confirm=True,
                 )
                 stripe.Transfer.create(
-                    amount=int(end_price * 0.85 * 100),
+                    amount=int(discounted_price * 0.85 * 100),
                     currency="AUD",
                     destination=provider_user['payOut_id'],
                 )
-
+                helper.sendConfirmationEmail(user['email'], user['username'], discounted_price)
             # err handling from https://docs.stripe.com/payments/without-card-authentication
             except stripe.error.CardError as e:
                 return json.dumps({'error': e.user_message}), 200
 
-
             user_listings[listing_no].update({'is_active': "True"})
-            booking_list[-1].update(booking)
+            booking_list[recentbooking_no].update(booking)
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listings.listing_id": userData["listingId"]}
+            filter = {"listings.listing_id": userData["booking"]["listing_id"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listing_id": userData["listingId"]}
+            print(userData["listings"])
+            filter = {"listing_id": userData["listings"]["listing_id"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
-            return json_util.dumps(end_price)
+            return json_util.dumps(discounted_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     """ def testPay(self, userData):
@@ -818,3 +817,17 @@ class User:
         booking_list = user["recentBookings"]
 
         return json_util.dumps(booking_list[-1]["start_time"])
+    
+    def apply_promo_code(self, booking_price, promo_code):
+
+            if promo_code and promo_code.isalnum():
+                #the last two digits 
+                with open("promoCodes.txt", "r") as file: 
+                    for promo in file: 
+                        if promo_code == promo.strip():
+                            discount_percentage = int(promo_code[-2:0]) 
+                            discounted_price = booking_price - (booking_price * discount_percentage / 100)
+                            return discounted_price
+                return booking_price
+            else:
+                return booking_price
