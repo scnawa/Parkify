@@ -28,7 +28,6 @@ const theme = createTheme({
 		},
 	},
 });
-
 const font1 = "'Nunito Sans', sans-serif";
 export function rentOutInfoOnclick(props) {
 	console.log("here", props);
@@ -80,6 +79,11 @@ function NavBar(props) {
 	const userMenuClose = (event) => {
 		setUserMenuLocation(null);
 	}
+	const addPaymentOnClick = (props) => {
+		navigate("/managePayment");
+		return;	
+	}
+	
 	// TODO: navigate different page
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
@@ -245,6 +249,7 @@ function NavBar(props) {
 								>
 									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
 									<MenuItem onClick={()=>rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
+									<MenuItem onClick={()=>addPaymentOnClick(props)}>Add customer payment method</MenuItem>
 
 									<MenuItem onClick={logOut}>Log out</MenuItem>
 								</Menu>

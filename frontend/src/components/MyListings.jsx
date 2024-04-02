@@ -1,5 +1,5 @@
 import { Box, Button, List, Stack, ThemeProvider, Typography, createTheme } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import ListItem from '@mui/material/ListItem';
 
 import { useNavigate } from "react-router-dom";
@@ -16,16 +16,17 @@ const theme = createTheme({
 	},
 });
 function MyListings(props) {
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
 	const [listings, setListings] = React.useState([]);
 	const navigate = useNavigate();
 	React.useEffect(() => {
-		if (!props.token) {
+		if (!token) {
 			navigate('/login');
 			return
 		}
-	}, [props.token]);
+	}, [token]);
 	React.useEffect(() => {
-		if (!props.token) {
+		if (!token) {
 			navigate('/login');
 			return
 		}
@@ -35,7 +36,7 @@ function MyListings(props) {
 					method: 'Get',
 					headers: {
 						'Content-Type': 'application/json',
-						'email': props.token
+						'email': token
 					},
 				});
 
@@ -57,7 +58,7 @@ function MyListings(props) {
 					method: 'Get',
 					headers: {
 						'Content-Type': 'application/json',
-						'email': props.token
+						'email': token
 					},
 				});
 
@@ -76,15 +77,22 @@ function MyListings(props) {
 
 		fetchStripeStatus().then((data)=> {
 			console.log(data);
-			if (data["is_stripe_connected"] == false) {
-				console.log("here2");
+			if (data["stripe_connected"] == false) {
+				alert("Redirecting to update provider details");
+
 				rentOutInfoOnclick(props);
 				return;
 			} else {
-				console.log("here");
+				console.log(data);
+
+				console.log("wrong");
 				return fetchListings();
 			}
-		}).catch(alert);
+		}).catch((e) => {
+			alert("Redirecting to update provider details");
+			rentOutInfoOnclick(props);
+			return;
+		});
 	}, []);
 
 	const createOnClick = () => {
@@ -108,7 +116,7 @@ function MyListings(props) {
                             borderRadius: 1,
 							border: 1,
                         }}>
-                            <ProviderListing token={props.token} listing={listing} listings={listings} setListings={setListings} />
+                            <ProviderListing token={token} listing={listing} listings={listings} setListings={setListings} />
                         </ListItem>
                     ))}
                 </List>

@@ -4,12 +4,38 @@ import './ListingPage.css'
 
 function ListingPage(props) {
     const navigate = useNavigate(); 
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
+
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
+    const [defaultPayment, setDefaultPayment] = useState(null);
+
     const [error, setError] = useState(null);
+    console.log(props);
     useEffect(() => {
 /*         const abortController = new AbortController();
         const signal = abortController.signal; */
+        const fetchPayment = async () => {
+			try {
+				const response = await fetch('http://localhost:8080/getDefaultCard', {
+					method: 'Get',
+					headers: {
+						'Content-Type': 'application/json',
+						'email': token,
+					},
+				});
+
+
+				const data = await response.json();
+                if (data.error) {
+                    return Promise.reject(data.error);
+                } else {
+                    return Promise.resolve(data);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+		};
 
         const fetchListing = async () => {
             try {
@@ -17,7 +43,6 @@ function ListingPage(props) {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'email': props.token,
                         'listingId': listing_id
                     },
                     /* signal: signal */
@@ -41,19 +66,36 @@ function ListingPage(props) {
         };
 
         fetchListing();
+        if (token) {
+            fetchPayment().then((data) => {
+                setDefaultPayment(data['default_payment']);
+                return;
+            }).catch(console.log);
+        }
 
         // Cleanup function to abort fetch on component unmount
        /*  return () => {
             abortController.abort();
         }; */
-    }, [listing_id]);
+    }, [listing_id, defaultPayment]);
     const handleBookNow = async () => {
-        console.log("booking")
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+        if (!defaultPayment) {
+            alert("Please provide customer's payment method before booking");
+            return;
+        }
         const ListingNo = listing.listing_no;
+        // pass real data
+        // const data = {
+        //     "email": token,
+        //     "listingId": listing_id,
+        //     "listingNo": ListingNo
+        // }
         const data = {
-            "email": props.token,
-            "listingId": listing_id,
-            "listingNo": ListingNo
+            // real data
         }
         try {
             const response = await fetch('/hold_listing', {

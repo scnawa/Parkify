@@ -38,7 +38,42 @@ function Booking( props ) {
     }, [timer]);
 
     const handleIamHereClick = () => {
-        navigate('/timer');
+        const data = {
+            //pass real data
+        }
+        // testing data
+        // const data = {
+        //     'email': props.token,
+        //     "listings": {
+        //         'listing_id': '5998000f7717462684933a534f806d6c',
+        //         'listing_no': 1,
+        //         'address': '新南威尔斯大学, Anzac Parade, Kensington, Eastern Suburbs, 悉尼, Randwick City Council, 新南威尔士州, 2033, 澳大利亚 / 澳洲',
+        //     },
+        // }
+        const fetchCreateBook = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/create_booking', {
+                    method: 'POST',
+                    headers: {
+                        'email': props.token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const res = await response.json();
+                if (res.error) {
+                    return Promise.reject(res.error);
+                } else {
+                    return Promise.resolve(res);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        };
+        fetchCreateBook().then(()=>{
+            navigate('/timer');
+        }).catch(alert);
     };
 
     const handleCancel = () => {
