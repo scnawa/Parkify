@@ -24,15 +24,22 @@ const History = ( props ) => {
         }
         const userInfo = await response.json();
         console.log(userInfo);
+        setBookings(userInfo.recentBookings)
       } catch (error) {
         console.error('Error getting user info:', error.message);
       }
   };
 
+  
   return (
     <div>
       <div className='history-page-container'>
-
+      {bookings.map((booking, index) => (
+        <div key={index}>
+          <h2>{booking.title}</h2>
+          <p>{booking.description}</p>
+        </div>
+      ))}
       </div>
     </div>
   );
