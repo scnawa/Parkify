@@ -471,10 +471,13 @@ class User:
         user_listings = provider_user.get('listings')
         booking_list = user["recentBookings"]
 
+        listing_no = userData["listingNo"]
+
         now = datetime.datetime.now()
         start_time = now.strftime("%H:%M:%S")
 
         booking = {
+                    "address": user_listings[listing_no]["address"],
                     "listing_id": userData["listingId"],
                     "recentbooking_no": len(user["recentBookings"]),
                     "start_time": start_time,
@@ -489,7 +492,6 @@ class User:
         bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
 
         if user:
-            listing_no = userData["listingNo"]
             if not bookingFound:
                 booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
