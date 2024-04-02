@@ -806,3 +806,15 @@ class User:
         # check if the listing exists
         provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
         return json_util.dumps(provider_user)
+
+    def get_pre_booking_time(self, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        return json_util.dumps(user["pre_booking_time"])
+    
+    def get_booking_time(self, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        booking_list = user["recentBookings"]
+
+        return json_util.dumps(booking_list[-1]["start_time"])

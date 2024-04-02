@@ -232,5 +232,17 @@ def get_specific_listing():
     userData = request.headers
     return config.User().get_specific_listing(userData)
 
+@APP.route('/getPreBookingTime', methods = ['GET'])
+def get_pre_booking_time(): 
+    userData = request.headers
+    return config.User().get_pre_booking_time(userData)
+
+@APP.route('/getBookingTime', methods = ['GET'])
+def get_booking_time(): 
+    userData = request.headers
+    return config.User().get_booking_time(userData)
+
+
+
 if __name__ == "__main__": 
     APP.run(port = config.port)
