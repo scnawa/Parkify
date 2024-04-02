@@ -32,7 +32,7 @@ function Booking( props ) {
         if (timer === 0) {
             console.log("api call")
             releaseListing();
-            localStorage.clearItem("bookingStartTime");
+            localStorage.removeItem("bookingStartTime");
             navigate("/")
         }
     }, [timer]);
@@ -75,7 +75,7 @@ function Booking( props ) {
             }
         };
         fetchCreateBook().then(()=>{
-            navigate('/timer');
+            navigate('/timer', { state: { listing_id, ListingNo} });
         }).catch(alert);
     };
 

@@ -1,5 +1,6 @@
 from copyreg import constructor
 import json
+import math
 from operator import truediv
 from pickle import FALSE, TRUE
 import this
@@ -470,10 +471,13 @@ class User:
         user_listings = provider_user.get('listings')
         booking_list = user["recentBookings"]
 
+        listing_no = userData["listingNo"]
+
         now = datetime.datetime.now()
         start_time = now.strftime("%H:%M:%S")
 
         booking = {
+                    "address": user_listings[listing_no]["address"],
                     "listing_id": userData["listingId"],
                     "recentbooking_no": len(user["recentBookings"]),
                     "start_time": start_time,
@@ -488,7 +492,6 @@ class User:
         bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
 
         if user:
-            listing_no = userData["listingNo"]
             if not bookingFound:
                 booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
@@ -525,37 +528,36 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def end_booking(self, headers, userData):
-        print(headers)
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        
         user_listings = provider_user.get('listings')
-
         booking_list = user["recentBookings"]
-
-
         if user:
             listing_no = userData["listingNo"]
-            end_price = int(userData["totalTime"]) * int(user_listings[listing_no]['price'])
+            end_price = math.ceil(int(userData["totalTime"])/3600) * int(user_listings[listing_no]["price"])
+            discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
+            now = datetime.datetime.now()
+            start_time = now.strftime("%H:%M:%S")
             booking = {
-                    "end_price": end_price,
+                    "start_time": start_time,
+                    "end_price": discounted_price,
                     "feedback": userData["feedback"],
-                    "end_image_url": userData["end_image_url"], 
+                    "end_image_url": userData["endImageUrl"], 
                     "total_time": userData["totalTime"]
             }
             paymentMethods = stripe.PaymentMethod.list(
-                customer=user["payment_id"],
+                customer=user['payment_id'],
                 limit=3
             )
             if len(paymentMethods.data) <= 0 or user['default_payment_id'] == "":
                 return jsonify({"type": "payment", "error": "payment failed"}), 402
-
+ 
             paymentMethodId = user['default_payment_id']
             try:
                 stripe.PaymentIntent.create(
-                    amount=end_price * 100,
+                    amount=int(discounted_price * 100),
                     currency='AUD',
                     customer=user['payment_id'],
                     payment_method=paymentMethodId,
@@ -563,15 +565,14 @@ class User:
                     confirm=True,
                 )
                 stripe.Transfer.create(
-                    amount=int(end_price * 0.85 * 100),
+                    amount=int(discounted_price * 0.85 * 100),
                     currency="AUD",
                     destination=provider_user['payOut_id'],
                 )
-
+                helper.sendConfirmationEmail(user['email'], user['username'], discounted_price)
             # err handling from https://docs.stripe.com/payments/without-card-authentication
             except stripe.error.CardError as e:
                 return json.dumps({'error': e.user_message}), 200
-
 
             user_listings[listing_no].update({'is_active': "True"})
             booking_list[-1].update(booking)
@@ -581,11 +582,10 @@ class User:
             filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            print(userData["listings"])
             filter = {"listing_id": userData["listingId"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
-            return json_util.dumps(end_price)
+            return json_util.dumps(discounted_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     """ def testPay(self, userData):
@@ -814,3 +814,30 @@ class User:
         # check if the listing exists
         provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
         return json_util.dumps(provider_user)
+
+    def get_pre_booking_time(self, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        return json_util.dumps(user["pre_booking_time"])
+    
+    def get_booking_time(self, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        booking_list = user["recentBookings"]
+
+        return json_util.dumps(booking_list[-1]["start_time"])
+    
+    def apply_promo_code(self, booking_price, promo_code):
+
+            if promo_code and promo_code.isalnum():
+                #the last two digits 
+                with open("capstone-project-3900w09a_parkify\server\promoCodes.txt", "r") as file: 
+                    for promo in file: 
+                        if promo_code == promo.strip():
+                            print(promo_code[-2:])
+                            discount_percentage = int(promo_code[-2:]) 
+                            discounted_price = booking_price - (booking_price * discount_percentage / 100)
+                            return discounted_price
+                return booking_price
+            else:
+                return booking_price

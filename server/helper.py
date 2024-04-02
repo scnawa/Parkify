@@ -63,3 +63,24 @@ def calcLatLong(address):
 
 def calculateDistance(sourceLat, destLat, sourceLon, destLon): 
     return geodesic((sourceLat,sourceLon),(destLat, destLon)).kilometers
+
+def sendConfirmationEmail(email, username, amount):
+    senderEmail = 'parkify.auth@gmail.com'
+    senderPass = 'rvekzmdhtnwnonfk'
+    verificationCode = generateCode()
+
+    subject = 'Parkify - Payment Receipt'
+    body = "Hi " + username + ",\nThank you for using Parkify!\n\nYour bill for the booking is: $" + \
+        str(amount) + "\n\nCheers,\nThe Parkify Team"
+
+    emailMessageObj = EmailMessage()
+    emailMessageObj['From'] = senderEmail
+    emailMessageObj['To'] = email
+    emailMessageObj['Subject'] = subject
+    emailMessageObj.set_content(body)
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+        smtp.login(senderEmail, senderPass)
+        smtp.sendmail(senderEmail, email, emailMessageObj.as_string())
+    return verificationCode

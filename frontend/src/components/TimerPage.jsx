@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function TimerPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [timer, setTimer] = useState(0);
-
+    const { listing_id, ListingNo} = location.state || {};
     useEffect(() => {
         const intervalId = setInterval(() => {
             setTimer((prevTimer) => prevTimer + 1);
@@ -16,7 +17,7 @@ function TimerPage() {
     }, []);
 
     const handleEndBooking = () => {
-        navigate('/park-end', { state: { timer } });
+        navigate('/park-end', { state: { timer, listing_id, ListingNo } });
     };
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
