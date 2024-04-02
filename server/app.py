@@ -176,10 +176,10 @@ def searchForSpace():
     userData = request.headers
     return config.User().searchForSpace(userData)
 
-@APP.route('/filterByPrice', methods = ['GET'])
-def filterByPrice(): 
+@APP.route('/filterByPriceAndDistance', methods = ['GET'])
+def filterByPriceAndDistance(): 
     userData = request.headers
-    return config.User().filterByPrice(userData)
+    return config.User().filterByPriceAndDistance(userData)
 
 @APP.route('/addPaymentMethod', methods=['POST'])
 def pay_booking(): 

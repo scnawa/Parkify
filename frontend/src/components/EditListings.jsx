@@ -153,7 +153,8 @@ function EditListings(props) {
             >
 				<Typography>Edit Listings</Typography>
 
-				<Box component="form" sx={{ mt: 1, rowGap: "20px" }}>
+				<Box component="form" sx={{ mt: 1, rowGap: "20px", display: 'flex', justifyContent: 'center',
+							alignItems: 'center', flexDirection: 'column', ml: '20px'}}>
                     <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="filled" disabled/>
                     <TextInputField label="Rate:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
                     <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" />
@@ -164,7 +165,6 @@ function EditListings(props) {
                     <p></p>
                     <FileInputField color='green' variant="contained" multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" />
                     {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
-                    <p></p>
                     <Box> 
                         <Button  color='success' variant="contained" onClick={(e) => submitForm(e)}>Edit</Button>
                         <Button  color='success' variant="contained" onClick={handleRemove} sx={{ml:'21px'}}>Remove</Button>

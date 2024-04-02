@@ -431,7 +431,7 @@ class User:
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def getClosestListings(self, headers): 
+    def getClosestListings(self, headers, distance): 
         user = db.userbase_data.find_one({"email": headers['email']})
         if user: 
             latitude = 0
@@ -454,7 +454,7 @@ class User:
                     listing_lat = listing["latitude"]
                     listing_long = listing["longitude"]
 
-                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= 50 and listing['is_active'] == "True": 
+                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
                     closestListings.append(listing)
             
             return json_util.dumps(closestListings)
@@ -633,9 +633,17 @@ class User:
     #        if temp is None: 
     #            db.listing_data.insert_one(listing)
 
-    def filterByPrice(self, headers): 
-        nearbyListings = json_util.loads(User.getClosestListings(self,headers))
+    def filterByPriceAndDistance(self, headers): 
         order = headers["order"]
+        if headers["distance"] == "":
+            distance = 10000000
+        else:
+            distance = int(headers["distance"])
+        nearbyListings = json_util.loads(User.getClosestListings(self,headers,distance))
+
+        if order == "":
+            return json_util.dumps(nearbyListings)
+
         if order == "ascending": 
             return json_util.dumps(sorted(nearbyListings, key = lambda x: int(x["price"])))
         else: 
