@@ -97,7 +97,9 @@ function ListingPage(props) {
         //     "listingNo": ListingNo
         // }
         const data = {
-            // real data
+            "email": props.token,
+            "listingId": listing_id,
+            "listingNo": ListingNo
         }
         try {
             const response = await fetch('/hold_listing', {
@@ -110,7 +112,7 @@ function ListingPage(props) {
 
             if (response.ok) {
                 navigate('/book', { state: { listing_id, ListingNo} });
-                console.log("booked")
+                //console.log("booked")
             } else {
                 alert("Failed to book")
                 console.error('Failed to hold listing');

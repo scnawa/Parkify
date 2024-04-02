@@ -466,7 +466,7 @@ class User:
         booking_list = user["recentBookings"]
 
         booking = {
-                    "listing_id": userData["listings"]["listing_id"],
+                    "listing_id": userData["listingId"],
                     "recentbooking_no": len(user["recentBookings"]),
                     "start_time": "",
                     "end_price": "",
@@ -477,20 +477,20 @@ class User:
                     "payment_id": "",
         }
 
-        bookingFound = [i for i in booking_list if i["listing_id"] == userData["listings"]["listing_id"]]
+        bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
 
         if user:
-            listing_no = userData["listings"]["listing_no"]
+            listing_no = userData["listingNo"]
             if not bookingFound:
                 booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listings.listing_id": userData["listings"]["listing_id"]}
+            filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listing_id": userData["listings"]["listing_id"]}
+            filter = {"listing_id": userData["listingId"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
             return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
@@ -577,7 +577,7 @@ class User:
             filter = {"listings.listing_id": userData["booking"]["listing_id"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            print(userData["listings"])
+            # print(userData["listings"])
             filter = {"listing_id": userData["listings"]["listing_id"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
@@ -797,7 +797,6 @@ class User:
 
     def get_specific_listing(self, headers):
         # user should be able to view listing before login in
-        print(headers)
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists

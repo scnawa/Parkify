@@ -38,9 +38,11 @@ function Booking( props ) {
     }, [timer]);
 
     const handleIamHereClick = () => {
-        createBooking();
+        //createBooking();
         const data = {
-            //pass real data
+            "email": props.token,
+            "listingId": listing_id,
+            "listingNo": ListingNo
         }
         // testing data
         // const data = {
@@ -108,7 +110,7 @@ function Booking( props ) {
         }
     };
 
-    const createBooking = async() => {
+    /* const createBooking = async() => {
         const userData = {
             "email": props.token,
             "listingId": listing_id,
@@ -130,7 +132,7 @@ function Booking( props ) {
         } catch (error) {
           console.error('Error creating booking:', error.message);
         }
-      }
+      } */
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
