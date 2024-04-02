@@ -525,12 +525,13 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def end_booking(self, headers, userData):
-        print(headers)
+        # print(userData)
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
+        print(userData["listingId"])
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        
+        print(type(provider_user))
         user_listings = provider_user.get('listings')
 
         booking_list = user["recentBookings"]
@@ -542,7 +543,7 @@ class User:
             booking = {
                     "end_price": end_price,
                     "feedback": userData["feedback"],
-                    "end_image_url": userData["end_image_url"], 
+                    "endImageUrl": userData["endImageUrl"], 
                     "total_time": userData["totalTime"]
             }
             paymentMethods = stripe.PaymentMethod.list(
@@ -581,7 +582,6 @@ class User:
             filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
-            print(userData["listings"])
             filter = {"listing_id": userData["listingId"]}
             newvalues = {"$set" : user_listings[listing_no]}
             db.listing_data.update_one(filter, newvalues)
