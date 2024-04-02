@@ -147,7 +147,7 @@ function ListingPage(props) {
                                 <div>Parking space is avaliable</div>
                             </div>
                                 <div className="booking-box">
-                                    <button onClick={handleBookNow}>Book Now</button>
+                                    <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
                                 </div>
                             </div>
                     </div>

@@ -35,9 +35,10 @@ const History = ( props ) => {
     <div>
       <div className='history-page-container'>
       {bookings.map((booking, index) => (
-        <div key={index}>
-          <h2>{booking.title}</h2>
-          <p>{booking.description}</p>
+        <div className='recent-booking-card' key={index}>
+          <h2>{booking.address}</h2>
+          <p>{booking.end_price}</p>
+          <p>{booking.start_time}</p>
         </div>
       ))}
       </div>

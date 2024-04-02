@@ -5,37 +5,52 @@ function Booking( props ) {
     const navigate = useNavigate(); 
     const location = useLocation();
     const { listing_id, ListingNo} = location.state || {};
-    const [timer, setTimer] = useState(600);
+    const [timer, setTimer] = useState('');
+
     useEffect(() => {
-        const storedStartTime = localStorage.getItem('bookingStartTime');
+        const fetchPreBookingTimer = async () => {
+            try {
+                const response = await fetch('/getPreBookingTime', {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    "email": props.token,
+                  }
+                });
+            
+                if (!response.ok) {
+                  throw new Error('Failed to get time info');
+                }
+                const preTimer = await response.json();
+                console.log(preTimer);
+                //get current time
+                const currentTime = Date.now();
 
-        if (storedStartTime) {
-            const startTime = parseInt(storedStartTime, 10);
-            const currentTime = Date.now();
-            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-            const remainingTime = Math.max(600 - elapsedTime, 0);
+                const [hoursStr, minutesStr, secondsStr] = preTimer.split(':');
+                const preHours = parseInt(hoursStr);
+                const preMinutes = parseInt(minutesStr);
+                const preSeconds = parseInt(secondsStr);
+                const preTime = new Date();
+                preTime.setHours(preHours, preMinutes, preSeconds, 0); 
 
-            setTimer(remainingTime);
-        } else {
-            const startTime = Date.now();
-            localStorage.setItem('bookingStartTime', startTime.toString());
-        }
-
+                const timeDifference = Math.round((currentTime - preTime)/(3600));
+                console.log(timeDifference)
+                setTimer(timeDifference);
+              } catch (error) {
+                console.error('Error getting time info:', error.message);
+              }
+          };
+        
         const interval = setInterval(() => {
             setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
         }, 1000);
 
+        fetchPreBookingTimer();
+
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        if (timer === 0) {
-            console.log("api call")
-            releaseListing();
-            localStorage.removeItem("bookingStartTime");
-            navigate("/")
-        }
-    }, [timer]);
+
 
     const handleIamHereClick = () => {
         //createBooking();

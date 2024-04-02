@@ -8,11 +8,10 @@ body {
 }
 
 .listing-page {
-    background-color: aqua;
     width: 80vw;
     height: 100vh;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     margin-top: 3vh;
 }
 
@@ -48,16 +47,16 @@ img {
 }
 
 .listing-right-box {
-    background-color: aquamarine;
     flex: 1;
     display: flex;
-    justify-content: flex-start;
+    align-items: center;
     flex-direction: column;
+    width: 80vw;
 }
 
 .price-box {
     background-color: rgb(182, 176, 176);
-    width: 100%;
+    width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -74,6 +73,14 @@ img {
 }
 
 .booking-box {
-    background-color: aqua;
+    display:flex;
+    justify-content: center;
+}
+
+.book-now-button {
+    width: 10vw;
+    height: 5vh;
+    font-size: 20px;
+    background-color: #E0F2F1;
 }
 
