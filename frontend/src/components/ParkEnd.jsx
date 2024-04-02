@@ -8,6 +8,7 @@ function ParkEnd() {
     const timer = location.state ? location.state.timer : 0;
     const navigate = useNavigate(); 
     const { listing_id, ListingNo} = location.state || {};
+    console.log(listing_id, ListingNo)
 
     React.useEffect(() => {
 		if (!token) {

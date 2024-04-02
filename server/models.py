@@ -463,7 +463,7 @@ class User:
       
     def create_booking(self, userData):
         # check if the user exists
-        print(userData)
+        # print(userData)
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
@@ -525,7 +525,7 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def end_booking(self, headers, userData):
-    
+        print(headers)
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
