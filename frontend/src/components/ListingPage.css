@@ -1,5 +1,5 @@
 body {
-    overflow: auto; /* or scroll, hidden, visible, depending on your requirement */
+    overflow: auto;
 }
 
 .listing-page-container {

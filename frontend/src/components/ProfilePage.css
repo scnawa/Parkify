@@ -88,14 +88,14 @@ form > input {
 }
 
 @media (max-width: 768px) {
-    .container {
+    .profile-container {
         flex-direction: column;
         width: 80vw;
         margin: 10vh auto;
     }
 
-    .left-box,
-    .right-box {
+    .left-box-profile,
+    .right-box-profile {
         width: 100%;
         margin-bottom: 20px;
     }
