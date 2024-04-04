@@ -9,4 +9,5 @@
 
 .recent-booking-card {
     display: flex;
+    flex-direction: column;
 }

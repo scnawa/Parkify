@@ -446,7 +446,7 @@ class User:
             print(latitude)
             print(longitude)
             for listing in db.listing_data.find({}): 
-
+                print(listing)
                 listing_lat = 0
                 listing_long = 0
                 if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
@@ -457,7 +457,7 @@ class User:
 
                 if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
                     closestListings.append(listing)
-            
+            print(closestListings)
             return json_util.dumps(closestListings)
 
         return jsonify({"Error": "User does not exist"})
@@ -831,7 +831,8 @@ class User:
 
             if promo_code and promo_code.isalnum():
                 #the last two digits 
-                with open("capstone-project-3900w09a_parkify\server\promoCodes.txt", "r") as file: 
+                
+                with open("/home/sam/comp3900/capstone-project-3900w09a_parkify/server/promoCodes.txt", "r") as file: 
                     for promo in file: 
                         if promo_code == promo.strip():
                             print(promo_code[-2:])

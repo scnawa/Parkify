@@ -109,7 +109,10 @@ function NavBar(props) {
 		Logout(token, SID, setToken, setSID);
 		navigate("/");
 	}
+	const historyOnclick = () => {
+		navigate("/history");
 
+	}
 	const signUpOnclick = (event) => {
 		navigate("/signup");
 	}
@@ -248,6 +251,8 @@ function NavBar(props) {
 									onClose={userMenuClose}
 								>
 									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
+									<MenuItem onClick={()=>historyOnclick(props)}>Booking History</MenuItem>
+
 									<MenuItem onClick={()=>rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
 									<MenuItem onClick={()=>addPaymentOnClick(props)}>Add customer payment method</MenuItem>
 
