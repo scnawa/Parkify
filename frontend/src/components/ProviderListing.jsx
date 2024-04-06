@@ -34,13 +34,15 @@ const theme = createTheme({
 });
 
 function ProviderListing(props) {
+    console.log("providerListings " + props.token)	
     const [popoverLocation, setPopOverLocation] = useState(false);
     const [listing, _] = useState(props.listing);
     const [activated, setActivated] = useState(props.listing.is_active === "True");
-
+    
     const navigate = useNavigate();
 
     const hadnelEdit = () => {
+        console.log(props.token)
         navigate('/editListings', { state: { token: props.token, listing: listing } });
 
     }

@@ -5,6 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import { useNavigate } from "react-router-dom";
 import ProviderListing from "./ProviderListing";
 import { rentOutInfoOnclick } from "./NavBar";
+
 const theme = createTheme({
 	palette: {
 		yellow: {
@@ -16,7 +17,9 @@ const theme = createTheme({
 	},
 });
 function MyListings(props) {
-    const [token, setToken] = React.useState(localStorage.getItem('token'));
+	const token = props.token;
+	console.log("mylistings " + token)	
+    //const [token, setToken] = React.useState(localStorage.getItem('token'));
 	const [listings, setListings] = React.useState([]);
 	const navigate = useNavigate();
 	React.useEffect(() => {
@@ -77,7 +80,7 @@ function MyListings(props) {
 
 		fetchStripeStatus().then((data)=> {
 			console.log(data);
-			if (data["stripe_connected"] == false) {
+			if (data["stripe_connected"] === false) {
 				alert("Redirecting to update provider details");
 
 				rentOutInfoOnclick(props);
@@ -89,22 +92,25 @@ function MyListings(props) {
 				return fetchListings();
 			}
 		}).catch((e) => {
-			alert("Redirecting to update provider details");
-			rentOutInfoOnclick(props);
-			return;
+			if (!props.isAdmin) {
+				alert("Redirecting to update provider details");
+				rentOutInfoOnclick(props);
+				return;
+			}
+			return fetchListings();
 		});
-	}, []);
+	}, [token]);
 
 	const createOnClick = () => {
-		navigate('/create-listings')
+		navigate('/create-listings', { state: { token: token } })
 	};
 	return (
         <ThemeProvider theme={theme}>
             <Box display='flex' flexDirection="column" sx={{ justifyContent: "space-between", margin: 2 }}>
                 <Box display='flex' justifyContent="space-between" alignItems="center" mb={4}>
-                    <Typography variant="h4" component="div">
-                        Manage Your Parking Spaces
-                    </Typography>
+				<Typography variant="h4" component="div">
+					{props.isAdmin ? `${props.username}'s Parking Spaces` : 'Manage Your Parking Spaces'}
+				</Typography>
                     <Button variant="contained" onClick={createOnClick} color="success">
                         Create
                     </Button>

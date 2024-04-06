@@ -52,8 +52,9 @@ const uploadFile = (file) => {
 
 function EditListings(props) {
     const { state } = useLocation();
+    console.log("editListings " + state.token)	
     const [listing, setListing] = React.useState(state.listing);
-
+    
     const navigate = useNavigate();
     React.useEffect(() => {
         if (!state.token) {
@@ -91,7 +92,11 @@ function EditListings(props) {
         };
         console.log(listing);
         fetchDelete().then((res) => {
-            navigate('/myListing');
+            if (props.isAdmin) {
+                navigate('/adminViewListings', { state: { token: state.token } });
+            } else {
+                navigate('/myListing');
+            }
         }).catch(alert);
     }
 
@@ -129,7 +134,13 @@ function EditListings(props) {
                 }
             };
             return fetchListings();
-        }).then(()=>navigate('/myListing')).catch((err) => {
+        }).then(()=> {
+            if (props.isAdmin) {
+                navigate('/adminViewListings', { state: { token: state.token } });
+            } else {
+                navigate('/myListing');
+            }
+        }).catch((err) => {
             alert(err);
         });
     }

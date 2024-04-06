@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Button, Paper, Typography, createTheme, ThemeProvider, Popover, Autocomplete, TextField, CircularProgress } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import TextInputField from './TextInputField';
 import CheckBoxInput from './CheckBoxInput';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -82,8 +82,10 @@ function CreateListings(props) {
 	const [images, setImages] = React.useState([]);
 	const loaded = React.useRef(false);
 	console.log(addressGeo);
-
+	const location = useLocation(); 
+	const state = location.state || {};
 	const navigate = useNavigate();
+	
 	React.useEffect(() => {
 		if (!props.token) {
 			navigate('/login');
@@ -119,7 +121,7 @@ function CreateListings(props) {
 		console.log(addressGeo);
 		uploadFile(thumbnail).then((url) => {
 			const data = {
-				email: props.token,
+				email: state.token,
 				listings: {
 					"address": addressGeo.display_name,
 					"price": rate,
@@ -152,7 +154,13 @@ function CreateListings(props) {
 				}
 			};
 			return fetchListings();
-		}).then(() => alert("created listing")).then(() => navigate('/myListing'))
+		}).then(() => alert("created listing")).then(() => { 
+			if (props.isAdmin) {
+                navigate('/adminViewListings', { state: { token: state.token } });
+            } else {
+                navigate('/myListing');
+            }
+		})
 			.catch((err) => {
 				alert(err);
 				console.error(err);
