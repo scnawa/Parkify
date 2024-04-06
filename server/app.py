@@ -48,6 +48,12 @@ def setupAdmin():
     userData = json.loads(request.data)
     return config.User().setupAdmin(userData)
 
+@APP.route('/checkAdmin', methods = ['GET'])
+def checkAdmin():
+    userData = request.headers
+    return config.User().checkAdmin(userData)
+    
+
 @APP.route('/signup', methods=['POST'])
 def signup(): 
     userData = json.loads(request.data)

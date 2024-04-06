@@ -103,7 +103,10 @@ class User:
         if db.userbase_data.insert_one(user):
             # debugging 
             return json_util.dumps({"type": "SUCCESS"})
-        
+
+    def checkAdmin(self, headers): 
+        user = db.userbase_data.find_one({"email": headers['email']})
+        return user.get('isAdmin', False)
 
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
