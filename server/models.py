@@ -433,34 +433,37 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def getClosestListings(self, headers, distance): 
-        user = db.userbase_data.find_one({"email": headers['email']})
-        if user: 
-            latitude = 0
-            longitude = 0
+        print("Email value:", headers['email'])
+        print("Email type:", type(headers['email']))
+        latitude = 0
+        longitude = 0
+        
+        if headers['email'] == "null":
+            latitude, longitude = geocoder.ip('me').latlng
+        else:
+            user = db.userbase_data.find_one({"email": headers['email']})
             if 'latitude' not in user.keys() or 'longitude' not in user.keys(): 
                 latitude, longitude = geocoder.ip('me').latlng
             else:
                 latitude = user["latitude"]
                 longitude = user["longitude"]
-            closestListings = []
-            print(latitude)
-            print(longitude)
-            for listing in db.listing_data.find({}): 
-                print(listing)
-                listing_lat = 0
-                listing_long = 0
-                if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
-                    listing_lat, listing_long = helper.calcLatLong(listing['address'])
-                else:
-                    listing_lat = listing["latitude"]
-                    listing_long = listing["longitude"]
+        closestListings = []
+        print(latitude)
+        print(longitude)
+        for listing in db.listing_data.find({}): 
+            print(listing)
+            listing_lat = 0
+            listing_long = 0
+            if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
+                listing_lat, listing_long = helper.calcLatLong(listing['address'])
+            else:
+                listing_lat = listing["latitude"]
+                listing_long = listing["longitude"]
 
-                if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
-                    closestListings.append(listing)
-            print(closestListings)
-            return json_util.dumps(closestListings)
-
-        return jsonify({"Error": "User does not exist"})
+            if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
+                closestListings.append(listing)
+        print(closestListings)
+        return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
         # check if the user exists
