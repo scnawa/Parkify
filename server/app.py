@@ -125,6 +125,12 @@ def get_listings():
 
     return config.User().get_listings(headers)
 
+@APP.route('/get_all_users', methods = ['GET'])
+def get_all_users(): 
+    headers = request.headers
+
+    return config.User().get_all_users(headers)
+
 @APP.route('/get_listing', methods = ['GET'])
 def get_listing(): 
     userData = request.headers

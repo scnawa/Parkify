@@ -348,6 +348,13 @@ class User:
             return json_util.dumps(user['listings'])
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
+    def get_all_users(self, headers):
+        users_cursor = db.userbase_data.find({}, {"_id": 0, "username": 1, "email": 1})
+        users = list(users_cursor)
+        return json_util.dumps(users)       
+
+        
+
     def get_listing(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
