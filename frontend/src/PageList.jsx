@@ -23,6 +23,7 @@ import ProviderDetailsReturn from './components/ProviderDetailsReturn';
 import TestPayment from './components/TestPayment';
 import ManagePayment from './components/ManagePayment';
 import History from './components/History';
+import AdminViewListings from './components/AdminViewListings';
 
 const PageList = (props) => {
 
@@ -30,16 +31,42 @@ const PageList = (props) => {
   const [SID, setSID] = React.useState(localStorage.getItem('SID'));
   const [listings, setListings] = useState([]);
   const [listingDetails, setListingDetails] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  React.useEffect(() => {
+    if (token) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch('http://localhost:8080/checkAdmin', {
+            method: 'GET',
+            headers: {
+                'email': token,
+                'Content-Type': 'application/json',
+            },
+          });
+          const data = await response.json();
+          setIsAdmin(data.isAdmin)
+          console.log(data)
+        } catch (error) {
+          console.error('An error occurred during data fetching:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [token]);
+  
+
   const navigate = useNavigate();
   //console.log(token, localStorage.getItem('token'));
   return (
     <>
-      <NavBar token={token} SID={SID} setToken={setToken} setSID={setSID} setListings={setListings}/>
+      <NavBar token={token} SID={SID} setToken={setToken} setSID={setSID} setListings={setListings} 
+      isAdmin={isAdmin} setIsAdmin={setIsAdmin}/>
       <Routes>
         <Route path="/"element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/create-listings" element={<CreateListings token={token}/>} />
+        <Route path="/create-listings" element={<CreateListings token={token} isAdmin={isAdmin}/>} />
         <Route path="/myListing" element={<MyListings token={token}/>} />
-        <Route path="/editListings" element={<EditListings />} />
+        <Route path="/editListings" element={<EditListings isAdmin={isAdmin}/>} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
         <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID} listingDetails={listingDetails}/>} />
         <Route path="/book" element={<Booking token={token} SID={SID} />}/>
@@ -54,10 +81,10 @@ const PageList = (props) => {
         <Route path="/providerDetailsReturn" element={<ProviderDetailsReturn  />} />
         <Route path="/testPayment" element={<TestPayment/>} />
         <Route path="/managePayment" element={<ManagePayment/>} />
-
-        <Route path="/profilepage" element={<ProfilePage token={token} SID={SID} setToken={setToken}/>}/>
+        <Route path="/profilepage" element={<ProfilePage token={token} setToken={setToken} SID={SID} setSID={setSID} setIsAdmin={setIsAdmin}/>}/>
         <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/payment" element={<Payment token={token} stripe={props.stripe} setToken={setToken} SID={SID} setSID={setSID}/>} />
+        <Route path="/adminViewListings" element={<AdminViewListings token={token} isAdmin={isAdmin}/>} />
 
       </Routes>
     </>

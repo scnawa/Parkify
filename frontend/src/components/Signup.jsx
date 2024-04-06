@@ -33,7 +33,6 @@ function Signup(props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Add any additional headers as needed
         },
         body: JSON.stringify({
           email: email,
@@ -54,7 +53,7 @@ function Signup(props) {
     } catch (error) {
         console.error('An error occurred during signup:', error);
     }
-};
+  };
 
   return (
     <ThemeProvider theme={theme}>

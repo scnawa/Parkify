@@ -93,7 +93,8 @@ class User:
             "email" : userData["email"], 
             "session_id": [],
             "isVerified" : True,
-            "isAdmin": True
+            "isAdmin": True,
+            "listings": []
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -106,7 +107,8 @@ class User:
 
     def checkAdmin(self, headers): 
         user = db.userbase_data.find_one({"email": headers['email']})
-        return user.get('isAdmin', False)
+        is_admin = user.get('isAdmin', False)
+        return jsonify({'isAdmin': is_admin})
 
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -164,15 +166,16 @@ class User:
         if listing_ids:
             for listing_id in listing_ids:
                 db.listing_data.delete_one({"listing_id": listing_id})
-
-        if user:
+        is_admin = user.get('isAdmin', False)
+        if not is_admin:
             if user["payment_id"] != "":
                 stripe.Customer.delete(user["payment_id"])
             if user["payOut_id"] != "":
                 stripe.Account.delete(user["payOut_id"])
             db.userbase_data.delete_one(user)
             return jsonify({'status': "PASS"}), 200
-        return jsonify({"type": "username", "error": "User Does Not Exist"}), 402 
+        db.userbase_data.delete_one(user)
+        return jsonify({'status': "PASS"}), 200
     
     def resetPass(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -352,9 +355,17 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     def get_all_users(self, headers):
-        users_cursor = db.userbase_data.find({}, {"_id": 0, "username": 1, "email": 1})
+        query = {
+            "isAdmin": {"$ne": True}, 
+            "isVerified": {"$ne": False} 
+        }
+        projection = {"_id": 0, "username": 1, "email": 1}
+
+        users_cursor = db.userbase_data.find(query, projection)
         users = list(users_cursor)
-        return json_util.dumps(users)       
+        return json_util.dumps(users)
+
+     
 
         
 
@@ -708,7 +719,9 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
         user = db.userbase_data.find_one({"email": userData['email']})
-
+        is_admin = user.get('isAdmin', False)
+        if is_admin:
+            return jsonify({"type": "User", "error": "Admin Account"}), 402
         if user:
             account = stripe.Account.retrieve(user['payOut_id'])
             print(account)

@@ -49,7 +49,7 @@ const ProfilePage = (props) => {
 
     const handleDeleteProfile = async () => {
         try {
-            await Logout(props.token, props.SID, props.setToken);
+            await Logout(props.token, props.SID, props.setToken, props.setSID, props.setIsAdmin);
             const response = await fetch('/deleteAccount', {
                 method: 'DELETE',
                 headers: {

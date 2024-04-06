@@ -65,10 +65,21 @@ function NavBar(props) {
 	const SID = props.SID;
 	const setToken = props.setToken;
 	const setSID = props.setSID;
+	const isAdmin = props.isAdmin;
+	const setIsAdmin = props.setIsAdmin;
 	const location = useLocation();
+	const [pages, setPages] = React.useState(['HOME', 'MY PARKING SPACES']);
 
-	const pages = ['HOME', 'MY PARKING SPACES'];
 	const navigate = useNavigate();
+
+	React.useEffect(() => {
+		if (isAdmin) {
+		  setPages(['HOME', "ALL USER'S PARKING SPACES"]);
+		} else {
+		  setPages(['HOME', 'MY PARKING SPACES']);
+		}
+	  }, [isAdmin]); 
+
 	// TODO: navigate user profile
 	const userMenuOnclick = (event) => {
 		setUserMenuLocation(event.currentTarget);
@@ -91,6 +102,9 @@ function NavBar(props) {
 			case "MY PARKING SPACES":
 				navigate("/myListing");
 				break;
+			case "ALL USER'S PARKING SPACES":
+				navigate("/adminViewListings")
+				break;
 			case "HOME":
 				navigate("/");
 				break;
@@ -106,7 +120,7 @@ function NavBar(props) {
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		Logout(token, SID, setToken, setSID);
+		Logout(token, SID, setToken, setSID, setIsAdmin);
 		navigate("/");
 	}
 	const historyOnclick = () => {
