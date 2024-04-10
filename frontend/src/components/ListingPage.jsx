@@ -171,8 +171,8 @@ function ListingPage(props) {
                                     <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
                                 </div>
                             </div>
-                                            						{/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
-						https://react-leaflet.js.org/docs/example-popup-marker/*/}
+                        {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
+						    https://react-leaflet.js.org/docs/example-popup-marker/*/}
 						<div style={{ width: "100%", height: "80vh",'margin-top':'3px'}}>
 							<MapContainer center={locations} zoom={15} style={{ width: '100%', height: '100%'}}>
 								<TileLayer
