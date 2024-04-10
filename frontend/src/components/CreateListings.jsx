@@ -30,7 +30,7 @@ const theme = createTheme({
 	},
 });
 /* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY */
-function MapChild(props) {
+export function MapChild(props) {
 	const map = useMap();
 	if (props.addressGeo) {
 		if (props.addressGeo.lat && props.addressGeo.lon) {
@@ -166,7 +166,7 @@ function CreateListings(props) {
 				console.error(err);
 			});
 	}
-	let locations = [50, 50];
+	let locations = [-33, 151];
 
 	if (addressGeo && addressGeo.lat && addressGeo.lon) {
 		locations = [addressGeo.lat, addressGeo.lon];

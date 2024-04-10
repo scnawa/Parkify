@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import './ListingPage.css'
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import location from '../assets/location.png';
+import { MapChild } from "./CreateListings";
+import Background from '../assets/car.png';
+
+const placeholder = L.icon({
+	iconUrl: location,
+	iconSize: [30, 30]
+});
 
 function ListingPage(props) {
     const navigate = useNavigate(); 
@@ -121,7 +132,17 @@ function ListingPage(props) {
             console.error('API call failed:', error);
         }
     };
+    let locations = [50,50];
+    let mapProps = {...listing};
+	if (listing && listing.latitude
+        && listing.longitude) {
+		locations = [listing.latitude, listing.longitude];
+        mapProps.lat = listing.latitude;
+        mapProps.lon = listing.longitude;
 
+
+	}
+    console.log(listing);
 
     return (
         <div>
@@ -130,8 +151,8 @@ function ListingPage(props) {
                 <div className="listing-page-container">    
                     <div className="listing-page">
                         <div className="listing-left-box">
-                            <h2>{listing.address}</h2>
-                            <img src="" alt="Parking space"></img>
+                            <h2 style={{'marginLeft': '5px'}}>{listing.address}</h2>
+                            <img src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
                             <div className="details-box">
                                 <h4>Description:</h4>
                                 <p>{listing.details}</p>
@@ -150,7 +171,26 @@ function ListingPage(props) {
                                     <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
                                 </div>
                             </div>
+                                            						{/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
+						https://react-leaflet.js.org/docs/example-popup-marker/*/}
+						<div style={{ width: "100%", height: "80vh",'margin-top':'3px'}}>
+							<MapContainer center={locations} zoom={15} style={{ width: '100%', height: '100%'}}>
+								<TileLayer
+									attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+									style={{ width: '100%', height: '100%' }}
+								/>
+									<div>
+										<Marker icon={placeholder} position={locations}>
+										</Marker>
+									</div>
+								
+								<MapChild addressGeo={listing} />
+							</MapContainer>
+						</div>
+
                     </div>
+
                 </div>    
             ) : (
                 <div>Loading...</div>
