@@ -48,36 +48,45 @@ const ProfilePage = (props) => {
     };
 
     const handleDeleteProfile = async () => {
-        try {
-            await Logout(props.token, props.SID, props.setToken, props.setSID, props.setIsAdmin);
-            const response = await fetch('/deleteAccount', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: props.token,
-                }),
-            });
-    
-            if (response.ok) {
-                console.log('Profile deleted successfully!');
-
-                navigate('/')
-            } else {
-                console.error('Failed to delete profile. Server response:', response.status, response.statusText);
+        if (window.confirm("Are you sure you want to delete this account?")) {
+            try {
+                if (!props.isAdmin) {
+                    await Logout(props.token, props.SID, props.setToken, props.setSID, props.setIsAdmin);
+                }
+                const response = await fetch('/deleteAccount', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: props.token,
+                    }),
+                });
+        
+                if (response.ok) {
+                    console.log('Profile deleted successfully!');
+                    if (!props.isAdmin) {
+                        navigate(0)
+                    }
+                    else {
+                        navigate('/')
+                    }
+                    
+                } else {
+                    console.error('Failed to delete profile. Server response:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error('An error occurred during the deletion:', error);
             }
-        } catch (error) {
-            console.error('An error occurred during the deletion:', error);
         }
     };
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             <Stack spacing={4} alignItems="center">
-                <Typography variant="h4" gutterBottom>
-                    Profile
-                </Typography>
+            <Typography variant="h4" component="div">
+					{props.isAdmin ? `${props.username}'s Profile` : 'My Profile'}
+				</Typography>
                 <Avatar
                     src={profilePicture}
                     alt="Profile"
