@@ -46,8 +46,10 @@ function AllListings(props) {
                 'Content-Type': 'application/json',
                 'order': priceOrder,
                 'distance': distance,
-                'email': props.token
-            },
+                'email': props.token,
+                'lat': userLocation[0],
+                'lon': userLocation[1],
+        },
         })
             .then(response => response.json())
             .then(data => {
@@ -115,7 +117,10 @@ function AllListings(props) {
                     'Content-Type': 'application/json',
                     'order': priceOrder,
                     'distance': distance,
-                    'email': props.token
+                    'email': props.token,
+                    'lat': userLocation[0],
+                    'lon': userLocation[1],
+
                 },
             });
 

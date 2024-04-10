@@ -107,8 +107,11 @@ class User:
 
     def checkAdmin(self, headers): 
         user = db.userbase_data.find_one({"email": headers['email']})
-        is_admin = user.get('isAdmin', False)
-        return jsonify({'isAdmin': is_admin})
+        print(user)
+        if user:
+            is_admin = user.get('isAdmin', False)
+            return jsonify({'isAdmin': is_admin})
+        return jsonify({'isAdmin': False})
 
     def login(self, userData): 
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -458,16 +461,9 @@ class User:
         print("Email type:", type(headers['email']))
         latitude = 0
         longitude = 0
-        
-        if headers['email'] == "null":
-            latitude, longitude = geocoder.ip('me').latlng
-        else:
-            user = db.userbase_data.find_one({"email": headers['email']})
-            if 'latitude' not in user.keys() or 'longitude' not in user.keys(): 
-                latitude, longitude = geocoder.ip('me').latlng
-            else:
-                latitude = user["latitude"]
-                longitude = user["longitude"]
+        print(headers)
+        latitude = float(headers['lat'])
+        longitude = float(headers['lon'])
         closestListings = []
         print(latitude)
         print(longitude)
@@ -719,10 +715,10 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
         user = db.userbase_data.find_one({"email": userData['email']})
-        is_admin = user.get('isAdmin', False)
-        if is_admin:
-            return jsonify({"type": "User", "error": "Admin Account"}), 402
         if user:
+            is_admin = user.get('isAdmin', False)
+            if is_admin:
+                return jsonify({"type": "User", "error": "Admin Account"}), 402
             account = stripe.Account.retrieve(user['payOut_id'])
             print(account)
             if not account.payouts_enabled:
