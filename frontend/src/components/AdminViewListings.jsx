@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import MyListings from './MyListings'; 
+import ProfilePage from './ProfilePage';
 
 function AdminViewListings(props) {
-  const [selectedName, setSelectedName] = useState('');
   const [selectedUser, setSelectedUser] = useState(null); 
   const [users, setUsers] = useState([]);
   const location = useLocation();
@@ -20,14 +21,12 @@ function AdminViewListings(props) {
           },
         });
         const data = await response.json();
-        setUsers(data);
+        setUsers(data.map(user => ({ ...user, label: `${user.username} (${user.email})` })));
 
-  
         if(token) {
           const userWithEmail = data.find(user => user.email === token);
           if(userWithEmail) {
-            setSelectedUser(userWithEmail);
-            setSelectedName(userWithEmail.username); 
+            setSelectedUser({ ...userWithEmail, label: `${userWithEmail.username} (${userWithEmail.email})` });
           }
         }
       } catch (error) {
@@ -37,30 +36,25 @@ function AdminViewListings(props) {
     fetchData();
   }, [token]); 
 
-  const handleNameChange = (event) => {
-    const { value } = event.target; 
-    const user = users.find(user => user.username === value);
-    setSelectedUser(user); 
-    setSelectedName(value); 
+  const handleUserChange = (_, newValue) => {
+    setSelectedUser(newValue);
   };
 
   return (
     <div>
-      <FormControl variant="outlined" sx={{ minWidth: 240, marginLeft: 2, marginTop: 2 }}>
-        <InputLabel id="name-select-label">Select User</InputLabel>
-        <Select
-          labelId="name-select-label"
-          id="name-select"
-          value={selectedName}
-          onChange={handleNameChange}
-          label="Select User"
-        >
-          {users.map((user) => (
-            <MenuItem key={user.username} value={user.username}>{user.username}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
+      <Autocomplete
+        id="user-select-combo"
+        options={users}
+        sx={{ width: 300, marginLeft: 2, marginTop: 2 }}
+        value={selectedUser}
+        onChange={handleUserChange}
+        autoHighlight
+        getOptionLabel={(option) => option.label}
+        renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" />}
+      />
+      {selectedUser && (
+        <ProfilePage token={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
+      )}
       {selectedUser && (
         <MyListings key={selectedUser.email} token={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
       )}
