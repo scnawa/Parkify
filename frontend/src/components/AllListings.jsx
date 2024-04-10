@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import location from '../assets/location.png';
+import { MapChild } from "./CreateListings";
+const placeholder = L.icon({
+    iconUrl: location,
+    iconSize: [30, 35]
+});
 
 const theme = createTheme({
     palette: {
@@ -13,38 +22,56 @@ const theme = createTheme({
         },
     },
 });
-
+function PanMap(props) {
+    const map = useMap();
+    const userLocation = props.userLocation;
+    if (userLocation[0] != -33.9062434 && userLocation[1] != 151.23465683738365) {
+        map.panTo(new L.LatLng(userLocation[0], userLocation[1]));
+    }
+    return null;
+}
 function AllListings(props) {
     const [listings, setListings] = useState([]);
-    const [priceOrder, setPriceOrder] = useState(''); 
+    const [priceOrder, setPriceOrder] = useState('');
     const [distance, setDistance] = useState('10');
+    const [userLocation, setUserLocation] = useState([-33.9062434, 151.23465683738365]);
     const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         // Initial fetch for all listings
         fetch('http://localhost:8080/filterByPriceAndDistance', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'order' : priceOrder,
-                    'distance' : distance,
-                    'email': props.token
-                },
-            })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.error) {
-                console.log(data)
-                setListings(data);
-                setInitialListingsLoaded(true)
-            } else {
-                alert(data.error);
-            }
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'order': priceOrder,
+                'distance': distance,
+                'email': props.token
+            },
         })
-        .catch(error => console.error(error));
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    console.log(data)
+                    setListings(data);
+                    setInitialListingsLoaded(true)
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error(error));
     }, []);
-
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    console.log(position);
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation([latitude, longitude]);
+                }
+            )
+        }
+    }, []);
     // we leverage reacts design here. the useffects are ran before the initial render is complete
     // meaning that any variable changes (such as initialistings loaded = true) are not reflected
     // and done UNTIL the useffects and initial render are fully finished. Hence we can use this
@@ -64,7 +91,6 @@ function AllListings(props) {
         }
     }, [props.listings]);
 
-    
 
     const handlePriceOrderChange = (event) => {
         setPriceOrder(event.target.value);
@@ -87,8 +113,8 @@ function AllListings(props) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'order' : priceOrder,
-                    'distance' : distance,
+                    'order': priceOrder,
+                    'distance': distance,
                     'email': props.token
                 },
             });
@@ -104,9 +130,10 @@ function AllListings(props) {
             console.error(error);
         }
     };
+    console.log(userLocation);
 
     return (
-            <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             <Box sx={{ margin: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                     <Typography variant="h4" component="div">
@@ -135,23 +162,63 @@ function AllListings(props) {
                                     <MenuItem value="descending">High to Low</MenuItem>
                                 </Select>
                             </FormControl>
-                            <Button type="submit" sx={{ 
-									ml: 1, 
-									bgcolor: 'black', 
-									'&:hover': {
-										bgcolor: 'black', // lighter green on hover
-									},
-									borderRadius: '4px', 
-									padding: '10px 16px' 
-									}} variant="contained">Apply</Button>
+                            <Button type="submit" sx={{
+                                ml: 1,
+                                bgcolor: 'black',
+                                '&:hover': {
+                                    bgcolor: 'black', // lighter green on hover
+                                },
+                                borderRadius: '4px',
+                                padding: '10px 16px'
+                            }} variant="contained">Apply</Button>
                         </form>
                     </Box>
                 </Box>
-                <Grid container spacing={4}>
+                {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
+						    https://react-leaflet.js.org/docs/example-popup-marker/*/}
+                <div style={{ width: "100%", height: "80vh", 'margin-top': '3px' }}>
+                    <MapContainer center={userLocation} zoom={12} style={{ width: '100%', height: '100%' }}>
+                        <TileLayer
+                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            style={{ width: '100%', height: '100%' }}
+                        />
+
+                        {listings.map((listing, key) => {
+                            let locations = [50, 50];
+                            let mapProps = { ...listing };
+                            if (listing && listing.latitude
+                                && listing.longitude) {
+                                locations = [listing.latitude, listing.longitude];
+                                mapProps.lat = listing.latitude;
+                                mapProps.lon = listing.longitude;
+                            }
+                            return (
+                                <>
+                                    <div key={String(listing.latitude) + String(listing.longitude) + key}>
+                                        <Marker icon={placeholder} position={locations}>
+                                            <Popup maxHeight='400' autoClose>
+                                                <Link to={'/listing/' + listing.listing_id} style={{ textDecoration: 'none' }} target="_blank">
+                                                    <AllProviderListing listing={listing} height={'100%'} imageHeight={'150px'} objectFit='contain' />
+                                                </Link>
+                                            </Popup>
+                                        </Marker>
+                                    </div>
+
+
+                                </>
+                            );
+                        })}
+                        <PanMap userLocation={userLocation} />
+
+                    </MapContainer>
+                </div>
+
+                <Grid container spacing={4} style={{ 'margin-top': '10px' }}>
                     {listings.map((listing) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={listing.listing_id}>
-                            <Link to={'/listing/'+ listing.listing_id} style={{ textDecoration: 'none' }} target="_blank">
-                                <AllProviderListing listing={listing} />
+                            <Link to={'/listing/' + listing.listing_id} style={{ textDecoration: 'none' }} target="_blank">
+                                <AllProviderListing listing={listing} height={'100%'} imageHeight={'300px'} objectFit='cover' />
                             </Link>
                         </Grid>
                     ))}

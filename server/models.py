@@ -202,8 +202,8 @@ class User:
                 "start_date": "",
                 "end_date": "",
                 "is_active": 'False',
-                "latitude": helper.calcLatLong(userData['listings']['address'])[0],
-                "longitude": helper.calcLatLong(userData['listings']['address'])[1]
+                "latitude": float(userData['listings']['lat']),
+                "longitude": float(userData['listings']['lon'])
             }
 
             user_listings = user['listings']

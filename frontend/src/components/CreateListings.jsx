@@ -124,6 +124,8 @@ function CreateListings(props) {
 				email: state.token,
 				listings: {
 					"address": addressGeo.display_name,
+					"lat": addressGeo.lat,
+					"lon": addressGeo.lon,
 					"price": rate,
 					"quantity": quantity,
 					"details": detail,
@@ -133,7 +135,7 @@ function CreateListings(props) {
 			}
 			console.log(data);
 
-			const fetchListings = async () => {
+			const fetchCreateListing = async () => {
 				try {
 					const response = await fetch('http://localhost:' + '8080/' + 'create_listing', {
 						method: 'PUT',
@@ -153,7 +155,7 @@ function CreateListings(props) {
 					return Promise.reject(error);
 				}
 			};
-			return fetchListings();
+			return fetchCreateListing();
 		}).then(() => alert("created listing")).then(() => {
 			if (props.isAdmin) {
 				navigate('/adminViewListings', { state: { token: state.token } });
