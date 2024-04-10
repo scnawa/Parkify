@@ -152,7 +152,7 @@ function ListingPage(props) {
                     <div className="listing-page">
                         <div className="listing-left-box">
                             <h2 style={{'marginLeft': '5px'}}>{listing.address}</h2>
-                            <img src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
+                            <img className="listing-img"src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
                             <div className="details-box">
                                 <h4>Description:</h4>
                                 <p>{listing.details}</p>

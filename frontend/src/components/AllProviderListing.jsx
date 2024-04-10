@@ -11,13 +11,14 @@ const theme = createTheme({
     },
 });
 
-function AllProviderListing({ listing }) {
+function AllProviderListing({ listing, height, imageHeight, objectFit }) {
+    console.log(imageHeight);
     return (
         <ThemeProvider theme={theme}>
-            <Card sx={{ display: 'flex', height: '100%', flexDirection: 'column', borderRadius: '16px' }}>
+            <Card sx={{ display: 'flex', height: { height }, flexDirection: 'column', borderRadius: '16px' }}>
                 <CardMedia
                     component="img"
-                    sx={{ width: '100%', height: 300, objectFit: 'cover' }} // height 300 is what controls the images size, width 100% making it responsive width wise
+                    sx={{ width: '100%', height: imageHeight, objectFit: objectFit }} // height 300 is what controls the images size, width 100% making it responsive width wise
                     image={listing.image_url !== '' ? listing.image_url : Background}
                     alt="Parking space"
                 />
