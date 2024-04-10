@@ -254,6 +254,14 @@ def get_booking_time():
     userData = request.headers
     return config.User().get_booking_time(userData)
 
+@APP.route('/updateUser', methods = ['POST'])
+def update_user(): 
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().update_user(userData, headers)
+
+
+
 
 
 if __name__ == "__main__": 

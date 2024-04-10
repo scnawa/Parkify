@@ -25,6 +25,7 @@ from pygtrie import Trie
 import re
 import stripe
 import datetime
+from datetime import date
 
 class User: 
     def signup(self, userData): 
@@ -44,7 +45,9 @@ class User:
             "payOut_id": "",
             "default_payment_id":"",
             "is_stripe_connected": False,
-            "pre_booking_time": ""
+            "pre_booking_time": "",
+            "profile_picture": userData['profile_picture'] 
+
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -94,7 +97,7 @@ class User:
             "session_id": [],
             "isVerified" : True,
             "isAdmin": True,
-            "listings": []
+            "disputes": []
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
@@ -465,10 +468,7 @@ class User:
         latitude = float(headers['lat'])
         longitude = float(headers['lon'])
         closestListings = []
-        print(latitude)
-        print(longitude)
         for listing in db.listing_data.find({}): 
-            print(listing)
             listing_lat = 0
             listing_long = 0
             if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
@@ -493,13 +493,17 @@ class User:
 
         listing_no = userData["listingNo"]
 
+        listing_booking_list = user_listings[listing_no]["recentBookings"]
+
         now = datetime.datetime.now()
         start_time = now.strftime("%H:%M:%S")
+        today = str(date.today())
 
         booking = {
                     "address": user_listings[listing_no]["address"],
                     "listing_id": userData["listingId"],
                     "recentbooking_no": len(user["recentBookings"]),
+                    "date": today,
                     "start_time": start_time,
                     "end_price": "",
                     "feedback": "",
@@ -509,15 +513,18 @@ class User:
                     "payment_id": "",
         }
 
-        bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
+        ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
+        ##bookingFoundv2 = [i for i in listing_booking_list if i["listing_id"] == userData["listingId"]]
 
         if user:
-            if not bookingFound:
-                booking_list.append(booking)
+            booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
+            booking.update({"email": userData['email']})
+            del booking["recentbooking_no"]
+            listing_booking_list.append(booking)
             filter = {"listings.listing_id": userData["listingId"]}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
@@ -556,6 +563,7 @@ class User:
         booking_list = user["recentBookings"]
         if user:
             listing_no = userData["listingNo"]
+            listing_booking_list = user_listings[listing_no]["recentBookings"]
             end_price = math.ceil(int(userData["totalTime"])/3600) * int(user_listings[listing_no]["price"])
             discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
             booking = {
@@ -593,6 +601,7 @@ class User:
 
             user_listings[listing_no].update({'is_active': "True"})
             booking_list[-1].update(booking)
+            listing_booking_list[-1].update(booking)
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
@@ -851,7 +860,7 @@ class User:
             if promo_code and promo_code.isalnum():
                 #the last two digits 
                 
-                with open("/home/sam/comp3900/capstone-project-3900w09a_parkify/server/promoCodes.txt", "r") as file: 
+                with open("/Users/adydaddy/capstone-project-3900w09a_parkify/server/promoCodes.txt", "r") as file: 
                     for promo in file: 
                         if promo_code == promo.strip():
                             print(promo_code[-2:])
@@ -861,3 +870,49 @@ class User:
                 return booking_price
             else:
                 return booking_price
+            
+    def update_user(self, userData, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+
+            newuser = {
+                "username": userData['username'], 
+                "email" : userData["email"], 
+                "profile_picture": userData['profile_picture'] 
+            }
+
+            
+            user.update(newuser)
+            filter = {'email': headers['email']}
+            newvalues = {"$set" : user}
+            db.userbase_data.update_one(filter, newvalues)
+
+            return json_util.dumps(user)
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+
+    def create_dispute(self, userData, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+            dispute = {
+                "dispute_id": uuid.uuid4().hex,
+                "address": userData['address'],
+                "date": userData['date'],
+                "end_price": userData['end_price'],
+                "total_time": userData['total_time'],
+                "start_time": userData['start_time'],
+                "dispute_by": headers['email'],
+                "dispute_against": userData["against_email"],
+                "dispute_message": userData["dispute_message"], 
+                "dispute_image": userData['dispute_image'] 
+            }
+
+            db.disputes.insert_one(dispute)
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+
+            
+
+    def get_email(self, userData):
+        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+        return json_util.dumps(provider_user['email'])
