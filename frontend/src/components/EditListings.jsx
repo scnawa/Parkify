@@ -52,9 +52,9 @@ const uploadFile = (file) => {
 
 function EditListings(props) {
     const { state } = useLocation();
-    console.log("editListings " + state.token)	
+    console.log("editListings " + state.token)
     const [listing, setListing] = React.useState(state.listing);
-    
+
     const navigate = useNavigate();
     React.useEffect(() => {
         if (!state.token) {
@@ -103,7 +103,7 @@ function EditListings(props) {
     const submitForm = (e) => {
         e.preventDefault();
         uploadFile(listing.image_url).then((url) => {
-            const new_listing = {...listing};
+            const new_listing = { ...listing };
             new_listing["image_url"] = url;
             const data = {
                 email: state.token,
@@ -134,7 +134,7 @@ function EditListings(props) {
                 }
             };
             return fetchListings();
-        }).then(()=> {
+        }).then(() => {
             if (props.isAdmin) {
                 navigate('/adminViewListings', { state: { token: state.token } });
             } else {
@@ -154,36 +154,38 @@ function EditListings(props) {
     return (
         <ThemeProvider theme={theme} >
 
-        <div style={pageStyle}>
-            <Paper elevation={4}
-                sx={{
-                    p: 2,
-                    margin: 'auto',
-                    maxWidth: "md",
-                }}
-            >
-				<Typography>Edit Listings</Typography>
+            <div style={pageStyle}>
+                <Paper elevation={4}
+                    sx={{
+                        p: 2,
+                        margin: 'auto',
+                        maxWidth: "md",
+                    }}
+                >
+                    <Typography>Edit Listings</Typography>
 
-				<Box component="form" sx={{ mt: 1, rowGap: "20px", display: 'flex', justifyContent: 'center',
-							alignItems: 'center', flexDirection: 'column', ml: '20px'}}>
-                    <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="filled" disabled/>
-                    <TextInputField label="Rate:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" />
-                    <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" />
+                    <Box component="form" sx={{
+                        mt: 1, rowGap: "20px", display: 'flex', justifyContent: 'center',
+                        alignItems: 'center', flexDirection: 'column', ml: '20px'
+                    }} onSubmit={(e) => submitForm(e)}>
+                        <TextInputField label="Address:" setFunction={handleChange("address")} value={listing.address} color="success" variant="filled" disabled />
+                        <TextInputField label="Rate:" setFunction={handleChange("price")} value={listing.price} color="success" variant="outlined" type="number" required={true} />
+                        <TextInputField label="Quantity:" setFunction={handleChange("quantity")} value={listing.quantity} color="success" variant="outlined" type="number" required={true} />
 
-                    <TextInputField label="Details:" setFunction={handleChange("details")} value={listing.details} color="success" variant="outlined" multiline={true} />
-                    <TextInputField label="Restrictions:" setFunction={handleChange("restrictions")} value={listing.restrictions} color="success" variant="outlined" multiline={true} />
-                    {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
-                    <p></p>
-                    <FileInputField color='green' variant="contained" multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" />
-                    {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
-                    <Box> 
-                        <Button  color='success' variant="contained" onClick={(e) => submitForm(e)}>Edit</Button>
-                        <Button  color='success' variant="contained" onClick={handleRemove} sx={{ml:'21px'}}>Remove</Button>
+                        <TextInputField label="Details:" setFunction={handleChange("details")} value={listing.details} color="success" variant="outlined" multiline={true} />
+                        <TextInputField label="Restrictions:" setFunction={handleChange("restrictions")} value={listing.restrictions} color="success" variant="outlined" multiline={true} />
+                        {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
+                        <p></p>
+                        <FileInputField color='green' variant="contained" multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" required={false} />
+                        {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
+                        <Box>
+                            <Button color='success' variant="contained" type="submit">Edit</Button>
+                            <Button color='success' variant="contained" onClick={handleRemove} sx={{ ml: '21px' }}>Remove</Button>
+                        </Box>
                     </Box>
-                </Box>
-            </Paper>
+                </Paper>
 
-        </div>
+            </div>
         </ThemeProvider>
 
     )
