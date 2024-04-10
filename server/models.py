@@ -558,10 +558,7 @@ class User:
             listing_no = userData["listingNo"]
             end_price = math.ceil(int(userData["totalTime"])/3600) * int(user_listings[listing_no]["price"])
             discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
-            now = datetime.datetime.now()
-            start_time = now.strftime("%H:%M:%S")
             booking = {
-                    "start_time": start_time,
                     "end_price": discounted_price,
                     "feedback": userData["feedback"],
                     "end_image_url": userData["endImageUrl"], 

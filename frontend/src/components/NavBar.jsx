@@ -74,7 +74,7 @@ function NavBar(props) {
 
 	React.useEffect(() => {
 		if (isAdmin) {
-		  setPages(['HOME', "ALL USER'S PARKING SPACES"]);
+		  setPages(['HOME', "MANAGE USERS", "DISPUTES"]);
 		} else {
 		  setPages(['HOME', 'MY PARKING SPACES']);
 		}
@@ -91,6 +91,7 @@ function NavBar(props) {
 		setUserMenuLocation(null);
 	}
 	const addPaymentOnClick = (props) => {
+		setUserMenuLocation(null);
 		navigate("/managePayment");
 		return;	
 	}
@@ -102,8 +103,11 @@ function NavBar(props) {
 			case "MY PARKING SPACES":
 				navigate("/myListing");
 				break;
-			case "ALL USER'S PARKING SPACES":
+			case "MANAGE USERS":
 				navigate("/adminViewListings")
+				break;
+			case "DISPUTES":
+				navigate("/adminDisputes")
 				break;
 			case "HOME":
 				navigate("/");
@@ -124,7 +128,13 @@ function NavBar(props) {
 		navigate("/");
 	}
 	const historyOnclick = () => {
+		setUserMenuLocation(null);
 		navigate("/history");
+
+	}
+	const customerHistoryOnclick = () => {
+		setUserMenuLocation(null);
+		navigate("/customerHistory");
 
 	}
 	const signUpOnclick = (event) => {
@@ -265,7 +275,8 @@ function NavBar(props) {
 									onClose={userMenuClose}
 								>
 									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
-									<MenuItem onClick={()=>historyOnclick(props)}>Booking History</MenuItem>
+									<MenuItem onClick={()=>historyOnclick(props)}>My Booking History</MenuItem>
+									<MenuItem onClick={()=>customerHistoryOnclick(props)}>Customer Bookings</MenuItem>
 
 									<MenuItem onClick={()=>rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
 									<MenuItem onClick={()=>addPaymentOnClick(props)}>Add customer payment method</MenuItem>

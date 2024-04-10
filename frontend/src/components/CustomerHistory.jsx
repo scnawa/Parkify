@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Grid, Typography, Button, Box } from '@mui/material';
 
-const History = (props) => {
+const CustomerHistory = (props) => {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
@@ -70,4 +70,4 @@ const History = (props) => {
   );
 };
 
-export default History;
+export default CustomerHistory;

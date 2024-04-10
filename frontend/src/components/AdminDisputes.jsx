@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, List, ListItem, Button, Divider } from '@mui/material';
 
-function AdminDashboard(props) {
+function AdminDisputes(props) {
   const navigate = useNavigate();
   
   const goToUserDisputes = () => {
@@ -47,7 +47,7 @@ function AdminDashboard(props) {
         </Typography>
         <List>
           <ListItem>
-            Support Ticket 1 - Bob
+            Support Ticket 1 - aditya
             <Button onClick={() => { console.log("Navigate to Support Ticket 1 details"); }}>View Details</Button>
           </ListItem>
           <Divider component="li" />
@@ -57,11 +57,11 @@ function AdminDashboard(props) {
           </ListItem>
         </List>
         <Button variant="contained" color="primary" onClick={goToUserSupport}>
-          View All Support Tickets
+          LOOL
         </Button>
       </Box>
     </Box>
   );
 }
 
-export default AdminDashboard;
+export default AdminDisputes;

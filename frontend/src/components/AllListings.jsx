@@ -99,8 +99,19 @@ function AllListings(props) {
     };
 
     const handleDistanceChange = (event) => {
-        setDistance(event.target.value);
+        const value = event.target.value;
+    
+        const numericOnly = value.replace(/[^\d]/g, '');
+    
+        const intValue = parseInt(numericOnly, 10);
+    
+        if (!isNaN(intValue)) {
+            setDistance(intValue.toString()); 
+        } else {
+            setDistance(''); 
+        }
     };
+    
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
