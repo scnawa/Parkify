@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Grid, Typography, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+  
 
 const History = (props) => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
@@ -29,9 +32,27 @@ const History = (props) => {
     }
   };
 
-  const handleDispute = (bookingId) => {
-    console.log("Disputing booking with ID:", bookingId);
-  };
+  const handleDispute =  async(booking) => {
+    try {
+          const response = await fetch('/getEmail', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'email': props.token,
+                  'listingId': booking.listing_id
+              },
+          });
+          const data = await response.json();
+          if (data.error) {
+            console.error('An error occurred during fetch:', data.error);
+          } else {
+            const email = data;
+            navigate('/disputePage', { state: { booking, email } });
+          }
+      } catch (error) {
+          console.error('An error occurred during fetch:', error);
+      }
+    };
 
   const formatTime = (totalSeconds) => {
     const hours = Math.ceil(totalSeconds / 3600);
@@ -56,7 +77,7 @@ const History = (props) => {
               <Box display="flex" justifyContent="flex-end">
                 <Button 
                   variant="outlined" 
-                  onClick={() => handleDispute(booking.id)}
+                  onClick={() => handleDispute(booking)}
                   sx={{ borderColor: "red", color: "red", ':hover': { bgcolor: 'red', color: 'white', borderColor: 'red' } }}
                 >
                   Dispute

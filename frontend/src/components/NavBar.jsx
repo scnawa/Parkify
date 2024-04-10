@@ -275,12 +275,14 @@ function NavBar(props) {
 									onClose={userMenuClose}
 								>
 									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
-									<MenuItem onClick={()=>historyOnclick(props)}>My Booking History</MenuItem>
-									<MenuItem onClick={()=>customerHistoryOnclick(props)}>Customer Bookings</MenuItem>
-
-									<MenuItem onClick={()=>rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
-									<MenuItem onClick={()=>addPaymentOnClick(props)}>Add customer payment method</MenuItem>
-
+									{!isAdmin && (
+										<>
+											<MenuItem onClick={() => historyOnclick(props)}>My Booking History</MenuItem>
+											<MenuItem onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>
+											<MenuItem onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
+											<MenuItem onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>
+										</>
+									)}
 									<MenuItem onClick={logOut}>Log out</MenuItem>
 								</Menu>
 							</>

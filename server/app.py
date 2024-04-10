@@ -259,9 +259,23 @@ def update_user():
     headers = request.headers
     userData = json.loads(request.data)
     return config.User().update_user(userData, headers)
+    
+@APP.route('/createDispute', methods = ['POST'])
+def create_dispute(): 
+    headers = request.headers
+    userData = json.loads(request.data)
+    print(headers['email'])
+    return config.User().create_dispute(userData, headers)
 
+@APP.route('/getEmail', methods = ['GET'])
+def get_email(): 
+    headers = request.headers
+    return config.User().get_email(headers)
 
-
+@APP.route('/getDisputes', methods = ['GET'])
+def get_disputes(): 
+    headers = request.headers
+    return config.User().get_disputes(headers)
 
 
 if __name__ == "__main__": 

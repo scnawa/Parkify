@@ -41,7 +41,7 @@ function Login(props) {
         localStorage.setItem('token', data.email);
         props.setSID(data.session_id[data.session_id.length-1]);
         localStorage.setItem('SID', data.session_id[data.session_id.length-1]);
-        navigate('/admindashboard')
+        navigate('/')
       } else {
         props.setToken(data.email);
         localStorage.setItem('token', data.email);

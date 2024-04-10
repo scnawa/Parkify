@@ -894,6 +894,8 @@ class User:
     def create_dispute(self, userData, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
+        print(bool(user))
+        print(headers['email'])
         if user:
             dispute = {
                 "dispute_id": uuid.uuid4().hex,
@@ -903,16 +905,26 @@ class User:
                 "total_time": userData['total_time'],
                 "start_time": userData['start_time'],
                 "dispute_by": headers['email'],
-                "dispute_against": userData["against_email"],
+                "dispute_against": userData["dispute_against"],
                 "dispute_message": userData["dispute_message"], 
-                "dispute_image": userData['dispute_image'] 
+                "dispute_image": userData['dispute_images'] 
             }
-
+            print(dispute)
             db.disputes.insert_one(dispute)
+            return jsonify({"message": "Dispute successfully created"}), 200
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
             
 
-    def get_email(self, userData):
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+    def get_email(self, headers):
+        provider_user = db.userbase_data.find_one({"listings.listing_id": headers["listingId"]})
         return json_util.dumps(provider_user['email'])
+    
+    def get_disputes(self, headers):
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user: 
+            disputes = db.disputes.find()
+            disputes_list = list(disputes)  
+            return json_util.dumps(disputes_list)
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        
