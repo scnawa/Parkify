@@ -7,18 +7,6 @@ body {
     justify-content: center;
 }
 
-.listing-page {
-    width: 80vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    margin-top: 3vh;
-}
-
-img {
-    width: 40vw;
-    height: auto;
-}
 
 .listing-left-box {
     background-color: aliceblue;
@@ -28,41 +16,124 @@ img {
     flex-direction: column;
 }
 
-.details-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 40vw;
-    margin-top: 2vh;
-    border-bottom: 1px solid #ccc;
-}
 
-.restrictions-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 40vw;
-    margin-top: 2vh;
-    border-bottom: 1px solid #ccc;
-}
+@media only screen and (max-width: 600px) {
+    .price-box {
+        background-color: rgb(182, 176, 176);
+        width: 100%;
+    
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 1vh;
+        padding-bottom: 10px;
+        
+    }
+    .listing-right-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width:100%;
+    }
+    .listing-page {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1vh;
+    }    
+    .book-now-button {
+        height: 5vh;
+        font-size: 20px;
+        background-color: #E0F2F1;
+    }
+    .details-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 2vh;
+        border-bottom: 1px solid #ccc;
+        margin-left: 5px;
+    }
+    
+    .restrictions-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 2vh;
+        border-bottom: 1px solid #ccc;
+        margin-left: 5px;
 
-.listing-right-box {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    width: 80vw;
-}
+    }
+    img {
+        width: 100%;
+        height: auto;
 
-.price-box {
-    background-color: rgb(182, 176, 176);
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 1vh;
-    padding-bottom: 10px;
+    }
+    
+    
+    
+}
+@media only screen and (min-width: 601px) {
+    .price-box {
+        background-color: rgb(182, 176, 176);
+        width: 15vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 1vh;
+        padding-bottom: 10px;
+    }
+    .listing-right-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 80vw;
+    }
+    
+    .listing-page {
+        width: 85vw;
+        display: flex;
+        flex-direction: column;
+        margin-top: 3vh;
+    }
+    .book-now-button {
+        width: 15vw;
+        height: 5vh;
+        font-size: 20px;
+        background-color: #E0F2F1;
+    }
+    .details-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 40vw;
+        margin-top: 2vh;
+        border-bottom: 1px solid #ccc;
+        margin-left: 5px;
+
+    }
+    
+    .restrictions-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 40vw;
+        margin-top: 2vh;
+        border-bottom: 1px solid #ccc;
+        margin-left: 5px;
+
+    }
+    img {
+        width: 40vw;
+        height: auto;
+    }
+    
+    
+    
+
 }
 
 .top-price-box {
@@ -75,12 +146,5 @@ img {
 .booking-box {
     display:flex;
     justify-content: center;
-}
-
-.book-now-button {
-    width: 10vw;
-    height: 5vh;
-    font-size: 20px;
-    background-color: #E0F2F1;
 }
 
