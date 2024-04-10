@@ -72,8 +72,8 @@ function AdminDisputes(props) {
               <CardContent>
                 <Typography variant="h6">{dispute.address}</Typography>
                 <Typography variant="body1">Date: {dispute.date}</Typography>
-                <Typography variant="body2">Dispute By: {selectedDispute.dispute_by}</Typography>
-              <Typography variant="body2">Dispute Against: {selectedDispute.dispute_against}</Typography>
+                <Typography variant="body2">Dispute By: {dispute.dispute_by}</Typography>
+              <Typography variant="body2">Dispute Against: {dispute.dispute_against}</Typography>
               </CardContent>
               <CardActions>
                 <Button size="small" onClick={() => handleViewDetails(dispute)}>View Details</Button>
