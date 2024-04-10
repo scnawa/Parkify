@@ -4,7 +4,7 @@ import CreateListings from './components/CreateListings';
 import NavBar from './components/NavBar';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import AdminDashboard from './components/AdminDashboard';
+import AdminDisputes from './components/AdminDisputes';
 
 import ProfilePage from './components/ProfilePage';
 import Verify from './components/Verify';
@@ -24,6 +24,8 @@ import TestPayment from './components/TestPayment';
 import ManagePayment from './components/ManagePayment';
 import History from './components/History';
 import AdminViewListings from './components/AdminViewListings';
+import CustomerHistory from './components/CustomerHistory';
+import DisputePage from './components/DisputePage'
 
 const PageList = (props) => {
 
@@ -73,9 +75,10 @@ const PageList = (props) => {
         <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
         <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
         <Route path="/history" element={<History token={token} SID={SID}/>} />
+        <Route path="/customerHistory" element={<CustomerHistory token={token} SID={SID}/>} />
         <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/signup" element={<Signup  />} />
-        <Route path="/admindashboard" element={<AdminDashboard  />} />
+        <Route path="/adminDisputes" element={<AdminDisputes  token={token}/>} />
         <Route path="/paymentAddedSuccess" element={<PaymentAddedSuccess  />} />
         <Route path="/providerDetailsExpired" element={<ProviderDetailsExpried  />} />
         <Route path="/providerDetailsReturn" element={<ProviderDetailsReturn  />} />
@@ -85,6 +88,7 @@ const PageList = (props) => {
         <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/payment" element={<Payment token={token} stripe={props.stripe} setToken={setToken} SID={SID} setSID={setSID}/>} />
         <Route path="/adminViewListings" element={<AdminViewListings token={token} isAdmin={isAdmin}/>} />
+        <Route path="/disputePage" element={<DisputePage token={token}/>} />
 
       </Routes>
     </>
