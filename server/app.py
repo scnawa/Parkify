@@ -260,7 +260,10 @@ def update_user():
     userData = json.loads(request.data)
     return config.User().update_user(userData, headers)
 
-
+@APP.route('/getRecentBookings', methods = ['GET'])
+def get_recentBookings(): 
+    userData = request.headers
+    return config.User().get_recentBookings(userData)
 
 
 
