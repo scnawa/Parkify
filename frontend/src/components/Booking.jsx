@@ -1,25 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { Paper, Button, createTheme } from '@mui/material';
+import { ThemeProvider } from '@emotion/react';
+const theme = createTheme({
+    palette: {
+        green: {
+            main: '#4caf50',
+            light: '#E0F2F1',
+            dark: '#004D40',
+            contrastText: '#E0F2F1',
+        },
+    },
+});
 
-function Booking( props ) {
-    const navigate = useNavigate(); 
+function Booking(props) {
+    const navigate = useNavigate();
     const location = useLocation();
-    const { listing_id, ListingNo} = location.state || {};
+    const { listing_id, ListingNo } = location.state || {};
     const [timer, setTimer] = useState('');
+    const [initialTime, setinitialTime] = useState(null);
 
     useEffect(() => {
         const fetchPreBookingTimer = async () => {
             try {
                 const response = await fetch('/getPreBookingTime', {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    "email": props.token,
-                  }
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "email": props.token,
+                    }
                 });
-            
+
                 if (!response.ok) {
-                  throw new Error('Failed to get time info');
+                    throw new Error('Failed to get time info');
                 }
                 const preTimer = await response.json();
                 console.log(preTimer);
@@ -32,23 +46,29 @@ function Booking( props ) {
                 const preMinutes = parseInt(minutesStr);
                 const preSeconds = parseInt(secondsStr);
                 const preTime = new Date();
-                preTime.setHours(preHours, preMinutes, preSeconds, 0); 
-                const timeDifference = Math.round((preTime.getTime() + 600000 - currentTime)/(1000));
+                preTime.setHours(preHours, preMinutes, preSeconds, 0);
+                const timeDifference = Math.round((preTime.getTime() + 600000 - currentTime) / (1000));
+                setinitialTime(timeDifference);
                 setTimer(timeDifference);
-              } catch (error) {
+            } catch (error) {
                 console.error('Error getting time info:', error.message);
-              }
-          };
-        
-        const interval = setInterval(() => {
-            setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
-        }, 1000);
+            }
+        };
+
+        // const interval = setInterval(() => {
+        //     setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
+        // }, 1000);
 
         fetchPreBookingTimer();
 
-        return () => clearInterval(interval);
+        return;
     }, []);
-
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [])
 
 
     const handleIamHereClick = () => {
@@ -88,14 +108,15 @@ function Booking( props ) {
                 return Promise.reject(error);
             }
         };
-        fetchCreateBook().then(()=>{
-            navigate('/timer', { state: { listing_id, ListingNo} });
+        fetchCreateBook().then(() => {
+            navigate('/timer', { state: { listing_id, ListingNo } });
         }).catch(alert);
     };
 
     const handleCancel = () => {
-        navigate('/');
         releaseListing();
+
+        navigate('/');
     };
 
     const releaseListing = async () => {
@@ -110,7 +131,7 @@ function Booking( props ) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }, 
+                },
                 body: JSON.stringify(data),
             });
 
@@ -153,14 +174,58 @@ function Booking( props ) {
         const remainingSeconds = seconds % 60;
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     };
-
     return (
-        <div>
-            <h2>Timer: {formatTime(timer)}</h2>
-            <button onClick={handleIamHereClick}>I am here</button>
-            <button onClick={handleCancel}>Cancel</button>
-        </div>
-    );
+        <ThemeProvider theme={theme} >
+
+            <div
+                style={{
+                    "backgroundSize": "cover",
+                    height: "70vh",
+                    marginTop: '10px'
+                }}>
+                <Paper elevation={4}
+                    sx={{
+                        p: 2,
+                        margin: 'auto',
+                        maxWidth: "md",
+                        height: '100%',
+                    }}
+                >
+
+                    {initialTime &&
+                        <div style={{ display: "flex", flexDirection: "column", rowGap: "30px", height: '100%', justifyContent: 'center', justifyItems: 'space-between' }}>
+                            <div style={{ alignSelf: 'center' }}>
+                                <CountdownCircleTimer
+                                    isPlaying
+                                    duration={600}
+                                    initialRemainingTime={initialTime}
+                                    colors={["#4caf50", "#CDDC39", "#990F02", "#000000"]}
+                                    colorsTime={[600, 300, 180, 0]}
+                                    onComplete={() => {
+                                        handleCancel();
+                                    }}
+                                >
+                                    {({ remainingTime, color }) => {
+                                        return (
+                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                                <div style={{ color: color }}>Time Remaining:</div>
+                                                <div style={{ color: color }}>{formatTime(remainingTime)}</div>
+                                            </div>)
+                                    }}
+
+                                </CountdownCircleTimer>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "row", justifyContent: 'space-around' }}>
+                                <Button variant="contained" color="green" onClick={handleIamHereClick}>Confirm Booking</Button>
+                                <Button variant="contained" color="green" onClick={handleCancel}>Cancel</Button>
+                            </div>
+                        </div>
+                    }
+                </Paper>
+            </div>
+        </ThemeProvider>
+
+    )
 }
 
 export default Booking;
