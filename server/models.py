@@ -928,3 +928,23 @@ class User:
             return json_util.dumps(disputes_list)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
         
+
+    def get_recentBookings(self, headers):
+        # check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        # check if the listing exists
+        user_listings = user.get('listings')
+        listingFound = [i for i in user_listings if i["listing_id"] == headers["listingId"]]
+
+        listing = db.userbase_data.find_one(
+            {"listings.listing_id": headers["listingId"]},
+            {"listings.$": 1}
+        )
+
+        recent_bookings = listing.get('listings', [])[0].get('recentBookings', [])
+
+        if user:
+            if listingFound:
+                return json_util.dumps(recent_bookings)
+            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402

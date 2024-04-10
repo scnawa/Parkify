@@ -276,6 +276,12 @@ def get_email():
 def get_disputes(): 
     headers = request.headers
     return config.User().get_disputes(headers)
+    
+@APP.route('/getRecentBookings', methods = ['GET'])
+def get_recentBookings(): 
+    userData = request.headers
+    return config.User().get_recentBookings(userData)
+
 
 
 if __name__ == "__main__": 
