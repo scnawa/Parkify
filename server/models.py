@@ -862,12 +862,27 @@ class User:
                 "dispute_by": headers['email'],
                 "dispute_against": userData["dispute_against"],
                 "dispute_message": userData["dispute_message"], 
-                "dispute_image": userData['dispute_images'] 
+                "dispute_image": userData['dispute_images'],
+                "resolved": 'False' 
             }
             print(dispute)
             db.disputes.insert_one(dispute)
             return jsonify({"message": "Dispute successfully created"}), 200
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+    def resolve_dispute(self, userData, headers):
+        user = db.userbase_data.find_one({"email": headers['email']})
+
+        if user:
+            dispute = {
+                "resolved": 'True' 
+            }
+            dispute_id = userData['dispute_id']
+            filter = {'dispute_id': dispute_id}
+            newvalues = {"$set": dispute}
+            db.disputes.update_one(filter, newvalues)
+            return jsonify({"message": "Dispute successfully resolved"}), 200
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 40
 
             
 
