@@ -41,6 +41,7 @@ function Signup(props) {
           listings: [],
           creditCards: [],
           session_id: [],
+          profile_picture: "",
         }),
       });
       const data = await response.json();
@@ -49,9 +50,9 @@ function Signup(props) {
       } else {
         navigate('/verify', { state: { email: email, password: password } });
       }
-      
+
     } catch (error) {
-        console.error('An error occurred during signup:', error);
+      console.error('An error occurred during signup:', error);
     }
   };
 
@@ -71,7 +72,7 @@ function Signup(props) {
         <Typography variant="h4" gutterBottom color="primary">
           Sign up
         </Typography>
-        <Box component="form" sx={{ mt: 1}}>
+        <Box component="form" sx={{ mt: 1 }}>
           <TextField
             label="Email"
             type="text"

@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import TextField from '@mui/material/TextField';
 
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 
@@ -28,6 +29,16 @@ const theme = createTheme({
 		},
 	},
 });
+const searchBarStyle = {
+	// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
+	"& label.Mui-focused": {
+		'color': "#E0F2F1"
+	},
+	"& .MuiFilledInput-underline:after": {
+		'borderBottomColor': "#E0F2F1"
+	},
+}
+
 const font1 = "'Nunito Sans', sans-serif";
 export function rentOutInfoOnclick(props) {
 	console.log("here", props);
@@ -68,17 +79,17 @@ function NavBar(props) {
 	const isAdmin = props.isAdmin;
 	const setIsAdmin = props.setIsAdmin;
 	const location = useLocation();
-	const [pages, setPages] = React.useState(['HOME', 'MY PARKING SPACES']);
+	const [pages, setPages] = React.useState([]);
 
 	const navigate = useNavigate();
 
 	React.useEffect(() => {
 		if (isAdmin) {
-		  setPages(['HOME', "MANAGE USERS", "DISPUTES"]);
+			setPages(["MANAGE USERS", "DISPUTES"]);
 		} else {
-		  setPages(['HOME', 'MY PARKING SPACES']);
+			setPages([]);
 		}
-	  }, [isAdmin]); 
+	}, [isAdmin]);
 
 	// TODO: navigate user profile
 	const userMenuOnclick = (event) => {
@@ -93,14 +104,14 @@ function NavBar(props) {
 	const addPaymentOnClick = (props) => {
 		setUserMenuLocation(null);
 		navigate("/managePayment");
-		return;	
+		return;
 	}
-	
+
 	// TODO: navigate different page
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
 		switch (text) {
-			case "MY PARKING SPACES":
+			case "MY SPACES":
 				navigate("/myListing");
 				break;
 			case "MANAGE USERS":
@@ -137,6 +148,12 @@ function NavBar(props) {
 		navigate("/customerHistory");
 
 	}
+	const customerRentOutOnclick = () => {
+		setUserMenuLocation(null);
+		navigate("/myListing");
+
+	}
+
 	const signUpOnclick = (event) => {
 		navigate("/signup");
 	}
@@ -153,7 +170,7 @@ function NavBar(props) {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					'query': searchQuery, 
+					'query': searchQuery,
 				},
 			});
 
@@ -174,27 +191,124 @@ function NavBar(props) {
 
 	return (
 		<ThemeProvider theme={theme}>
+			<Box sx={{ flexGrow: 1 }}>
+				<AppBar color="green" position="static">
+					<Container maxWidth="xl">
+						<Toolbar disableGutters>
+							<button style={{
+								"cursor": "pointer",
+								"border": "0px",
+								"background-color": "transparent",
+								"color": "#CDDC39",
+								"margin": "2px",
+								"padding": "2px",
+							}}>
+								<Typography
+									variant="h6"
+									noWrap
+									component="a"
+									sx={{
+										mr: 0.5,
+										fontWeight: 700,
+										letterSpacing: '.2rem',
+										fontFamily: 'future',
+									}}
+									onClick={() => {
+										navigate("/");
+									}}
+								>
+									Parkify
+								</Typography>
+							</button>
+							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, }}>
+								{pages.map((item) => (
+									<Button key={item} onClick={pageOnClick}
+										sx={{
+											color: 'green.light',
+											fontFamily: 'time',
+											letterSpacing: '.06rem',
+										}}>
 
-			<AppBar color="green" position="static">
-				<Container maxWidth="xl">
-					<Toolbar disableGutters>
-						<Typography
-							variant="h6"
-							noWrap
-							component="a"
-							sx={{
-								mr: 1.8,
-								fontWeight: 700,
-								letterSpacing: '.2rem',
-								fontFamily: 'future',
-								display: { xs: 'none', sm: 'block', md: 'block' },
-							}}
-						>
-							Parkify
-						</Typography>
-						<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, }}>
-							{pages.map((item) => (
-								<Button key={item} onClick={pageOnClick}
+										{item}
+									</Button>
+								))}
+								{(location.pathname === "/" || location.pathname === "/alllistings") && (
+									<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row' }}>
+										<TextField sx={searchBarStyle}
+											label="search for space" type="search" variant="filled"
+											onChange={(e) => setSearchQuery(e.target.value)}
+											value={searchQuery}
+										/>
+										<Button
+											type="submit"
+											variant="contained"
+											sx={{
+												ml: 0.4,
+												bgcolor: 'black',
+												'&:hover': {
+													bgcolor: 'black', // lighter green on hover
+												},
+												borderRadius: '4px',
+												padding: '10px 16px'
+											}}
+										>
+											Search
+										</Button>
+									</form>
+								)}
+
+							</Box>
+
+
+							{token && (
+								<>
+									<IconButton
+										aria-haspopup={true}
+										aria-label="notifications"
+										size="large"
+										onClick={notiLocationOnclick}
+										color="inherit"
+									>
+										<NotificationsNoneOutlinedIcon />
+
+									</IconButton>
+									<Modal isOpen={notiLocation} setnotiLocation={setnotiLocation} content=""></Modal>
+								</>
+							)}
+							{token && (
+								<>
+									<IconButton
+										aria-haspopup={true}
+										aria-label="user operation"
+
+										size="large"
+										onClick={userMenuOnclick}
+										color="inherit"
+									>
+										<AccountCircle />
+									</IconButton>
+									<Menu
+										id="menu-appbar"
+										anchorEl={userMenuLocation}
+										open={Boolean(userMenuLocation)}
+										onClose={userMenuClose}
+									>
+										<MenuItem onClick={profileOnClick}>Profile</MenuItem>
+										{!isAdmin && (
+											[
+												(<MenuItem key="history" onClick={() => historyOnclick(props)}>My Booking History</MenuItem>),
+												(<MenuItem key="customerHistory" onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>),
+												(<MenuItem key="rentOut" onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>),
+												(<MenuItem key="payment" onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>),
+												(<MenuItem key="RentSpaces" onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
+											]
+										)}
+										<MenuItem onClick={logOut}>Log out</MenuItem>
+									</Menu>
+								</>
+							)}
+							{!token && (
+								<Button onClick={loginOnClick}
 									sx={{
 										color: 'green.light',
 										fontWeight: 500,
@@ -203,121 +317,28 @@ function NavBar(props) {
 										letterSpacing: '.06rem',
 									}}>
 
-									{item}
+									Log In
 								</Button>
-							))}
-						</Box>
-						{(location.pathname === "/" || location.pathname === "/alllistings") && (
-							<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row', marginLeft: 'auto', marginRight: '30px' }}>
-								<input
-									type="text"
-									placeholder="Search for space..."
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									style={{ 
-									flexGrow: 1,
-									padding: '10px',
-									marginRight: '8px',
-									border: '1px solid #ddd',
-									borderRadius: '4px',
-									outline: 'none',
-									}}
-								/>
-								<Button 
-									type="submit" 
-									variant="contained" 
-									sx={{ 
-									ml: 1, 
-									bgcolor: 'black', 
-									'&:hover': {
-										bgcolor: 'black', // lighter green on hover
-									},
-									borderRadius: '4px', 
-									padding: '10px 16px' 
-									}}
-								>
-									Search
+							)}
+							{!token && (
+								<Button onClick={signUpOnclick}
+									sx={{
+										color: 'green.light',
+										fontWeight: 500,
+
+										fontFamily: 'time',
+										letterSpacing: '.06rem',
+									}}>
+
+									Sign Up
 								</Button>
-							</form>
-						)}
+							)}
 
-						{token && (
-							<>
-								<IconButton
-									aria-haspopup={true}
-									aria-label="notifications"
-									size="large"
-									onClick={notiLocationOnclick}
-									color="inherit"
-								>
-									<NotificationsNoneOutlinedIcon />
-
-								</IconButton>
-								<Modal isOpen={notiLocation} setnotiLocation={setnotiLocation} content=""></Modal>
-							</>
-						)}
-						{token && (
-							<>
-								<IconButton
-									aria-haspopup={true}
-									aria-label="user operation"
-
-									size="large"
-									onClick={userMenuOnclick}
-									color="inherit"
-								>
-									<AccountCircle />
-								</IconButton>
-								<Menu
-									id="menu-appbar"
-									anchorEl={userMenuLocation}
-									open={Boolean(userMenuLocation)}
-									onClose={userMenuClose}
-								>
-									<MenuItem onClick={profileOnClick}>Profile</MenuItem>
-									{!isAdmin && (
-										<>
-											<MenuItem onClick={() => historyOnclick(props)}>My Booking History</MenuItem>
-											<MenuItem onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>
-											<MenuItem onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>
-											<MenuItem onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>
-										</>
-									)}
-									<MenuItem onClick={logOut}>Log out</MenuItem>
-								</Menu>
-							</>
-						)}
-						{!token && (
-							<Button onClick={loginOnClick}
-								sx={{
-									color: 'green.light',
-									fontWeight: 500,
-
-									fontFamily: 'time',
-									letterSpacing: '.06rem',
-								}}>
-
-								Log In
-							</Button>
-						)}
-						{!token && (
-							<Button onClick={signUpOnclick}
-								sx={{
-									color: 'green.light',
-									fontWeight: 500,
-
-									fontFamily: 'time',
-									letterSpacing: '.06rem',
-								}}>
-
-								Sign Up
-							</Button>
-						)}
-
-					</Toolbar>
-				</Container>
-			</AppBar>
-		</ThemeProvider>
+						</Toolbar>
+					</Container>
+				</AppBar>
+			</Box>
+		</ThemeProvider >
 
 	)
 
