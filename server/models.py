@@ -46,7 +46,7 @@ class User:
             "default_payment_id":"",
             "is_stripe_connected": False,
             "pre_booking_time": "",
-            "profile_picture": userData['profile_picture'] 
+            "profile_picture": "",
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
