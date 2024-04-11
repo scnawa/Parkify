@@ -209,7 +209,8 @@ class User:
                 "end_date": "",
                 "is_active": 'False',
                 "latitude": float(userData['listings']['lat']),
-                "longitude": float(userData['listings']['lon'])
+                "longitude": float(userData['listings']['lon']),
+                "recentBookings": []
             }
 
             user_listings = user['listings']
@@ -500,17 +501,17 @@ class User:
         today = str(date.today())
 
         booking = {
-                    "address": user_listings[listing_no]["address"],
-                    "listing_id": userData["listingId"],
-                    "recentbooking_no": len(user["recentBookings"]),
-                    "date": today,
-                    "start_time": start_time,
-                    "end_price": "",
-                    "feedback": "",
-                    "end_image_url": "", 
-                    "total_time": "",
-                    "is_paid": False,
-                    "payment_id": "",
+            "address": user_listings[listing_no]["address"],
+            "listing_id": userData["listingId"],
+            "recentbooking_no": len(user["recentBookings"]),
+            "date": today,
+            "start_time": start_time,
+            "end_price": "",
+            "feedback": "",
+            "end_image_url": "", 
+            "total_time": "",
+            "is_paid": False,
+            "payment_id": "",
         }
 
         ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
