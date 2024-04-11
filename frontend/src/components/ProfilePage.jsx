@@ -35,10 +35,29 @@ const ProfilePage = (props) => {
         setFormData({ ...formData, [name]: value });
     };
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Form submitted:', formData);
-        // add fetch request to change backend data here
+        try {
+            const response = await fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    email: formData.email
+                },
+                body: JSON.stringify(formData),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const data = await response.json();
+            console.log('User data updated successfully:', data);
+            // Handle success, update UI, etc.
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
     };
 
     const handleImageChange = (e) => {

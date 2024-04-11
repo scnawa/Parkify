@@ -145,29 +145,6 @@ function Booking(props) {
         }
     };
 
-    /* const createBooking = async() => {
-        const userData = {
-            "email": props.token,
-            "listingId": listing_id,
-        }
-        try {
-          const response = await fetch('/create_booking', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-          });
-      
-          if (!response.ok) {
-            throw new Error('Failed to create booking');
-          } 
-          const responseData = await response.json();
-          console.log(responseData);
-        } catch (error) {
-          console.error('Error creating booking:', error.message);
-        }
-      } */
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);

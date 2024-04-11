@@ -7,11 +7,7 @@ import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 const History = (props) => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
-  const [isThumbUp, setIsThumbUp] = useState(false);
-
-  const handleThumbClick = () => {
-    setIsThumbUp(!isThumbUp);
-  };
+  const [likeStatus, setLikeStatus] = useState([]);
 
   useEffect(() => {
     fetchBookings();
@@ -31,8 +27,9 @@ const History = (props) => {
         throw new Error('Failed to get user info');
       }
       const userInfo = await response.json();
-      console.log(userInfo);
+      console.log(userInfo.recentBookings);
       setBookings(userInfo.recentBookings);
+      setLikeStatus(Array(userInfo.recentBookings.length).fill(false));
     } catch (error) {
       console.error('Error getting user info:', error.message);
     }
@@ -65,6 +62,14 @@ const History = (props) => {
     return `${hours} hr${hours > 1 ? 's' : ''}`;
   };
 
+  const handleThumbClick = (index) => {
+    // Create a copy of the current like status array
+    const updatedLikeStatus = [...likeStatus];
+    // Toggle the like status for the specific booking
+    updatedLikeStatus[index] = !updatedLikeStatus[index];
+    // Update the state with the new like status array
+    setLikeStatus(updatedLikeStatus);
+  };
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Grid container spacing={3}>
@@ -82,15 +87,15 @@ const History = (props) => {
               </Typography>
               <Box display="flex" justifyContent="flex-end">
                 <Box sx={{ mt: 1 , mr: 1}}>
-                  {isThumbUp ? (
+                  {likeStatus[index] ? (
                     <ThumbUpAltIcon 
-                    onClick={handleThumbClick}
-                    sx={{ color: "blue", fontSize: 30 }} 
+                      onClick={() => handleThumbClick(index)}
+                      sx={{ color: "blue", fontSize: 30 }} 
                     />
                   ) : (
                     <ThumbUpOffAltIcon 
-                    onClick={handleThumbClick} 
-                    sx={{ color: "blue", fontSize: 30 }} 
+                      onClick={() => handleThumbClick(index)} 
+                      sx={{ color: "blue", fontSize: 30 }} 
                     />
                   )}
                 </Box>
