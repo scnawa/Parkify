@@ -4,6 +4,7 @@ import math
 from operator import truediv
 from pickle import FALSE, TRUE
 import this
+import threading
 from unittest import result
 from flask import Flask, jsonify, request, session, redirect
 from jinja2 import Undefined
@@ -26,8 +27,12 @@ import re
 import stripe
 import datetime
 from datetime import date
+import time
 
-class User: 
+class User:
+    timer = threading.Timer(0, 'hello')
+    #def __init__(self):
+     #   self.timer = threading.Thread()
     def signup(self, userData): 
         latitude, longitude = geocoder.ip('me').latlng
         user = { 
@@ -427,6 +432,7 @@ class User:
 
         if user:
                 db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": start_time}})
+                # listing no to book 
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
                 filter = {"listings.listing_id": userData["listingId"]}
@@ -435,12 +441,21 @@ class User:
                 filter = {"listing_id": userData["listingId"]}
                 newvalues = {"$set" : user_listings[listing_no]}
                 db.listing_data.update_one(filter, newvalues)
+                self.timer = threading.Timer(10, User.timer_thread, args=(User, userData,))
+                self.timer.start()
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
+    def timer_thread(self, userData): 
+        # release listing 
+        User.release_listing(self, userData)
+
+
+
 
     # puts listing on page
     def release_listing(self, userData):
+        self.timer.cancel()
         # print(userData)
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -452,6 +467,7 @@ class User:
         if user:
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "True"})
+                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": ""}})
                 filter = {"listings.listing_id": userData["listingId"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
@@ -484,6 +500,8 @@ class User:
         return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
+        if self.timer:
+            self.timer.cancel()
         # check if the user exists
         # print(userData)
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -615,51 +633,7 @@ class User:
             return json_util.dumps(discounted_price)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    """ def testPay(self, userData):
-        paymentMethods = stripe.PaymentMethod.list(
-            customer="cus_PpxZVOFpOPxNHM",
-            limit=3
-        )
-        if len(paymentMethods.data) <= 0:
-            return jsonify({"type": "payment", "error": "payment failed"}), 402
-        paymentMethodId = paymentMethods.data[0].id
-        try:
-            stripe.PaymentIntent.create(
-            amount=200*100,
-            currency='AUD',
-            customer="cus_PpxZVOFpOPxNHM",
-            payment_method=paymentMethodId,
-            off_session=True,
-
-            # error_on_requires_action=True,
-            confirm=True,
-            )
-            stripe.Transfer.create(
-                amount=int(200 * 0.85 * 100),
-                currency="AUD",
-                destination="acct_1P0HeLPa3wzFl1vn",
-            )
-
-        # err handling from https://docs.stripe.com/payments/without-card-authentication
-        except stripe.error.CardError as e:    
-            return json.dumps({'error': e.user_message}), 400
-        return json_util.dumps({"status":"success"}) """
-
-
-
-    #def updateListingDatabase(self): 
-    #    user_database = db.userbase_data.find({})
-    #    
-    #    listings = []
-    #    for user in user_database: 
-    #        if 'listings' in user: 
-    #            for listing in user['listings']: 
-    #                listings.append(listing)
-    #    for listing in listings: 
-    #        temp = db.listing_data.find_one({"address": listing["address"]}) 
-    #        if temp is None: 
-    #            db.listing_data.insert_one(listing)
-
+    
     def filterByPriceAndDistance(self, headers): 
         order = headers["order"]
         if headers["distance"] == "":
@@ -816,25 +790,6 @@ class User:
             return jsonify({"default_payment": user['default_payment_id'], "cards":other_cards})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
-    # def pay_booking(self, userData): 
-    #     user = db.userbase_data.find_one({"email": userData['email']})
-    #     if user:
-    #         booking_list = user["recentBookings"]
-    #         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listings"]["listing_id"]})
-    #         booking = booking_list[userData.bookingId]
-    #         price = booking[end_price]
-    #         listing_id = booking[listing_id]
-    #         listing = db.userbase_data.find_one({"listings.listing_id": listing_id})
-    #         payment = stripe.PaymentIntent.create(
-    #             amount=price,
-    #             currency="aud",
-    #             automatic_payment_methods={"enabled": True},
-    #             customer=user[payment_id]
-    #         )
-    #         respond = {"price":price, "address": listing.address, "client_secret":payment.client_secret }
-    #         return json_util.dumps(respond)
-
-
     def get_specific_listing(self, headers):
         # user should be able to view listing before login in
         # check if the user exists
@@ -928,7 +883,7 @@ class User:
             return json_util.dumps(disputes_list)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
         
-
+    
     def get_recentBookings(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})

@@ -68,7 +68,9 @@ function AdminDisputes(props) {
       <Grid container spacing={2}>
         {disputes.map((dispute) => (
           <Grid item xs={12} md={6} lg={4} key={dispute.dispute_id}>
-            <Card>
+            <Card sx={{
+          bgcolor: 'white',
+        }}>
               <CardContent>
                 <Typography variant="h6">{dispute.address}</Typography>
                 <Typography variant="body1">Date: {dispute.date}</Typography>
