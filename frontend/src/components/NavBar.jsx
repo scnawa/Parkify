@@ -41,13 +41,10 @@ const searchBarStyleDesktop = {
 	"margin-left": "10px",
 }
 const searchBarStyleMobile = {
-		// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
 	"display": { xs: 'block', sm: 'None', md: 'None' },
-	"backgroundColor":"#ffffff",
+	"backgroundColor": "#ffffff",
 	"border": '1px solid #ddd',
 	"borderRadius": '4px',
-
-	
 }
 
 const font1 = "'Nunito Sans', sans-serif";
@@ -240,43 +237,43 @@ function NavBar(props) {
 											color: 'green.light',
 											fontFamily: 'time',
 											letterSpacing: '.06rem',
-											marginLeft:'2px'
+											marginLeft: '2px'
 										}}>
 
 										{item}
 									</Button>
 								))}
-								{(location.pathname === "/" || location.pathname === "/alllistings") && (
-									<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row' }}>
-										<TextField sx={searchBarStyleDesktop}
-											label="search for space" type="search" variant="filled"
-											onChange={(e) => setSearchQuery(e.target.value)}
-											value={searchQuery}
-										/>
-										<TextField sx={searchBarStyleMobile}
-											label="search for space" type="search" variant="standard"
-											onChange={(e) => setSearchQuery(e.target.value)}
-											value={searchQuery}
-										/>
-										<Button
-											type="submit"
-											variant="contained"
-											sx={{
-												ml: 0.4,
-												bgcolor: 'black',
-												'&:hover': {
-													bgcolor: 'black', // lighter green on hover
-												},
-												borderRadius: '4px',
-												padding: '10px 16px'
-											}}
-										>
-											Search
-										</Button>
-									</form>
-								)}
-
 							</Box>
+							{(location.pathname === "/" || location.pathname === "/alllistings") && (
+								<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row' }}>
+									<TextField sx={searchBarStyleMobile}
+										label="search for space" type="search" variant="standard"
+										onChange={(e) => setSearchQuery(e.target.value)}
+										value={searchQuery}
+									/>
+									<TextField sx={searchBarStyleDesktop}
+										label="search for space" type="search" variant="standard"
+										onChange={(e) => setSearchQuery(e.target.value)}
+										value={searchQuery}
+									/>
+
+									<Button
+										type="submit"
+										variant="contained"
+										sx={{
+											ml: 0.4,
+											bgcolor: 'black',
+											'&:hover': {
+												bgcolor: 'black', // lighter green on hover
+											},
+											borderRadius: '4px',
+											padding: '10px 16px'
+										}}
+									>
+										Search
+									</Button>
+								</form>
+							)}
 
 
 							{token && (
@@ -319,7 +316,7 @@ function NavBar(props) {
 												(<MenuItem key="customerHistory" onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>),
 												(<MenuItem key="rentOut" onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>),
 												(<MenuItem key="payment" onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>),
-												(<MenuItem key="RentSpaces" sx={{display:{xs: 'flex', sm: 'none', md: 'none'}}}onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
+												(<MenuItem key="RentSpaces" sx={{ display: { xs: 'flex', sm: 'none', md: 'none' } }} onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
 											]
 										)}
 										<MenuItem onClick={logOut}>Log out</MenuItem>
