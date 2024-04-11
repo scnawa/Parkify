@@ -49,7 +49,7 @@ function AllListings(props) {
                 'email': props.token,
                 'lat': userLocation[0],
                 'lon': userLocation[1],
-        },
+            },
         })
             .then(response => response.json())
             .then(data => {
@@ -100,18 +100,18 @@ function AllListings(props) {
 
     const handleDistanceChange = (event) => {
         const value = event.target.value;
-    
+
         const numericOnly = value.replace(/[^\d]/g, '');
-    
+
         const intValue = parseInt(numericOnly, 10);
-    
+
         if (!isNaN(intValue)) {
-            setDistance(intValue.toString()); 
+            setDistance(intValue.toString());
         } else {
-            setDistance(''); 
+            setDistance('');
         }
     };
-    
+
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
