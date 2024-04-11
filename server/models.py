@@ -28,9 +28,11 @@ import stripe
 import datetime
 from datetime import date
 import time
-imp
 
-class User: 
+class User:
+    timer = threading.Timer(0, 'hello')
+    #def __init__(self):
+     #   self.timer = threading.Thread()
     def signup(self, userData): 
         latitude, longitude = geocoder.ip('me').latlng
         user = { 
@@ -439,23 +441,21 @@ class User:
                 filter = {"listing_id": userData["listingId"]}
                 newvalues = {"$set" : user_listings[listing_no]}
                 db.listing_data.update_one(filter, newvalues)
-                timer = threading.Timer(600, User.timer_thread, args=(userData,))
-                timer.start()
+                self.timer = threading.Timer(10, User.timer_thread, args=(User, userData,))
+                self.timer.start()
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def timer_thread(self, userData): 
         # release listing 
-        '''provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        user_listings = provider_user.get('listings')
-        listing_no = userData["listingNo"] 
-        if user_listings[listing_no]['is_active'] == False:'''
-        User.release_listing(userData)
+        User.release_listing(self, userData)
 
-    
+
+
 
     # puts listing on page
     def release_listing(self, userData):
+        self.timer.cancel()
         # print(userData)
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
@@ -500,6 +500,8 @@ class User:
         return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
+        if self.timer:
+            self.timer.cancel()
         # check if the user exists
         # print(userData)
         user = db.userbase_data.find_one({"email": userData['email']})
