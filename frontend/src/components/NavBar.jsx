@@ -29,7 +29,7 @@ const theme = createTheme({
 		},
 	},
 });
-const searchBarStyle = {
+const searchBarStyleDesktop = {
 	// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
 	"& label.Mui-focused": {
 		'color': "#E0F2F1"
@@ -37,6 +37,17 @@ const searchBarStyle = {
 	"& .MuiFilledInput-underline:after": {
 		'borderBottomColor': "#E0F2F1"
 	},
+	"display": { xs: 'None', sm: 'block', md: 'block' },
+	"margin-left": "10px",
+}
+const searchBarStyleMobile = {
+		// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
+	"display": { xs: 'block', sm: 'None', md: 'None' },
+	"backgroundColor":"#ffffff",
+	"border": '1px solid #ddd',
+	"borderRadius": '4px',
+
+	
 }
 
 const font1 = "'Nunito Sans', sans-serif";
@@ -79,7 +90,7 @@ function NavBar(props) {
 	const isAdmin = props.isAdmin;
 	const setIsAdmin = props.setIsAdmin;
 	const location = useLocation();
-	const [pages, setPages] = React.useState([]);
+	const [pages, setPages] = React.useState(['My Parking Space']);
 
 	const navigate = useNavigate();
 
@@ -87,7 +98,7 @@ function NavBar(props) {
 		if (isAdmin) {
 			setPages(["MANAGE USERS", "DISPUTES"]);
 		} else {
-			setPages([]);
+			setPages(['My Parking Space']);
 		}
 	}, [isAdmin]);
 
@@ -110,8 +121,9 @@ function NavBar(props) {
 	// TODO: navigate different page
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
+		console.log(text);
 		switch (text) {
-			case "MY SPACES":
+			case "MY PARKING SPACE":
 				navigate("/myListing");
 				break;
 			case "MANAGE USERS":
@@ -224,9 +236,11 @@ function NavBar(props) {
 								{pages.map((item) => (
 									<Button key={item} onClick={pageOnClick}
 										sx={{
+											display: { xs: 'None', sm: 'block', md: 'block' },
 											color: 'green.light',
 											fontFamily: 'time',
 											letterSpacing: '.06rem',
+											marginLeft:'2px'
 										}}>
 
 										{item}
@@ -234,8 +248,13 @@ function NavBar(props) {
 								))}
 								{(location.pathname === "/" || location.pathname === "/alllistings") && (
 									<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row' }}>
-										<TextField sx={searchBarStyle}
+										<TextField sx={searchBarStyleDesktop}
 											label="search for space" type="search" variant="filled"
+											onChange={(e) => setSearchQuery(e.target.value)}
+											value={searchQuery}
+										/>
+										<TextField sx={searchBarStyleMobile}
+											label="search for space" type="search" variant="standard"
 											onChange={(e) => setSearchQuery(e.target.value)}
 											value={searchQuery}
 										/>
@@ -300,7 +319,7 @@ function NavBar(props) {
 												(<MenuItem key="customerHistory" onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>),
 												(<MenuItem key="rentOut" onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>),
 												(<MenuItem key="payment" onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>),
-												(<MenuItem key="RentSpaces" onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
+												(<MenuItem key="RentSpaces" sx={{display:{xs: 'flex', sm: 'none', md: 'none'}}}onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
 											]
 										)}
 										<MenuItem onClick={logOut}>Log out</MenuItem>
