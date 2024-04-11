@@ -110,7 +110,6 @@ class User:
 
     def checkAdmin(self, headers): 
         user = db.userbase_data.find_one({"email": headers['email']})
-        print(user)
         if user:
             is_admin = user.get('isAdmin', False)
             return jsonify({'isAdmin': is_admin})
@@ -205,6 +204,7 @@ class User:
                 "details": userData['listings']['details'],
                 "restrictions": userData['listings']['restrictions'],
                 "image_url": userData['listings']['image_url'], 
+                "images": userData['listings']['images'],
                 "start_date": "",
                 "end_date": "",
                 "is_active": 'False',
@@ -330,7 +330,8 @@ class User:
                     "quantity": userData['listings']['quantity'], 
                     "details": userData['listings']['details'],
                     "restrictions": userData['listings']['restrictions'],
-                    "image_url": userData['listings']['image_url'], 
+                    "image_url": userData['listings']['image_url'],
+                    "images": userData['listings']['images'], 
                     "start_date": userData['listings']['start_date'],
                     "end_date": userData['listings']['end_date'],
                     "is_active": userData['listings']['is_active']  
@@ -479,7 +480,6 @@ class User:
 
             if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
                 closestListings.append(listing)
-        print(closestListings)
         return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
@@ -726,7 +726,6 @@ class User:
             if is_admin:
                 return jsonify({"type": "User", "error": "Admin Account"}), 402
             account = stripe.Account.retrieve(user['payOut_id'])
-            print(account)
             if not account.payouts_enabled:
                 return jsonify({"type": "User", "error": "Please provide or update provider details"}), 402
 

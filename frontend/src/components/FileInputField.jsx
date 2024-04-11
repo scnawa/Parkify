@@ -1,5 +1,12 @@
 import { Button } from "@mui/material";
-function FileInputField({ multiple, setImage, content, required, color }) {
+function FileInputField({ multiple, setImage, content, required, color, onChange, inputRef }) {
+	let handleChange = (e) => {
+		const file = e.target.files;
+		setImage(file);
+	};
+	if (onChange) {
+		handleChange = onChange;
+	}
 	return (
 		<Button
 			variant="contained"
@@ -11,11 +18,7 @@ function FileInputField({ multiple, setImage, content, required, color }) {
 			<input
 				type="file"
 				accept="image/*"
-				onChange={e => {
-					const file = e.target.files;
-					setImage(file);
-				}
-				}
+				onChange={handleChange}
 				// following css is provided by https://mui.com/material-ui/react-button/
 
 				style={{
@@ -31,6 +34,7 @@ function FileInputField({ multiple, setImage, content, required, color }) {
 				}}
 				multiple={multiple}
 				required={required}
+				ref={inputRef}
 			/>
 		</Button>
 	)

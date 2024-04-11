@@ -62,8 +62,13 @@ body {
     margin-left: 5px;
   }
   .listing-img {
-    width: 100%;
-    height: auto;
+    width: 100vw;
+    height: 40vh;
+    object-fit: cover;
+  }
+  .img-container {
+    width: 100vw;
+    height: 40vh;
   }
 }
 @media only screen and (min-width: 601px) {
@@ -118,7 +123,12 @@ body {
   }
   .listing-img {
     width: 40vw;
-    height: auto;
+    height: 45vh;
+    object-fit: cover;
+  }
+  .img-container {
+    width: 40vw;
+    height: 45vh;
   }
 }
 

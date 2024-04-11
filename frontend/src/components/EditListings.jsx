@@ -5,7 +5,13 @@ import { useLocation } from 'react-router-dom';
 
 import TextInputField from './TextInputField';
 import FileInputField from './FileInputField';
-import Background from '../assets/car.png'
+import Background from '../assets/car.png';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import ClearIcon from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
+
 const pageStyle = {
     backgroundImage: `url(${Background})`,
     "backgroundSize": "cover",
@@ -27,14 +33,12 @@ const theme = createTheme({
 const uploadFile = (file) => {
     let targetFile;
     // https://stackoverflow.com/questions/4059147/check-if-a-variable-is-a-string-in-javascript
-    if (file.length === 0) {
+    if (!file) {
         return Promise.resolve('');
-    }
-    else if (typeof file === 'string' || file instanceof String) {
+    } else if (typeof file === 'string' || file instanceof String) {
         return Promise.resolve(file);
     } else {
-        console.log("yes");
-        targetFile = file[0];
+        targetFile = file;
     }
     const expectedType = ['image/jpeg', 'image/png', 'image/jpg']
     const valid = expectedType.find(type => type === targetFile.type);
@@ -54,6 +58,8 @@ function EditListings(props) {
     const { state } = useLocation();
     console.log("editListings " + state.token)
     const [listing, setListing] = React.useState(state.listing);
+    const thumbnailRef = React.useRef('');
+    const imagesRef = React.useRef('');
 
     const navigate = useNavigate();
     React.useEffect(() => {
@@ -151,6 +157,36 @@ function EditListings(props) {
             setListing(new_listing);
         }
     }
+    const handleThubnailChange = (e) => {
+        console.log(e.target.files);
+        uploadFile(e.target.files[0]).then((url) => { handleChange('image_url')(url); }).then(() => {
+            thumbnailRef.current = "";
+        }
+        ).catch(alert);
+        console.log(listing);
+
+    }
+    const handleImagesChangle = (e) => {
+        console.log(Array.from(e.target.files)[0]);
+        let imagePromises = Array.from(e.target.files).map((file) => uploadFile(file));
+        // i handled the multiple images upload similarly in my comp6080 assignment 4
+        // since this part of code is general and i don't know another way to do it
+        Promise.allSettled(imagePromises).then((results) => {
+            console.log(results);
+            return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
+        }).then((new_images) => {
+            handleChange('images')([...listing.images, ...new_images]);
+            imagesRef.current = "";
+        }).catch(alert);
+    }
+
+    const handleThumbnailDelete = () => {
+        handleChange('image_url')('');
+    }
+    const handleImageDelete = (removeIndex) => {
+        handleChange('images')(listing.images.filter((_, index) => index != removeIndex));
+    }
+
     return (
         <ThemeProvider theme={theme} >
 
@@ -176,8 +212,57 @@ function EditListings(props) {
                         <TextInputField label="Restrictions:" setFunction={handleChange("restrictions")} value={listing.restrictions} color="success" variant="outlined" multiline={true} />
                         {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
                         <p></p>
-                        <FileInputField color='green' variant="contained" multiple={false} setImage={handleChange("image_url")} content="Upload Thumbnail" required={false} />
-                        {/* <FileInputField multiple={true} setImage={setImages} content="More Images" /> */}
+                        <FileInputField multiple={false} color="green" onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" />
+                        {listing.image_url ? (
+                            <>
+                                <ImageListItem>
+                                    <img src={listing.image_url} style={{ 'height': '200px', 'object-fit': 'cover' }} />
+
+                                    <ImageListItemBar
+                                        title="thumbnail"
+                                        actionIcon={
+                                            <IconButton
+                                                sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                                aria-label={'button to remove thumbnail'}
+                                                onClick={handleThumbnailDelete}
+                                            >
+                                                <ClearIcon />
+                                            </IconButton>
+                                        }
+                                    />
+
+                                </ImageListItem>
+                            </>
+                        ) : null}
+                        <FileInputField multiple={true} color="green" onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" />
+                        {listing.images && listing.images.length != 0 ? (
+                            <>
+                                <ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
+
+                                    {listing.images.map((image, index) => (
+                                        <ImageListItem key={image}>
+                                            <img src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
+                                            <ImageListItemBar
+                                                title={"images" + index}
+                                                actionIcon={
+                                                    <IconButton
+                                                        sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                                        aria-label={'button to remove image'}
+                                                        onClick={() => { handleImageDelete(index); }}
+                                                    >
+                                                        <ClearIcon />
+                                                    </IconButton>
+                                                }
+                                            />
+
+                                        </ImageListItem>
+
+                                    ))}
+                                </ImageList>
+
+                            </>
+
+                        ) : null}
                         <Box>
                             <Button color='success' variant="contained" type="submit">Edit</Button>
                             <Button color='success' variant="contained" onClick={handleRemove} sx={{ ml: '21px' }}>Remove</Button>
