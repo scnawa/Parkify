@@ -17,6 +17,7 @@ const ProfilePage = (props) => {
         const fetchData = async () => {
           try {
             const userData = await GetUser(props.token);
+            console.log(userData);
             setFormData({
                 ...formData,
                 name: userData.username,  
@@ -130,6 +131,7 @@ const ProfilePage = (props) => {
                         value={formData.email}
                         onChange={handleInputChange}
                     />
+
                     <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
                         <Button
                             type="submit"

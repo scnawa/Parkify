@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Paper, Grid, Typography, Button, Box } from '@mui/material';
+import { Container, Paper, Grid, Typography, Button, Box} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-  
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 
 const History = (props) => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
+  const [isThumbUp, setIsThumbUp] = useState(false);
+
+  const handleThumbClick = () => {
+    setIsThumbUp(!isThumbUp);
+  };
 
   useEffect(() => {
     fetchBookings();
@@ -75,6 +81,19 @@ const History = (props) => {
                 Time: {formatTime(booking.total_time)}
               </Typography>
               <Box display="flex" justifyContent="flex-end">
+                <Box sx={{ mt: 1 , mr: 1}}>
+                  {isThumbUp ? (
+                    <ThumbUpAltIcon 
+                    onClick={handleThumbClick}
+                    sx={{ color: "blue", fontSize: 30 }} 
+                    />
+                  ) : (
+                    <ThumbUpOffAltIcon 
+                    onClick={handleThumbClick} 
+                    sx={{ color: "blue", fontSize: 30 }} 
+                    />
+                  )}
+                </Box>
                 <Button 
                   variant="outlined" 
                   onClick={() => handleDispute(booking)}

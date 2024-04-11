@@ -62,7 +62,7 @@ function Booking(props) {
         fetchPreBookingTimer();
 
         return;
-    }, []);
+    }, [props.token]);
     useEffect(() => {
         const interval = setInterval(() => {
             setTimer((prevTimer) => Math.max(prevTimer - 1, 0));

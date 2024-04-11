@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@mui/lab": "^5.0.0-alpha.169",
-    "@mui/material": "^5.15.14"
+    "@mui/material": "^5.15.14",
+    "react-countdown-circle-timer": "^3.2.1"
   }
 }
