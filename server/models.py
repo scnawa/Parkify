@@ -441,7 +441,7 @@ class User:
                 filter = {"listing_id": userData["listingId"]}
                 newvalues = {"$set" : user_listings[listing_no]}
                 db.listing_data.update_one(filter, newvalues)
-                self.timer = threading.Timer(10, User.timer_thread, args=(User, userData,))
+                self.timer = threading.Timer(600, User.timer_thread, args=(User, userData,))
                 self.timer.start()
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
