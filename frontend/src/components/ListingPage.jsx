@@ -7,14 +7,16 @@ import 'leaflet/dist/leaflet.css';
 import location from '../assets/location.png';
 import { MapChild } from "./CreateListings";
 import Background from '../assets/car.png';
+import { Splide, SplideSlide } from '@splidejs/react-splide';
+import '@splidejs/react-splide/css';
 
 const placeholder = L.icon({
-	iconUrl: location,
-	iconSize: [30, 30]
+    iconUrl: location,
+    iconSize: [30, 30]
 });
 
 function ListingPage(props) {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [token, setToken] = React.useState(localStorage.getItem('token'));
 
     const { listing_id } = useParams();
@@ -24,21 +26,21 @@ function ListingPage(props) {
     const [error, setError] = useState(null);
     // console.log(props);
     useEffect(() => {
-/*         const abortController = new AbortController();
-        const signal = abortController.signal; */
+        /*         const abortController = new AbortController();
+                const signal = abortController.signal; */
         // console.log(props);
         const fetchPayment = async () => {
-			try {
-				const response = await fetch('http://localhost:8080/getDefaultCard', {
-					method: 'Get',
-					headers: {
-						'Content-Type': 'application/json',
-						'email': token,
-					},
-				});
+            try {
+                const response = await fetch('http://localhost:8080/getDefaultCard', {
+                    method: 'Get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'email': token,
+                    },
+                });
 
 
-				const data = await response.json();
+                const data = await response.json();
                 if (data.error) {
                     return Promise.reject(data.error);
                 } else {
@@ -47,7 +49,7 @@ function ListingPage(props) {
             } catch (error) {
                 return Promise.reject(error);
             }
-		};
+        };
 
         const fetchListing = async () => {
             try {
@@ -87,10 +89,10 @@ function ListingPage(props) {
         }
 
         // Cleanup function to abort fetch on component unmount
-       /*  return () => {
-            abortController.abort();
-        }; */
-    }, [listing_id, defaultPayment]);
+        /*  return () => {
+             abortController.abort();
+         }; */
+    }, []);
     const handleBookNow = async () => {
         if (!token) {
             navigate("/login");
@@ -117,12 +119,12 @@ function ListingPage(props) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }, 
+                },
                 body: JSON.stringify(data),
             });
 
             if (response.ok) {
-                navigate('/book', { state: { listing_id, ListingNo} });
+                navigate('/book', { state: { listing_id, ListingNo } });
                 //console.log("booked")
             } else {
                 alert("Failed to book")
@@ -132,27 +134,50 @@ function ListingPage(props) {
             console.error('API call failed:', error);
         }
     };
-    let locations = [50,50];
-    let mapProps = {...listing};
-	if (listing && listing.latitude
+    let locations = [50, 50];
+    let mapProps = { ...listing };
+    if (listing && listing.latitude
         && listing.longitude) {
-		locations = [listing.latitude, listing.longitude];
+        locations = [listing.latitude, listing.longitude];
         mapProps.lat = listing.latitude;
         mapProps.lon = listing.longitude;
 
 
-	}
+    }
     console.log(listing);
 
     return (
         <div>
             {error && <div>Error: {error}</div>}
             {listing ? (
-                <div className="listing-page-container">    
+                <div className="listing-page-container">
                     <div className="listing-page">
                         <div className="listing-left-box">
-                            <h2 style={{'marginLeft': '5px'}}>{listing.address}</h2>
-                            <img className="listing-img"src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
+                            <h2 style={{ 'marginLeft': '5px' }}>{listing.address}</h2>
+                            <div className="listing">
+                                <div className="img-container">
+                                    {/* i used a similar structure of images and carousel in my comp6080 assignment 4,
+                                    but the actual libraries used are different. and the css style is also different
+                                */}
+                                    <Splide options={{ autoWidth: true, rewind: true, preloadPages: 2, drag: false }} aria-label="React Splide Example">
+                                        <SplideSlide>
+                                            <img className="listing-img" src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
+                                        </SplideSlide>
+                                        {(listing.images && listing.images.length != 0) ? (
+                                            <>
+                                                {listing.images.map((image, index) => (
+                                                    <SplideSlide>
+                                                        <img className="listing-img" src={image} alt="Parking space"></img>
+                                                    </SplideSlide>
+
+                                                ))
+                                                }</>
+                                        ) : null}
+                                    </Splide>
+                                </div>
+
+                            </div>
+
                             <div className="details-box">
                                 <h4>Description:</h4>
                                 <p>{listing.details}</p>
@@ -167,31 +192,31 @@ function ListingPage(props) {
                                 <div className="top-price-box"><h3>Price: ${listing.price}.00/hr</h3></div>
                                 <div>Parking space is avaliable</div>
                             </div>
-                                <div className="booking-box">
-                                    <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
-                                </div>
+                            <div className="booking-box">
+                                <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
                             </div>
+                        </div>
                         {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
 						    https://react-leaflet.js.org/docs/example-popup-marker/*/}
-						<div style={{ width: "100%", height: "80vh",'margin-top':'3px'}}>
-							<MapContainer center={locations} zoom={15} style={{ width: '100%', height: '100%'}}>
-								<TileLayer
-									attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-									style={{ width: '100%', height: '100%' }}
-								/>
-									<div>
-										<Marker icon={placeholder} position={locations}>
-										</Marker>
-									</div>
-								
-								<MapChild addressGeo={listing} />
-							</MapContainer>
-						</div>
+                        <div style={{ width: "100%", height: "80vh", 'margin-top': '3px' }}>
+                            <MapContainer center={locations} zoom={15} style={{ width: '100%', height: '100%' }}>
+                                <TileLayer
+                                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+                                <div>
+                                    <Marker icon={placeholder} position={locations}>
+                                    </Marker>
+                                </div>
+
+                                <MapChild addressGeo={listing} />
+                            </MapContainer>
+                        </div>
 
                     </div>
 
-                </div>    
+                </div>
             ) : (
                 <div>Loading...</div>
             )}

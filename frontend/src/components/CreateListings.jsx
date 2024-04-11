@@ -9,6 +9,12 @@ import Background from '../assets/car.png';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import location from '../assets/location.png';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import ClearIcon from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
+
 const placeholder = L.icon({
 	iconUrl: location,
 	iconSize: [30, 30]
@@ -47,10 +53,10 @@ export function MapChild(props) {
 // the general purpose file image processing function is from comp6080 assignment 4
 const uploadFile = (file) => {
 	let targetFile;
-	if (file.length === 0) {
+	if (!file) {
 		return Promise.resolve('');
 	} else {
-		targetFile = file[0];
+		targetFile = file;
 	}
 	const expectedType = ['image/jpeg', 'image/png', 'image/jpg']
 	const valid = expectedType.find(type => type === targetFile.type);
@@ -78,8 +84,12 @@ function CreateListings(props) {
 	const [quantity, setQuantity] = React.useState(0);
 
 	const [restriction, setRestriction] = React.useState('');
-	const [thumbnail, setThumbnail] = React.useState([]);
+	const [thumbnail, setThumbnail] = React.useState('');
 	const [images, setImages] = React.useState([]);
+	const thumbnailRef = React.useRef('');
+	const imagesRef = React.useRef('');
+
+
 	const loaded = React.useRef(false);
 	console.log(addressGeo);
 	const location = useLocation();
@@ -130,7 +140,8 @@ function CreateListings(props) {
 					"quantity": quantity,
 					"details": detail,
 					"restrictions": restriction,
-					"image_url": url
+					"image_url": url,
+					"images": images,
 				}
 			}
 			console.log(data);
@@ -174,7 +185,34 @@ function CreateListings(props) {
 		locations = [addressGeo.lat, addressGeo.lon];
 
 	}
+	const handleThubnailChange = (e) => {
+		console.log(e.target.files);
+		uploadFile(e.target.files[0]).then((url) => { setThumbnail(url); }).then(() => {
+			thumbnailRef.current = "";
+		}
+		).catch(alert);
+	}
+	const handleImagesChangle = (e) => {
+		console.log(Array.from(e.target.files)[0]);
+		let imagePromises = Array.from(e.target.files).map((file) => uploadFile(file));
+		// i handled the multiple images upload similarly in my comp6080 assignment 4
+		// since this part of code is general and i don't know another way to do it
+		Promise.allSettled(imagePromises).then((results) => {
+			console.log(results);
+			return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
+		}).then((new_images) => {
 
+			setImages([...images, ...new_images]);
+			imagesRef.current = "";
+		}).catch(alert);
+	}
+
+	const handleThumbnailDelete = () => {
+		setThumbnail('');
+	}
+	const handleImageDelete = (removeIndex) => {
+		setImages(images.filter((_, index) => index != removeIndex));
+	}
 
 	return (
 		<ThemeProvider theme={theme} >
@@ -243,9 +281,57 @@ function CreateListings(props) {
 						<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} required={true} />
 						<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} required={true} />
 						{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
-						<FileInputField multiple={false} color="green" setImage={setThumbnail} content="Upload Thumbnail" />
-						{/* <FileInputField multiple={true} setImage={setImages} content="Upload Additional Images" /> */}
+						<FileInputField multiple={false} color="green" setImage={setThumbnail} onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" />
+						{thumbnail ? (
+							<>
+								<ImageListItem>
+									<img src={thumbnail} style={{ 'height': '200px', 'object-fit': 'cover' }} />
 
+									<ImageListItemBar
+										title="thumbnail"
+										actionIcon={
+											<IconButton
+												sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+												aria-label={'button to remove thumbnail'}
+												onClick={handleThumbnailDelete}
+											>
+												<ClearIcon />
+											</IconButton>
+										}
+									/>
+
+								</ImageListItem>
+							</>
+						) : null}
+						<FileInputField multiple={true} color="green" setImage={setImages} onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" />
+						{images.length != 0 ? (
+							<>
+								<ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
+
+									{images.map((image, index) => (
+										<ImageListItem key={image}>
+											<img src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
+											<ImageListItemBar
+												title={"images" + index}
+												actionIcon={
+													<IconButton
+														sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+														aria-label={'button to remove image'}
+														onClick={() => { handleImageDelete(index); }}
+													>
+														<ClearIcon />
+													</IconButton>
+												}
+											/>
+
+										</ImageListItem>
+
+									))}
+								</ImageList>
+
+							</>
+
+						) : null}
 						<Button variant="contained" color="green" type="submit">Create</Button>
 					</Box>
 				</Paper>
