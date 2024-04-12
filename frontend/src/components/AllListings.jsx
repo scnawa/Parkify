@@ -151,7 +151,7 @@ function AllListings(props) {
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ margin: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', rowGap: '3px' }}>
                     <Typography variant="h4" component="div">
                         Active Parking Spaces
                     </Typography>

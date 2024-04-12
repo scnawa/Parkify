@@ -264,7 +264,6 @@ def update_user():
 def create_dispute(): 
     headers = request.headers
     userData = json.loads(request.data)
-    print(headers['email'])
     return config.User().create_dispute(userData, headers)
 
 @APP.route('/getEmail', methods = ['GET'])
@@ -281,6 +280,12 @@ def get_disputes():
 def get_recentBookings(): 
     userData = request.headers
     return config.User().get_recentBookings(userData)
+
+@APP.route('/resolveDispute', methods = ['POST'])
+def resolve_dispute(): 
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().resolve_dispute(userData, headers)
 
 
 
