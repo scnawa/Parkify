@@ -51,7 +51,8 @@ class User:
             "default_payment_id":"",
             "is_stripe_connected": False,
             "pre_booking_time": "",
-            "profile_picture": ""
+            "profile_picture": "", 
+            "liked_listings": []
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -215,7 +216,8 @@ class User:
                 "is_active": 'False',
                 "latitude": float(userData['listings']['lat']),
                 "longitude": float(userData['listings']['lon']),
-                "recentBookings": []
+                "recentBookings": [], 
+                "likes": 0
             }
 
             user_listings = user['listings']
@@ -796,8 +798,18 @@ class User:
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        provider_user = db.listing_data.find_one({"listing_id": headers["listingId"]})
-        return json_util.dumps(provider_user)
+
+        listing_data = db.listing_data.find_one({"listing_id": headers["listingId"]})
+        if user: 
+            listing_data['booked_previously'] = False
+            listing_data['has_liked'] = False
+            for listing in user['recentBookings']: 
+                if listing['listing_id'] == headers['listingId']: 
+                    listing_data['booked_previously'] = True
+                    if user['email'] in listing['likes']: 
+                        listing_data['has_liked'] = True
+                    break
+        return json_util.dumps(listing_data)
 
     def get_pre_booking_time(self, headers):
         # check if the user exists
@@ -922,34 +934,60 @@ class User:
     
     def like(self, userData, headers):
         # Check if the user exists
-        print("Email", headers['email'])
+        #print("Email", headers['email'])
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
-            # Check if the listing exists
-            user_listings = user.get('recentBookings')
-            #listing_found = [i for i in user_listings if i["listing_id"] == userData["listingId"]]
-            for listing in user_listings: 
+            chk = False 
+            liked_listings = []
+            user_recent_bookings = user.get('recentBookings')
+            for listing in user_recent_bookings: 
                 if listing['listing_id'] == userData['listingId']: 
-                    if 'liked' in listing:
-                        listing['liked'] = True
+                    liked_listings.append(listing)
+                    chk = True
                     break
-            db.userbase_data.update_one({"email": headers['email']}, {"$set": {"recentBookings": user_listings}})
+
+            if chk == True: 
+                db.userbase_data.update_one({"email": headers['email']}, {"$set": {"liked_listings": liked_listings}})
+                provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+                user_listings = provider_user.get('listings')
+                for listing in user_listings: 
+                    if listing['listing_id'] == userData['listingId']: 
+                        listing['likes'] += 1
+                db.userbase_data.update_one({"listings.listing_id": userData["listingId"]}, {"$set": {"listings": user_listings}})
+                # Check if the listing exists
+                listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
+                if listing: 
+                    db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": 1}})
+                
+                
+            #listing_found = [i for i in user_recent_bookings if i["listing_id"] == userData["listingId"]]
+            
             return jsonify({"message": "liked"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def dislike(self, userData, headers):
-        # Check if the user exists
-        print("Email", headers['email'])
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
-            # Check if the listing exists
-            user_listings = user.get('recentBookings')
-            #listing_found = [i for i in user_listings if i["listing_id"] == userData["listingId"]]
-            for listing in user_listings: 
+            chk = False 
+            liked_listings = []
+            user_recent_bookings = user.get('recentBookings')
+            for listing in user_recent_bookings: 
                 if listing['listing_id'] == userData['listingId']: 
-                    if 'liked' in listing.keys():
-                        listing['liked'] = False
+                    liked_listings.append(listing)
+                    chk = True
                     break
-            db.userbase_data.update_one({"email": headers['email']}, {"$set": {"recentBookings": user_listings}})
-            return jsonify({"message": "disliked"}), 200
+            if chk == True: 
+                db.userbase_data.update_one({"email": headers['email']}, {"$set": {"liked_listings": liked_listings}})
+                provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+                user_listings = provider_user.get('listings')
+                for listing in user_listings: 
+                    if listing['listing_id'] == userData['listingId']: 
+                        listing['likes'] -= 1
+                        if listing['likes'] < 0: 
+                            listing['likes'] = 0
+                db.userbase_data.update_one({"listings.listing_id": userData["listingId"]}, {"$set": {"listings": user_listings}})
+                # Check if the listing exists
+                listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
+                if listing: 
+                    db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
