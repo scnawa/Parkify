@@ -294,7 +294,7 @@ def like():
     return config.User().like(userData, headers)
 
 @APP.route('/dislike', methods=['POST'])
-def like():
+def dislike():
     headers = request.headers
     userData = json.loads(request.data)
     return config.User().dislike(userData, headers)
