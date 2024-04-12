@@ -98,6 +98,10 @@ function ListingPage(props) {
             navigate("/login");
             return;
         }
+        if (props.isAdmin) {
+            alert("Admins cannot book a listing")
+            return;
+        }
         if (!defaultPayment) {
             alert("Please provide customer's payment method before booking");
             return;
