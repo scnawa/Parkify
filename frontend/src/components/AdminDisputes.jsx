@@ -1,33 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Grid, Card, CardContent, CardActions, Button, Modal, CardMedia, IconButton } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, CardActions, Button, Modal, CardMedia, IconButton, FormControl, InputLabel, Select, MenuItem, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 function AdminDisputes(props) {
   const [disputes, setDisputes] = useState([]);
+  const [filteredDisputes, setFilteredDisputes] = useState([]);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedDispute, setSelectedDispute] = useState(null);
+  const [filter, setFilter] = useState('default');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('getDisputes', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'email': props.token,
-          },
-        });
-        const data = await response.json();
-        setDisputes(data);
-      } catch (error) {
-        console.error('An error occurred during data fetching:', error);
-      }
-    };
     fetchData();
   }, [props.token]);
 
+  useEffect(() => {
+    let filtered = [...disputes];
+    if (filter === 'unresolved') {
+      filtered = filtered.filter(dispute => !dispute.resolved);
+    } else if (filter === 'resolved') {
+      filtered = filtered.filter(dispute => dispute.resolved);
+    }
+    filtered.sort((a, b) => a.resolved - b.resolved);
+    setFilteredDisputes(filtered);
+  }, [disputes, filter]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('getDisputes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'email': props.token,
+        },
+      });
+      const data = await response.json();
+      if (data.error) {
+        console.error('An error occurred during fetch:', data.error);
+      } else {
+        setDisputes(data);
+        setFilteredDisputes(data);
+      }
+    } catch (error) {
+      console.error('An error occurred during data fetching:', error);
+    }
+  };
+
   const handleResolveDispute = async (disputeId) => {
-    console.log(`Resolving dispute with ID: ${disputeId}`);//todo
+    console.log(`Resolving dispute with ID: ${disputeId}`);
+    try {
+      const response = await fetch('resolveDispute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'email': props.token,
+        },
+        body: JSON.stringify({dispute_id: disputeId}),
+      });
+      const data = await response.json();
+        if (data.error) {
+          console.error('An error occurred during fetch:', data.error);
+        } else {
+          fetchData();
+        }
+    } catch (error) {
+      console.error('An error occurred during data fetching:', error);
+    }
   };
 
   const handleViewDetails = (dispute) => {
@@ -36,6 +75,10 @@ function AdminDisputes(props) {
   };
 
   const handleClose = () => setDetailModalOpen(false);
+
+  const handleChangeFilter = (event) => {
+    setFilter(event.target.value);
+  };
 
   const formatTime = (totalSeconds) => {
     const hours = Math.ceil(totalSeconds / 3600);
@@ -65,23 +108,34 @@ function AdminDisputes(props) {
   return (
     <Box sx={{ margin: 2 }}>
       <Typography variant="h4" gutterBottom>Disputes Review</Typography>
+      <FormControl fullWidth margin="normal" sx={{ width: '150px'}}>
+        <InputLabel>Filter Disputes</InputLabel>
+        <Select value={filter} label="Filter Disputes" onChange={handleChangeFilter}>
+          <MenuItem value="default">All</MenuItem>
+          <MenuItem value="unresolved">Unresolved</MenuItem>
+          <MenuItem value="resolved">Resolved</MenuItem>
+        </Select>
+      </FormControl>
       <Grid container spacing={2}>
-        {disputes.map((dispute) => (
+        {filteredDisputes.map((dispute) => (
           <Grid item xs={12} md={6} lg={4} key={dispute.dispute_id}>
-            <Card sx={{
-          bgcolor: 'white',
-        }}>
+            <Card sx={{ bgcolor: dispute.resolved ? 'action.disabledBackground' : 'action.disabledBackground' }}>
               <CardContent>
                 <Typography variant="h6">{dispute.address}</Typography>
                 <Typography variant="body1">Date: {dispute.date}</Typography>
                 <Typography variant="body2">Dispute By: {dispute.dispute_by}</Typography>
-              <Typography variant="body2">Dispute Against: {dispute.dispute_against}</Typography>
+                <Typography variant="body2">Dispute Against: {dispute.dispute_against}</Typography>
+                {dispute.resolved ? (
+                  <Chip icon={<CheckCircleIcon />} label="Resolved" color="success" size="small" sx={{ mt: 1 }} />
+                ) : <Chip icon={<ReportProblemIcon />} label="Unresolved" color="warning" size="small" sx={{ mt: 1 }} />}
               </CardContent>
               <CardActions>
                 <Button size="small" onClick={() => handleViewDetails(dispute)}>View Details</Button>
-                <Button size="small" color="primary" onClick={() => handleResolveDispute(dispute.dispute_id)}>
-                  Mark as Resolved
-                </Button>
+                {!dispute.resolved && (
+                  <Button size="small" color="primary" onClick={() => handleResolveDispute(dispute.dispute_id)}>
+                    Mark as Resolved
+                  </Button>
+                )}
               </CardActions>
             </Card>
           </Grid>

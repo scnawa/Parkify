@@ -864,7 +864,7 @@ class User:
                 "dispute_against": userData["dispute_against"],
                 "dispute_message": userData["dispute_message"], 
                 "dispute_image": userData['dispute_images'],
-                "resolved": 'False' 
+                "resolved": False 
             }
             print(dispute)
             db.disputes.insert_one(dispute)
@@ -876,7 +876,7 @@ class User:
 
         if user:
             dispute = {
-                "resolved": 'True' 
+                "resolved": True 
             }
             dispute_id = userData['dispute_id']
             filter = {'dispute_id': dispute_id}
