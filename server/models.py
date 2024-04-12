@@ -51,6 +51,8 @@ class User:
             "default_payment_id":"",
             "is_stripe_connected": False,
             "pre_booking_time": "",
+            "current_listing_id": "",
+            "current_listing_no": "",
             "profile_picture": "", 
             "liked_listings": []
 
@@ -435,6 +437,8 @@ class User:
 
         if user:
                 db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": start_time}})
+                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
+                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
                 # listing no to book 
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
@@ -996,11 +1000,14 @@ class User:
     def timerPersistence(self, headers):
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
-            if not user['pre_booking_timer'] == "": return jsonify({"prebooking"}), 200
-            elif not len(user['recentBookings']) == 0:
-                if user['recentBookings'][-1]['total_time'] == "": return jsonify({"booking"}), 200
+            if user['pre_booking_time'] != "":
+                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
+            elif len(user['recentBookings']) != 0:
+                if user['recentBookings'][-1]['total_time'] == "":
+                    return jsonify({"result": "booking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
                 else:
-                    return jsonify({"none"}), 200
-            else:     
-                return jsonify({"none"}), 200        
+                    return jsonify({"result": "none"}), 200
+            else:
+                return jsonify({"result": "none"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+

@@ -113,14 +113,22 @@ function Booking(props) {
         }).catch(alert);
     };
 
-    const handleCancel = () => {
-        releaseListing();
-
-        navigate('/');
+    // ensure that navigation to the main page only occurs after release listings completes
+    const handleCancel = async () => {
+        try {
+            await releaseListing();
+            console.log('Navigation can proceed now');
+            navigate('/'); 
+        } catch (error) {
+            console.error('Failed to release listing:', error);
+        }
     };
+    
 
     const releaseListing = async () => {
         //console.log("release listing")
+        console.log("hi " + listing_id)
+        console.log("bye " + ListingNo)
         const data = {
             "email": props.token,
             "listingId": listing_id,
