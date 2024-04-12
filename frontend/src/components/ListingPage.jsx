@@ -9,11 +9,34 @@ import { MapChild } from "./CreateListings";
 import Background from '../assets/car.png';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
+import IconButton from '@mui/material/IconButton';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+
+import { Container, Grid, Card, CardMedia, CardContent, CardActions, Typography, Box, Button } from '@mui/material';
+
+
+
+
+
 
 const placeholder = L.icon({
     iconUrl: location,
     iconSize: [30, 30]
 });
+
+const priceStyle = {
+    backgroundColor: 'grey', 
+    borderRadius: '4px',
+    padding: '6.5px',
+    display: 'inline-block', 
+    marginRight: '8px', 
+};
+
+const availabilityStyle = {
+    color: '#2e7d32', 
+};  
 
 function ListingPage(props) {
     const navigate = useNavigate();
@@ -22,6 +45,8 @@ function ListingPage(props) {
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
     const [defaultPayment, setDefaultPayment] = useState(null);
+    const [liked, setLiked] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
 
     const [error, setError] = useState(null);
     // console.log(props);
@@ -68,6 +93,8 @@ function ListingPage(props) {
                     console.log(error)
                 } else {
                     setListing(data);
+                    setLiked(data.has_liked)
+                    setTotalLikes(data.likes)
                     // console.log(data);
                 }
             } catch (error) {
@@ -150,81 +177,118 @@ function ListingPage(props) {
     }
     console.log(listing);
 
+    const toggleLike = async () => {
+        const currentlyLiked = liked; 
+        setLiked(!liked);
+        const endpoint = currentlyLiked ? '/dislike' : '/like'; 
+        setTotalLikes(currentlyLiked ? totalLikes - 1 : totalLikes + 1);
+        try {
+            const data = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'email': props.token,
+                },
+                body: JSON.stringify({
+                    listingId: listing.listing_id,
+                }),
+            });
+    
+            if (data.error) {
+                setError(data.error);
+                console.log(error)
+            } else {
+                console.log("liked or unliked now")
+            }
+            // Optionally handle the response data if needed
+        } catch (error) {
+            console.error('API call failed:', error);
+            setLiked(currentlyLiked); // Revert the liked state if the API call fails
+        }
+    };
+
     return (
-        <div>
-            {error && <div>Error: {error}</div>}
+        <Container maxWidth="lg">
             {listing ? (
-                <div className="listing-page-container">
-                    <div className="listing-page">
-                        <div className="listing-left-box">
-                            <h2 style={{ 'marginLeft': '5px' }}>{listing.address}</h2>
-                            <div className="listing">
-                                <div className="img-container">
-                                    {/* i used a similar structure of images and carousel in my comp6080 assignment 4,
-                                    but the actual libraries used are different. and the css style is also different
-                                */}
-                                    <Splide options={{ autoWidth: true, rewind: true, preloadPages: 2, drag: false }} aria-label="React Splide Example">
-                                        <SplideSlide>
-                                            <img className="listing-img" src={listing.image_url !== '' ? listing.image_url : Background} alt="Parking space"></img>
+                <Grid container spacing={4} mt={2} alignItems="center">
+                    <Grid item xs={12} md={7}>
+                        <Card sx={{borderRadius: '16px'}}>
+                            <Splide options={{ type: 'fade', rewind: true, width: '100%', gap: '1rem' }}>
+                                {listing.images && listing.images.length > 0 ? (
+                                    listing.images.map((image, index) => (
+                                        <SplideSlide key={index}>
+                                            <CardMedia
+                                                component="img"
+                                                height="450"
+                                                image={image || listing.image_url || Background}
+                                                alt="Parking space"
+                                            />
                                         </SplideSlide>
-                                        {(listing.images && listing.images.length != 0) ? (
-                                            <>
-                                                {listing.images.map((image, index) => (
-                                                    <SplideSlide>
-                                                        <img className="listing-img" src={image} alt="Parking space"></img>
-                                                    </SplideSlide>
-
-                                                ))
-                                                }</>
-                                        ) : null}
-                                    </Splide>
-                                </div>
-
-                            </div>
-
-                            <div className="details-box">
-                                <h4>Description:</h4>
-                                <p>{listing.details}</p>
-                            </div>
-                            <div className="restrictions-box">
-                                <h4>Restrictions:</h4>
-                                <p>{listing.restrictions}</p>
-                            </div>
-                        </div>
-                        <div className="listing-right-box">
-                            <div className="price-box">
-                                <div className="top-price-box"><h3>Price: ${listing.price}.00/hr</h3></div>
-                                <div>Parking space is avaliable</div>
-                            </div>
-                            <div className="booking-box">
-                                <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
-                            </div>
-                        </div>
-                        {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
-						    https://react-leaflet.js.org/docs/example-popup-marker/*/}
-                        <div style={{ width: "100%", height: "80vh", 'margin-top': '3px' }}>
-                            <MapContainer center={locations} zoom={15} style={{ width: '100%', height: '100%' }}>
+                                    ))
+                                ) : (
+                                    <CardMedia
+                                        component="img"
+                                        height="450"
+                                        image={listing.image_url || Background}
+                                        alt="Parking space"
+                                    />
+                                )}
+                            </Splide>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} md={5} style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Card raised sx={{borderRadius: '16px'}}>
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {listing.address}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Description: {listing.details}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                                    Restrictions: {listing.restrictions}
+                                </Typography>
+                                {/* Price and availability with additional styles */}
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="body1" sx={availabilityStyle}>
+                                        Status: Parking space is available
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                            <CardActions disableSpacing>
+                                <Typography variant="body1" sx={priceStyle}>
+                                    Price: ${listing.price}.00/hr
+                                </Typography>
+                                <Button variant="contained" color="primary" onClick={handleBookNow}>
+                                    Book Now
+                                </Button>
+                                {listing.booked_previously && (
+                                    <IconButton onClick={toggleLike} color="error">
+                                        {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                                        <Typography component="span" sx={{ ml: 1 }}>
+                                            {totalLikes}
+                                        </Typography>
+                                    </IconButton>
+                                )}
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box sx={{ height: 400, width: '100%' }}>
+                            <MapContainer center={locations} zoom={15} style={{ height: '100%', width: '100%' }}>
                                 <TileLayer
                                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    style={{ width: '100%', height: '100%' }}
                                 />
-                                <div>
-                                    <Marker icon={placeholder} position={locations}>
-                                    </Marker>
-                                </div>
-
-                                <MapChild addressGeo={listing} />
+                                <Marker icon={placeholder} position={locations} />
                             </MapContainer>
-                        </div>
-
-                    </div>
-
-                </div>
+                        </Box>
+                    </Grid>
+                </Grid>
             ) : (
-                <div>Loading...</div>
+                <Typography variant="h6" align="center">Loading...</Typography>
             )}
-        </div>
+        </Container>
     );
 }
 

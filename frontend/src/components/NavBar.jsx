@@ -110,7 +110,7 @@ function NavBar(props) {
 	const isAdmin = props.isAdmin;
 	const setIsAdmin = props.setIsAdmin;
 	const location = useLocation();
-	const [pages, setPages] = React.useState(['My Parking Space']);
+	const [pages, setPages] = React.useState(['My Parking Spaces']);
 
 	const navigate = useNavigate();
 
@@ -118,7 +118,7 @@ function NavBar(props) {
 		if (isAdmin) {
 			setPages(["MANAGE USERS", "DISPUTES"]);
 		} else {
-			setPages(['My Parking Space']);
+			setPages(['My Parking Spaces']);
 		}
 	}, [isAdmin]);
 
@@ -143,7 +143,7 @@ function NavBar(props) {
 		const text = e.target.innerText;
 		console.log(text);
 		switch (text) {
-			case "MY PARKING SPACE":
+			case "MY PARKING SPACES":
 				navigate("/myListing");
 				break;
 			case "MANAGE USERS":

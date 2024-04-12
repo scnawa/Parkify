@@ -93,9 +93,12 @@ function MyListings(props) {
 			}
 		}).catch((e) => {
 			if (!props.isAdmin) {
-				alert("Redirecting to update provider details");
-				rentOutInfoOnclick(props);
-				return;
+				if (window.confirm("You need to update provider details to continue. Redirect now?")) {
+					rentOutInfoOnclick(props);
+					return;
+				} else {
+					navigate(-1)
+				}
 			}
 			return fetchListings();
 		});

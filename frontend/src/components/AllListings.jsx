@@ -6,6 +6,10 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import location from '../assets/location.png';
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
+import 'leaflet-gesture-handling';
+
+
 import { MapChild } from "./CreateListings";
 const placeholder = L.icon({
     iconUrl: location,
@@ -37,6 +41,38 @@ function AllListings(props) {
     const [userLocation, setUserLocation] = useState([-33.9062434, 151.23465683738365]);
     const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check if user is currently in a prebooking/booking
+        if (props.token) {
+            fetch('http://localhost:8080/timerPersistence', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'email': props.token,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        if (data.result === "prebooking") {
+                            navigate('/book', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
+                            console.log("in a prebooking")
+                        } else if (data.result === "booking") {
+                            navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
+                            console.log("in a booking")
+                        } else if (data.result === "none") {
+                            console.log("not in a booking");
+                        }
+
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => console.error(error));
+        }
+    }, []);
+
 
     useEffect(() => {
         // Initial fetch for all listings
@@ -152,7 +188,7 @@ function AllListings(props) {
         <ThemeProvider theme={theme}>
             <Box sx={{ margin: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', rowGap: '3px' }}>
-                    <Typography variant="h4" component="div">
+                    <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#4caf50' }}>
                         Active Parking Spaces
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -192,8 +228,8 @@ function AllListings(props) {
                 </Box>
                 {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
 						    https://react-leaflet.js.org/docs/example-popup-marker/*/}
-                <div style={{ width: "100%", height: "80vh", 'margin-top': '3px' }}>
-                    <MapContainer center={userLocation} zoom={12} style={{ width: '100%', height: '100%' }}>
+                <Box sx={{ position: 'relative', width: '100%', height: '80vh', marginTop: '3px' }}>
+                    <MapContainer center={userLocation} zoom={12} style={{ width: '100%', height: '100%' }} gestureHandling={true}>
                         <TileLayer
                             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -227,8 +263,8 @@ function AllListings(props) {
                         })}
                         <PanMap userLocation={userLocation} />
 
-                    </MapContainer>
-                </div>
+                    </MapContainer>                    
+                </Box>
 
                 <Grid container spacing={4} style={{ 'margin-top': '10px' }}>
                     {listings.map((listing) => (
