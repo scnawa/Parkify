@@ -424,6 +424,7 @@ class User:
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
+        print(provider_user)
         user_listings = provider_user.get('listings')
 
         now = datetime.datetime.now()
@@ -882,7 +883,7 @@ class User:
             newvalues = {"$set": dispute}
             db.disputes.update_one(filter, newvalues)
             return jsonify({"message": "Dispute successfully resolved"}), 200
-        return jsonify({"type": "email", "error": "User Does Not Exist"}), 40
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
             
 
@@ -917,4 +918,42 @@ class User:
             if listingFound:
                 return json_util.dumps(recent_bookings)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
+    def like(self, userData, headers):
+        # Check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+            # Check if the listing exists
+            user_listings = user.get('listings')
+            listing_found = [i for i in user_listings if i["listing_id"] == userData["listingId"]]
+            if listing_found:
+                # Update the like status of the listing
+                # Increment the like count by 1
+                db.userbase_data.update_one(
+                    {"email": headers['email'], "listings.listing_id": headers["listingId"]},
+                    {"$inc": {"listings.$.liked": 1}}
+                )
+                return jsonify({"message": "liked"}), 200
+            else:
+                return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
+    def dislike(self, userData, headers):
+        # Check if the user exists
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+            # Check if the listing exists
+            user_listings = user.get('listings')
+            listing_found = [i for i in user_listings if i["listing_id"] == userData["listingId"]]
+            if listing_found:
+                # Update the like status of the listing
+                # Decrement the like count by 1
+                db.userbase_data.update_one(
+                    {"email": headers['email'], "listings.listing_id": headers["listingId"]},
+                    {"$inc": {"listings.$.liked": -1}}
+                )
+                return jsonify({"message": "disliked"}), 200
+            else:
+                return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402

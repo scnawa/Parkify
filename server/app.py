@@ -287,6 +287,18 @@ def resolve_dispute():
     userData = json.loads(request.data)
     return config.User().resolve_dispute(userData, headers)
 
+@APP.route('/like', methods=['POST'])
+def like():
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().like(userData, headers)
+
+@APP.route('/dislike', methods=['POST'])
+def like():
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().dislike(userData, headers)
+
 
 
 if __name__ == "__main__": 

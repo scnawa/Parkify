@@ -8,10 +8,16 @@ const History = (props) => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [likeStatus, setLikeStatus] = useState([]);
-
+  
   useEffect(() => {
     fetchBookings();
   }, []);
+
+ /*  useEffect(()=> {
+    //console.log("After: ", likeStatus);
+    console.log(likeStatus)
+    console.log(bookings[0])
+  }, [likeStatus]); */
 
   const fetchBookings = async () => {
     try {
@@ -27,7 +33,7 @@ const History = (props) => {
         throw new Error('Failed to get user info');
       }
       const userInfo = await response.json();
-      console.log(userInfo.recentBookings);
+      //console.log(userInfo.recentBookings);
       setBookings(userInfo.recentBookings);
       setLikeStatus(Array(userInfo.recentBookings.length).fill(false));
     } catch (error) {
@@ -62,14 +68,37 @@ const History = (props) => {
     return `${hours} hr${hours > 1 ? 's' : ''}`;
   };
 
-  const handleThumbClick = (index) => {
+  const handleThumbClick = async (index) => {
+    //console.log("Before: ", likeStatus);
     // Create a copy of the current like status array
     const updatedLikeStatus = [...likeStatus];
     // Toggle the like status for the specific booking
     updatedLikeStatus[index] = !updatedLikeStatus[index];
     // Update the state with the new like status array
-    setLikeStatus(updatedLikeStatus);
+    setLikeStatus(updatedLikeStatus); 
+    console.log(bookings[index].listing_id)
+    const endpoint = updatedLikeStatus[index] ? '/like' : '/dislike';
+    console.log(endpoint)
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'email': props.token
+        },
+        body: JSON.stringify({ bookingId: bookings[index].id })
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update like status');
+      }
+  
+      console.log('liked');
+    } catch (error) {
+      console.error('Error updating like status:', error.message);
+    }
   };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Grid container spacing={3}>
