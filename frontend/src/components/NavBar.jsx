@@ -29,22 +29,45 @@ const theme = createTheme({
 		},
 	},
 });
-const searchBarStyleDesktop = {
+const searchBarStyle = {
 	// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
-	"& label.Mui-focused": {
-		'color': "#E0F2F1"
-	},
-	"& .MuiFilledInput-underline:after": {
-		'borderBottomColor': "#E0F2F1"
-	},
-	"display": { xs: 'None', sm: 'block', md: 'block' },
-	"margin-left": "10px",
-}
-const searchBarStyleMobile = {
-	"display": { xs: 'block', sm: 'None', md: 'None' },
+	// Keeps the label transparent when the input is focused
+    "& .MuiInputLabel-root.Mui-focused": {
+        color: "#666666"
+    },
+    // Ensures label stays transparent when there's text in the field (both on focus and blur)
+    "& .MuiInputLabel-root.Mui-filled": {
+        color: "#666666"
+    },
+	// Target the label specifically when the field is filled but not focused
+    "& .MuiInputLabel-root.Mui-filled.MuiInputLabel-shrink": {
+        color: "#666666"
+    },
+    // Removes the underline in all states: normal, focused, and hover
+    "& .MuiInput-underline:after, & .MuiInput-underline:before, & .MuiInput-underline:hover:not(.Mui-disabled):before": {
+        borderBottom: "none"
+    },
+	// ensure the label is positioned correctly and acts as expected when viewport decreases
+	"& .MuiInputLabel-root": {
+        maxWidth: 'calc(100% - 24px)', 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis', 
+    },
+	"display": { xs: 'block', sm: 'block', md: 'block' },
+	"margin-left": "0px",
+	"margin-right": "10px",
 	"backgroundColor": "#ffffff",
 	"border": '1px solid #ddd',
 	"borderRadius": '4px',
+	// ensures input text is positioned correctly
+	"& .MuiInputBase-input": {
+        transform: 'translate(0, -38%)', 
+        padding: '10px 12px',  
+    }
+	
+	
+	
 }
 
 const font1 = "'Nunito Sans', sans-serif";
@@ -99,7 +122,7 @@ function NavBar(props) {
 		}
 	}, [isAdmin]);
 
-	// TODO: navigate user profile
+
 	const userMenuOnclick = (event) => {
 		setUserMenuLocation(event.currentTarget);
 	};
@@ -163,6 +186,17 @@ function NavBar(props) {
 
 	}
 
+	const manageUsers = () => {
+		setUserMenuLocation(null);
+		navigate("/adminViewListings");
+
+	}
+	
+	const disputes = () => {
+		setUserMenuLocation(null);
+		navigate("/adminDisputes");
+
+	}
 	const signUpOnclick = (event) => {
 		navigate("/signup");
 	}
@@ -229,7 +263,7 @@ function NavBar(props) {
 									Parkify
 								</Typography>
 							</button>
-							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, }}>
+							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, marginRight: { sm: 4} }}>
 								{pages.map((item) => (
 									<Button key={item} onClick={pageOnClick}
 										sx={{
@@ -237,7 +271,7 @@ function NavBar(props) {
 											color: 'green.light',
 											fontFamily: 'time',
 											letterSpacing: '.06rem',
-											marginLeft: '2px'
+											marginLeft: '10px',
 										}}>
 
 										{item}
@@ -245,17 +279,27 @@ function NavBar(props) {
 								))}
 							</Box>
 							{(location.pathname === "/" || location.pathname === "/alllistings") && (
-								<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row' }}>
-									<TextField sx={searchBarStyleMobile}
-										label="search for space" type="search" variant="standard"
+								<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row', height: '45px' }}>
+			
+									<TextField sx={searchBarStyle}
+										InputLabelProps={{
+											style: {
+												visibility: searchQuery.length > 0 ? 'hidden' : 'visible',
+												top: '50%',
+												left: '12px',
+												// This ensures that the label starts off centered
+												transform: 'translate(0, -50%)',
+												
+												
+											},
+											shrink: false,
+										}}
+										label="Search for space..." type="search" variant="standard"
 										onChange={(e) => setSearchQuery(e.target.value)}
 										value={searchQuery}
 									/>
-									<TextField sx={searchBarStyleDesktop}
-										label="search for space" type="search" variant="standard"
-										onChange={(e) => setSearchQuery(e.target.value)}
-										value={searchQuery}
-									/>
+
+
 
 									<Button
 										type="submit"
@@ -264,10 +308,11 @@ function NavBar(props) {
 											ml: 0.4,
 											bgcolor: 'black',
 											'&:hover': {
-												bgcolor: 'black', // lighter green on hover
+												bgcolor: 'black', 
 											},
 											borderRadius: '4px',
-											padding: '10px 16px'
+											padding: '10px 16px',
+											mr: '20px'
 										}}
 									>
 										Search
@@ -316,7 +361,13 @@ function NavBar(props) {
 												(<MenuItem key="customerHistory" onClick={() => customerHistoryOnclick(props)}>Customer Booking History</MenuItem>),
 												(<MenuItem key="rentOut" onClick={() => rentOutInfoOnclick(props)}>Set up rent out information</MenuItem>),
 												(<MenuItem key="payment" onClick={() => addPaymentOnClick(props)}>Add customer payment method</MenuItem>),
-												(<MenuItem key="RentSpaces" sx={{ display: { xs: 'flex', sm: 'none', md: 'none' } }} onClick={() => customerRentOutOnclick(props)}>Rent out my spaces</MenuItem>)
+												(<MenuItem key="RentSpaces" sx={{ display: { xs: 'flex', sm: 'none', md: 'none' } }} onClick={() => customerRentOutOnclick(props)}>My Parking Spaces</MenuItem>)
+											]
+										)}
+										{isAdmin && (
+											[
+												(<MenuItem key="adminViewListings" sx={{ display: { xs: 'flex', sm: 'none', md: 'none' } }} onClick={() => manageUsers(props)}>Manage Users</MenuItem>),
+												(<MenuItem key="adminDisputes" sx={{ display: { xs: 'flex', sm: 'none', md: 'none' } }} onClick={() => disputes(props)}>Disputes</MenuItem>),
 											]
 										)}
 										<MenuItem onClick={logOut}>Log out</MenuItem>
