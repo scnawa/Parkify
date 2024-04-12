@@ -811,7 +811,7 @@ class User:
             for listing in user['recentBookings']: 
                 if listing['listing_id'] == headers['listingId']: 
                     listing_data['booked_previously'] = True
-                    if user['email'] in listing['likes']: 
+                    if any(liked_listing['listing_id'] == headers["listingId"] for liked_listing in user['liked_listings']):
                         listing_data['has_liked'] = True
                     break
         return json_util.dumps(listing_data)
@@ -943,7 +943,7 @@ class User:
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
             chk = False 
-            liked_listings = []
+            liked_listings = user['liked_listings']
             user_recent_bookings = user.get('recentBookings')
             for listing in user_recent_bookings: 
                 if listing['listing_id'] == userData['listingId']: 
@@ -974,11 +974,11 @@ class User:
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
             chk = False 
-            liked_listings = []
+            liked_listings = user['liked_listings']
             user_recent_bookings = user.get('recentBookings')
             for listing in user_recent_bookings: 
                 if listing['listing_id'] == userData['listingId']: 
-                    liked_listings.append(listing)
+                    liked_listings.remove(listing)
                     chk = True
                     break
             if chk == True: 
@@ -994,7 +994,9 @@ class User:
                 # Check if the listing exists
                 listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
                 if listing: 
-                    db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
+                    if listing.get("likes", 0) > 0: 
+                        db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
+            return jsonify({"message": "disliked"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def timerPersistence(self, headers):

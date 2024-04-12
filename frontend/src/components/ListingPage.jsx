@@ -9,6 +9,9 @@ import { MapChild } from "./CreateListings";
 import Background from '../assets/car.png';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
+import IconButton from '@mui/material/IconButton';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const placeholder = L.icon({
     iconUrl: location,
@@ -22,6 +25,8 @@ function ListingPage(props) {
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
     const [defaultPayment, setDefaultPayment] = useState(null);
+    const [liked, setLiked] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
 
     const [error, setError] = useState(null);
     // console.log(props);
@@ -68,6 +73,8 @@ function ListingPage(props) {
                     console.log(error)
                 } else {
                     setListing(data);
+                    setLiked(data.has_liked)
+                    setTotalLikes(data.likes)
                     // console.log(data);
                 }
             } catch (error) {
@@ -150,6 +157,36 @@ function ListingPage(props) {
     }
     console.log(listing);
 
+    const toggleLike = async () => {
+        const currentlyLiked = liked; 
+        setLiked(!liked);
+        const endpoint = currentlyLiked ? '/dislike' : '/like'; 
+        setTotalLikes(currentlyLiked ? totalLikes - 1 : totalLikes + 1);
+        try {
+            const data = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'email': props.token,
+                },
+                body: JSON.stringify({
+                    listingId: listing.listing_id,
+                }),
+            });
+    
+            if (data.error) {
+                setError(data.error);
+                console.log(error)
+            } else {
+                console.log("liked or unliked now")
+            }
+            // Optionally handle the response data if needed
+        } catch (error) {
+            console.error('API call failed:', error);
+            setLiked(currentlyLiked); // Revert the liked state if the API call fails
+        }
+    };
+
     return (
         <div>
             {error && <div>Error: {error}</div>}
@@ -198,6 +235,14 @@ function ListingPage(props) {
                             </div>
                             <div className="booking-box">
                                 <button className="book-now-button" onClick={handleBookNow}>Book Now</button>
+                                {listing.booked_previously && (
+                                    <div className="like-container">
+                                        <IconButton onClick={toggleLike} color="primary">
+                                            {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                                        </IconButton>
+                                        <span className="like-count">{totalLikes}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {/* the below code of map is from https://www.youtube.com/watch?v=rmIhGPy8rSY and
