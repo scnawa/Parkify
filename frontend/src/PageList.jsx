@@ -70,7 +70,7 @@ const PageList = (props) => {
         <Route path="/myListing" element={<MyListings token={token}/>} />
         <Route path="/editListings" element={<EditListings isAdmin={isAdmin}/>} />
         <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/listing/:listing_id" element={<ListingPage token={token} SID={SID} listingDetails={listingDetails}/>} />
+        <Route path="/listing/:listing_id" element={<ListingPage isAdmin={isAdmin} token={token} SID={SID} listingDetails={listingDetails}/>} />
         <Route path="/book" element={<Booking token={token} SID={SID} />}/>
         <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
         <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
