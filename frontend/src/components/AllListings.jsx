@@ -44,31 +44,33 @@ function AllListings(props) {
 
     useEffect(() => {
         // Check if user is currently in a prebooking/booking
-        fetch('http://localhost:8080/timerPersistence', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'email': props.token,
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    if (data.result === "prebooking") {
-                        navigate('/book', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
-                        console.log("in a prebooking")
-                    } else if (data.result === "booking") {
-                        navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
-                        console.log("in a booking")
-                    } else if (data.result === "none") {
-                        console.log("not in a booking");
-                    }
-
-                } else {
-                    alert(data.error);
-                }
+        if (props.token) {
+            fetch('http://localhost:8080/timerPersistence', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'email': props.token,
+                },
             })
-            .catch(error => console.error(error));
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        if (data.result === "prebooking") {
+                            navigate('/book', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
+                            console.log("in a prebooking")
+                        } else if (data.result === "booking") {
+                            navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
+                            console.log("in a booking")
+                        } else if (data.result === "none") {
+                            console.log("not in a booking");
+                        }
+
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => console.error(error));
+        }
     }, []);
 
 
