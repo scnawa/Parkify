@@ -299,6 +299,11 @@ def dislike():
     userData = json.loads(request.data)
     return config.User().dislike(userData, headers)
 
+@APP.route('/timerPersistence', methods=['GET'])
+def timerPersistence():
+    headers = request.headers
+    return config.User().timerPersistence(headers)
+
 
 
 if __name__ == "__main__": 

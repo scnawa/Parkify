@@ -541,6 +541,7 @@ class User:
         if user:
             booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
+            db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": ""}})
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
@@ -990,4 +991,16 @@ class User:
                 listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
                 if listing: 
                     db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
+    def timerPersistence(self, headers):
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+            if not user['pre_booking_timer'] == "": return jsonify({"prebooking"}), 200
+            elif not len(user['recentBookings']) == 0:
+                if user['recentBookings'][-1]['total_time'] == "": return jsonify({"booking"}), 200
+                else:
+                    return jsonify({"none"}), 200
+            else:     
+                return jsonify({"none"}), 200        
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
