@@ -63,8 +63,38 @@ function TimerPage() {
     }, []);
 
     const handleEndBooking = () => {
-        // send timer to backend for data retrieval purposes
-        navigate('/park-end', { state: { timer, listing_id, ListingNo } });
+        // saveTimer saves the current end time and ends the booking phase, making
+        // the state enter to the current 
+        const saveTimer = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/saveTimer', {
+                    method: 'POST',
+                    headers: {
+                        'email': token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({'timer': timer}),
+                });
+
+                const res = await response.json();
+                if (res.error) {
+                    return Promise.reject(res.error);
+                } else {
+                    return Promise.resolve(res);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        };
+        saveTimer()
+            .then(() => {
+                console.log('Save timer success');
+                console.log('state variable timer: ' + timer)
+                navigate('/park-end', { state: { timer, listing_id, ListingNo } });
+            })
+            .catch((error) => {
+                console.error('Save timer failed:', error);
+            });
     };
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);

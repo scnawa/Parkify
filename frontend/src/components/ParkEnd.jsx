@@ -98,7 +98,7 @@ function ParkEnd() {
                 }
             };
             fetchEndBooking().then(() => {
-                alert("booking is ended");
+                alert("The booking has ended");
                 navigate('/');
             }).catch(alert);
         })

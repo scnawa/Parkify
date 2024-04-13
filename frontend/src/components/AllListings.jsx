@@ -58,7 +58,10 @@ function AllListings(props) {
                             console.log("in a prebooking")
                         } else if (data.result === "booking") {
                             navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
-                            console.log("in a booking")
+                            console.log("in a booking") 
+                        } else if (data.result === "endbooking") {
+                            navigate('/park-end', { state: { timer: data.timer, listing_id: data.listingId, ListingNo: data.listingNo } });
+                            console.log("in endbooking") 
                         } else if (data.result === "none") {
                             console.log("not in a booking");
                         }

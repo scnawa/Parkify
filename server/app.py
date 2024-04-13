@@ -304,6 +304,12 @@ def timerPersistence():
     headers = request.headers
     return config.User().timerPersistence(headers)
 
+@APP.route('/saveTimer', methods=['POST'])
+def saveTimer():
+    headers = request.headers
+    userData = json.loads(request.data)
+    return config.User().saveTimer(userData, headers)
+
 
 
 if __name__ == "__main__": 

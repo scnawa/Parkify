@@ -56,6 +56,7 @@ class User:
             "profile_picture": "", 
             "liked_listings": [],
             "carNumberPlate": "",
+            "timer": "",
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -535,7 +536,7 @@ class User:
             "feedback": "",
             "end_image_url": "", 
             "total_time": "",
-            "is_paid": False,
+            "in_end_booking_phase": False,
             "payment_id": "",
             "carNumberPlate": userData["carNumberPlate"],
         }
@@ -598,7 +599,8 @@ class User:
                     "end_price": discounted_price,
                     "feedback": userData["feedback"],
                     "end_image_url": userData["endImageUrl"], 
-                    "total_time": userData["totalTime"]
+                    "total_time": userData["totalTime"],
+                    "in_end_booking_phase": False
             }
             paymentMethods = stripe.PaymentMethod.list(
                 customer=user['payment_id'],
@@ -1006,6 +1008,8 @@ class User:
             if user['pre_booking_time'] != "":
                 return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "carNumberPlate": user['carNumberPlate']}), 200
             elif len(user['recentBookings']) != 0:
+                if user['recentBookings'][-1]['in_end_booking_phase'] == True:
+                    return jsonify({"result": "endbooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "timer": user['timer']}), 200
                 if user['recentBookings'][-1]['total_time'] == "":
                     return jsonify({"result": "booking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
                 else:
@@ -1013,4 +1017,18 @@ class User:
             else:
                 return jsonify({"result": "none"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    def saveTimer(self, userData, headers):
+        user = db.userbase_data.find_one({"email": headers['email']})
+        if user:
+            db.userbase_data.update_one({"email": headers['email']}, {"$set": {"timer": userData["timer"]}})
+            if user['recentBookings']:
+                last_booking_index = len(user['recentBookings']) - 1
+                update_field = f"recentBookings.{last_booking_index}.in_end_booking_phase"
+                db.userbase_data.update_one(
+                    {"email": headers['email']},
+                    {"$set": {update_field: True}}
+                )
+            return json_util.dumps("Pass")
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
