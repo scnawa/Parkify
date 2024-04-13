@@ -54,7 +54,8 @@ class User:
             "current_listing_id": "",
             "current_listing_no": "",
             "profile_picture": "", 
-            "liked_listings": []
+            "liked_listings": [],
+            "carNumberPlate": "",
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -438,6 +439,7 @@ class User:
                 db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": start_time}})
                 db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
                 db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
+                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"carNumberPlate": userData["carNumberPlate"]}})
                 # listing no to book 
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
@@ -535,6 +537,7 @@ class User:
             "total_time": "",
             "is_paid": False,
             "payment_id": "",
+            "carNumberPlate": userData["carNumberPlate"],
         }
 
         ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
@@ -1001,7 +1004,7 @@ class User:
         user = db.userbase_data.find_one({"email": headers['email']})
         if user:
             if user['pre_booking_time'] != "":
-                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
+                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "carNumberPlate": user['carNumberPlate']}), 200
             elif len(user['recentBookings']) != 0:
                 if user['recentBookings'][-1]['total_time'] == "":
                     return jsonify({"result": "booking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200

@@ -63,6 +63,7 @@ function TimerPage() {
     }, []);
 
     const handleEndBooking = () => {
+        // send timer to backend for data retrieval purposes
         navigate('/park-end', { state: { timer, listing_id, ListingNo } });
     };
     const formatTime = (seconds) => {
