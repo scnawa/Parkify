@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FileInputField from './FileInputField';
-import { Paper, Button, createTheme, FormControl } from '@mui/material';
+import { Paper, Button, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import Typography from '@mui/material/Typography';
 import TextInputField from './TextInputField';
-
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import ClearIcon from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
+import { uploadFile } from './CreateListings';
 const theme = createTheme({
     palette: {
         green: {
@@ -17,35 +21,15 @@ const theme = createTheme({
     },
 });
 
-// the general purpose file image processing function is from comp6080 assignment 4
-const uploadFile = (file) => {
-    let targetFile;
-    if (file.length === 0) {
-        return Promise.resolve('');
-    } else {
-        targetFile = file[0];
-    }
-    const expectedType = ['image/jpeg', 'image/png', 'image/jpg']
-    const valid = expectedType.find(type => type === targetFile.type);
-    if (!valid) {
-        return new Promise(resolve => resolve(targetFile));
-    }
-    const reader = new FileReader();
-    const dataPromise = new Promise((resolve, reject) => {
-        reader.onerror = reject;
-        reader.onload = () => resolve(reader.result);
-    });
-    reader.readAsDataURL(targetFile);
-    return dataPromise;
-}
-
 function ParkEnd() {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [feedback, setFeedback] = useState('');
     const [promo, setPromo] = useState('')
+    const thumbnailRef = React.useRef();
+    const [thumbnailFile, setThumbnailFile] = React.useState('');
 
-    const [thumbnail, setThumbnail] = useState([]);
-    const [image, setImages] = useState([]);
+
+    const [thumbnail, setThumbnail] = useState('');
     const location = useLocation();
 
     const timer = location.state ? location.state.timer : 0;
@@ -123,6 +107,16 @@ function ParkEnd() {
 
 
     }
+    const handleThubnailChange = (e) => {
+        setThumbnailFile(e.target.value);
+        uploadFile(e.target.files[0]).then((url) => { setThumbnail(url); }).catch(alert);
+    }
+    const handleThumbnailDelete = () => {
+        thumbnailRef.current = '';
+        setThumbnail('');
+        setThumbnailFile('');
+    }
+
     // Event handler to update the feedback state
     const handleFeedbackChange = (event) => {
         setFeedback(event.target.value);
@@ -165,7 +159,30 @@ function ParkEnd() {
                             </div>
 
                             <div>
-                                <FileInputField multiple={false} variant="contained" color="green" setImage={setThumbnail} content="Upload empty spot" required={true} />
+
+                                <FileInputField multiple={false} required={true} color="green" setImage={setThumbnail} onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload empty spot" images={thumbnailFile} />
+                                {thumbnail ? (
+                                    <>
+                                        <ImageListItem>
+                                            <img src={thumbnail} style={{ 'height': '200px', 'object-fit': 'cover' }} />
+
+                                            <ImageListItemBar
+                                                title="thumbnail"
+                                                actionIcon={
+                                                    <IconButton
+                                                        sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                                        aria-label={'button to remove thumbnail'}
+                                                        onClick={handleThumbnailDelete}
+                                                    >
+                                                        <ClearIcon />
+                                                    </IconButton>
+                                                }
+                                            />
+
+                                        </ImageListItem>
+                                    </>
+                                ) : null}
+
                                 <Typography variant="subtitle1" >Duration: {formatTime(timer)}</Typography>
 
                             </div>

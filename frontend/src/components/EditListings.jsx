@@ -60,6 +60,8 @@ function EditListings(props) {
     const [listing, setListing] = React.useState(state.listing);
     const thumbnailRef = React.useRef('');
     const imagesRef = React.useRef('');
+    const [thumbnailFile, setThumbnailFile] = React.useState('');
+    const [imagesFiles, setImagesFiles] = React.useState('');
 
     const navigate = useNavigate();
     React.useEffect(() => {
@@ -158,7 +160,7 @@ function EditListings(props) {
         }
     }
     const handleThubnailChange = (e) => {
-        console.log(e.target.files);
+        setThumbnailFile(e.target.value);
         uploadFile(e.target.files[0]).then((url) => { handleChange('image_url')(url); }).then(() => {
             thumbnailRef.current = "";
         }
@@ -167,7 +169,7 @@ function EditListings(props) {
 
     }
     const handleImagesChangle = (e) => {
-        console.log(Array.from(e.target.files)[0]);
+        setImagesFiles(e.target.value);
         let imagePromises = Array.from(e.target.files).map((file) => uploadFile(file));
         // i handled the multiple images upload similarly in my comp6080 assignment 4
         // since this part of code is general and i don't know another way to do it
@@ -181,9 +183,11 @@ function EditListings(props) {
     }
 
     const handleThumbnailDelete = () => {
+        setThumbnailFile('');
         handleChange('image_url')('');
     }
     const handleImageDelete = (removeIndex) => {
+        setImagesFiles('');
         handleChange('images')(listing.images.filter((_, index) => index != removeIndex));
     }
 
@@ -212,7 +216,7 @@ function EditListings(props) {
                         <TextInputField label="Restrictions:" setFunction={handleChange("restrictions")} value={listing.restrictions} color="success" variant="outlined" multiline={true} />
                         {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
                         <p></p>
-                        <FileInputField multiple={false} color="green" onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" />
+                        <FileInputField multiple={false} color="green" onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" images={thumbnailFile} />
                         {listing.image_url ? (
                             <>
                                 <ImageListItem>
@@ -234,7 +238,7 @@ function EditListings(props) {
                                 </ImageListItem>
                             </>
                         ) : null}
-                        <FileInputField multiple={true} color="green" onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" />
+                        <FileInputField multiple={true} color="green" onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" images={imagesFiles} />
                         {listing.images && listing.images.length != 0 ? (
                             <>
                                 <ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
