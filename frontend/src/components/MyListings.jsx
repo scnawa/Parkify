@@ -40,7 +40,7 @@ function MyListings(props) {
 					method: 'Get',
 					headers: {
 						'Content-Type': 'application/json',
-						'email': token
+						'token': token
 					},
 				});
 
@@ -62,7 +62,8 @@ function MyListings(props) {
 					method: 'Get',
 					headers: {
 						'Content-Type': 'application/json',
-						'email': token
+						'token': token,
+						'email': props.email
 					},
 				});
 
@@ -107,7 +108,7 @@ function MyListings(props) {
 	}, [token]);
 
 	const createOnClick = () => {
-		navigate('/create-listings', { state: { token: token } })
+		navigate('/create-listings', { state: { token: token, email:props.email } })
 	};
 	return (
 		<ThemeProvider theme={theme}>
@@ -127,7 +128,7 @@ function MyListings(props) {
 							borderRadius: 1,
 							border: 1,
 						}}>
-							<ProviderListing token={token} listing={listing} listings={listings} setListings={setListings} />
+							<ProviderListing token={token} email={props.email} listing={listing} listings={listings} setListings={setListings} />
 						</ListItem>
 					))}
 				</List>

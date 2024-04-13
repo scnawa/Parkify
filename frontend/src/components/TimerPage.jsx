@@ -32,7 +32,7 @@ function TimerPage() {
                 const response = await fetch('http://localhost:8080/getBookingTime', {
                     method: 'GET',
                     headers: {
-                        'email': token,
+                        'token': token,
                         'Content-Type': 'application/json',
                     },
                 });
@@ -70,7 +70,7 @@ function TimerPage() {
                 const response = await fetch('http://localhost:8080/saveTimer', {
                     method: 'POST',
                     headers: {
-                        'email': token,
+                        'token': token,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({'timer': timer}),

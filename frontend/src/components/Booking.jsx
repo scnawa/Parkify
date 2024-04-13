@@ -28,7 +28,7 @@ function Booking(props) {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        "email": props.token,
+                        "token": props.token,
                     }
                 });
 
@@ -74,7 +74,7 @@ function Booking(props) {
     const handleIamHereClick = () => {
         //createBooking();
         const data = {
-            "email": props.token,
+            "token": props.token,
             "listingId": listing_id,
             "listingNo": ListingNo,
             "carNumberPlate": numberPlate,
@@ -93,7 +93,7 @@ function Booking(props) {
                 const response = await fetch('http://localhost:8080/create_booking', {
                     method: 'POST',
                     headers: {
-                        'email': props.token,
+                        'token': props.token,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(data),
@@ -131,7 +131,7 @@ function Booking(props) {
         console.log("hi " + listing_id)
         console.log("bye " + ListingNo)
         const data = {
-            "email": props.token,
+            "token": props.token,
             "listingId": listing_id,
             "listingNo": ListingNo
         }

@@ -32,7 +32,7 @@ function AdminDisputes(props) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'email': props.token,
+          'token': props.token,
         },
       });
       const data = await response.json();
@@ -54,16 +54,16 @@ function AdminDisputes(props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'email': props.token,
+          'token': props.token,
         },
-        body: JSON.stringify({dispute_id: disputeId}),
+        body: JSON.stringify({ dispute_id: disputeId }),
       });
       const data = await response.json();
-        if (data.error) {
-          console.error('An error occurred during fetch:', data.error);
-        } else {
-          fetchData();
-        }
+      if (data.error) {
+        console.error('An error occurred during fetch:', data.error);
+      } else {
+        fetchData();
+      }
     } catch (error) {
       console.error('An error occurred during data fetching:', error);
     }
@@ -92,9 +92,9 @@ function AdminDisputes(props) {
     transform: 'translate(-50%, -50%)',
     width: '100%',
     maxWidth: {
-      xs: '55%', 
-      sm: 400, 
-      md: 400, 
+      xs: '55%',
+      sm: 400,
+      md: 400,
     },
     height: '100%',
     maxHeight: '90vh',
@@ -108,7 +108,7 @@ function AdminDisputes(props) {
   return (
     <Box sx={{ margin: 2 }}>
       <Typography variant="h4" gutterBottom>Disputes Review</Typography>
-      <FormControl fullWidth margin="normal" sx={{ width: '150px'}}>
+      <FormControl fullWidth margin="normal" sx={{ width: '150px' }}>
         <InputLabel>Filter Disputes</InputLabel>
         <Select value={filter} label="Filter Disputes" onChange={handleChangeFilter}>
           <MenuItem value="default">All</MenuItem>

@@ -65,7 +65,7 @@ function CustomerCard(props) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'email': props.token,
+                    'token': props.token,
                 },
                 body: JSON.stringify({
                     'default_card': card.id,
@@ -89,7 +89,7 @@ function CustomerCard(props) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'email': props.token,
+                    'token': props.token,
                 },
                 body: JSON.stringify({
                     'card_id': card.id,

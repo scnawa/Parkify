@@ -81,7 +81,7 @@ function ParkEnd() {
                     const response = await fetch('http://localhost:8080/end_booking', {
                         method: 'POST',
                         headers: {
-                            'email': token,
+                            'token': token,
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(data),

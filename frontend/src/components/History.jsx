@@ -16,7 +16,8 @@ const History = (props) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          "email": props.token,
+          "token": props.token,
+          "email": props.email
         }
       });
 
@@ -36,7 +37,8 @@ const History = (props) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'email': props.token,
+          'token': props.token,
+          "email": props.email,
           'listingId': booking.listing_id
         },
       });

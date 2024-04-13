@@ -33,7 +33,7 @@ function ManagePayment(props) {
                     method: 'Get',
                     headers: {
                         'Content-Type': 'application/json',
-                        'email': token,
+                        'token': token,
                     },
                 });
 

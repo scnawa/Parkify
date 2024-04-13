@@ -43,11 +43,12 @@ function AllListings(props) {
     useEffect(() => {
         // Check if user is currently in a prebooking/booking
         if (props.token) {
+            console.log(props);
             fetch('http://localhost:8080/timerPersistence', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'email': props.token,
+                    'token': props.token,
                 },
             })
                 .then(response => response.json())
@@ -83,7 +84,7 @@ function AllListings(props) {
                 'Content-Type': 'application/json',
                 'order': priceOrder,
                 'distance': distance,
-                'email': props.token,
+                'token': props.token,
                 'lat': userLocation[0],
                 'lon': userLocation[1],
             },
@@ -149,16 +150,12 @@ function AllListings(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        console.log(distance);
-
         fetchListingsSortedByPriceAndDistance(priceOrder, distance);
     };
 
 
 
     const fetchListingsSortedByPriceAndDistance = async (priceOrder, distance) => {
-        console.log(distance);
-
         try {
             const response = await fetch('http://localhost:8080/filterByPriceAndDistance', {
                 method: 'GET',
@@ -166,7 +163,7 @@ function AllListings(props) {
                     'Content-Type': 'application/json',
                     'order': priceOrder,
                     'distance': distance,
-                    'email': props.token,
+                    'token': props.token,
                     'lat': userLocation[0],
                     'lon': userLocation[1],
 
@@ -175,7 +172,6 @@ function AllListings(props) {
 
             const data = await response.json();
             if (!data.error) {
-                console.log(data)
                 setListings(data);
             } else {
                 alert(data.error);

@@ -119,7 +119,7 @@ class User:
             return json_util.dumps({"type": "SUCCESS"})
 
     def checkAdmin(self, headers): 
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             is_admin = user.get('isAdmin', False)
             return jsonify({'isAdmin': is_admin})
@@ -162,34 +162,41 @@ class User:
 
 
     def logout(self, userData): 
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
         if user: 
             if not user['session_id'].count(userData['currentSessionID']) > 0: 
                 return jsonify({'error': "Session Does Not Exist"}), 403
             user['session_id'].remove(userData['currentSessionID'])
-            db.userbase_data.update_one({"email": userData['email']}, {
+            db.userbase_data.update_one({"email": user['email']}, {
                                         "$set": {"session_id": user['session_id']}})
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
     
 
     def delete_account(self, userData): 
-        user = db.userbase_data.find_one({"email": userData['email']})
-        
+        requester = db.userbase_data.find_one({"session_id": userData['token']})
+        userInfo = db.userbase_data.find_one({"email": userData['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
         # deleting the same listing within the listings DB so ensure syncronised listings across DBs
-        listing_ids = [listing['listing_id'] for listing in user.get('listings', [])]
+        listing_ids = [listing['listing_id'] for listing in userInfo.get('listings', [])]
         if listing_ids:
             for listing_id in listing_ids:
                 db.listing_data.delete_one({"listing_id": listing_id})
-        is_admin = user.get('isAdmin', False)
+        is_admin = userInfo.get('isAdmin', False)
         if not is_admin:
-            if user["payment_id"] != "":
-                stripe.Customer.delete(user["payment_id"])
-            if user["payOut_id"] != "":
-                stripe.Account.delete(user["payOut_id"])
-            db.userbase_data.delete_one(user)
+            if userInfo["payment_id"] != "":
+                stripe.Customer.delete(userInfo["payment_id"])
+            if userInfo["payOut_id"] != "":
+                stripe.Account.delete(userInfo["payOut_id"])
+            db.userbase_data.delete_one(userInfo)
             return jsonify({'status': "PASS"}), 200
-        db.userbase_data.delete_one(user)
+        db.userbase_data.delete_one(userInfo)
         return jsonify({'status': "PASS"}), 200
     
     def resetPass(self, userData): 
@@ -202,12 +209,21 @@ class User:
     
     def create_listing(self, userData):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
-        if user:
+        # user = db.userbase_data.find_one({"email": userData['email']})
+        requester = db.userbase_data.find_one({"session_id": userData['token']})
+        userInfo = db.userbase_data.find_one({"email": userData['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
+        if userInfo:
 
             listing = {
                 "listing_id": uuid.uuid4().hex,
-                "listing_no": len(user['listings']),
+                "listing_no": len(userInfo['listings']),
                 "address": userData['listings']['address'],
                 "price": userData['listings']['price'],
                 "quantity": userData['listings']['quantity'],
@@ -224,9 +240,9 @@ class User:
                 "likes": 0
             }
 
-            user_listings = user['listings']
+            user_listings = userInfo['listings']
             user_listings.append(listing)
-            filter = {'email': user['email']}
+            filter = {'email': userInfo['email']}
             newvalues = {"$set" : {'listings': user_listings}}
             db.userbase_data.update_one(filter, newvalues)
             db.listing_data.insert_one(listing)
@@ -235,18 +251,25 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def deactivate_listing(self, userData, headers):
-        # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
         # check if the listing exists
-        user_listings = user.get('listings')
+        user_listings = userInfo.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
 
-        if user:
+        if userInfo:
 
             if listingFound:
                 listing_no = userData["listings"]["listing_no"] 
                 user_listings[listing_no].update({'start_date': "", 'end_date': "", 'is_active': "False"})
-                filter = {'email': user['email']}
+                filter = {'email': userInfo['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
         
@@ -262,23 +285,32 @@ class User:
                 }
                 db.listing_data.update_one(filter, newvalues)
 
-                return json_util.dumps(user)
+                return json_util.dumps(userInfo)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def activate_listing(self, userData, headers):
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         # check if the listing exists
-        user_listings = user.get('listings')
+        user_listings = userInfo.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
 
-        if user:
+        if userInfo:
             if listingFound:
                 
                 listing_no = userData["listings"]["listing_no"] 
                 user_listings[listing_no].update({'start_date': userData['listings']['start_date'], 'end_date': userData['listings']['end_date'], 'is_active': "True"})
-                filter = {'email': user['email']}
+                filter = {'email': userInfo['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
 
@@ -294,27 +326,34 @@ class User:
                 }
                 db.listing_data.update_one(filter, newvalues)
 
-                return json_util.dumps(user)
+                return json_util.dumps(userInfo)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def delete_listing(self, userData, headers):
-        # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
         # check if the listing exists
-        user_listings = user.get('listings')
+        user_listings = userInfo.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
-        if user: 
+        if userInfo: 
             if listingFound: 
                 listing_no = userData["listings"]["listing_no"]
-                listing_length = len(user['listings'])
+                listing_length = len(userInfo['listings'])
                 user_listings.remove(user_listings[listing_no])
-                listing_length = len(user['listings'])
+                listing_length = len(userInfo['listings'])
                 while listing_no < listing_length:
                     user_listings[listing_no].update({'listing_no': user_listings[listing_no]['listing_no'] - 1})
                     listing_no += 1
                     
-                filter = {'email': user['email']}
+                filter = {'email': userInfo['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
 
@@ -328,12 +367,20 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
     def update_listing(self, userData, headers):
-        # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+
         # check if the listing exists
-        user_listings = user.get('listings')
+        user_listings = userInfo.get('listings')
         listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
-        if user:
+        if userInfo:
             if listingFound:
 
                 listing = {
@@ -349,9 +396,9 @@ class User:
                     "is_active": userData['listings']['is_active']  
                 }
                 listing_no = userData["listings"]["listing_no"]
-                user_listings = user['listings']
+                user_listings = userInfo['listings']
                 user_listings[listing_no].update(listing)
-                filter = {'email': user['email']}
+                filter = {'email': userInfo['email']}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
 
@@ -362,15 +409,22 @@ class User:
                 db.listing_data.update_one(filter, newvalues)
 
 
-                return json_util.dumps(user)
+                return json_util.dumps(userInfo)
             return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def get_listings(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
-        if user: 
-            return json_util.dumps(user['listings'])
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+        if userInfo: 
+            return json_util.dumps(userInfo['listings'])
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     def get_all_users(self, headers):
@@ -418,16 +472,23 @@ class User:
 
 
     def getUserInfo(self, userData): 
-        user = db.userbase_data.find_one({"email": userData['email']})
-        if user:
-            return json_util.dumps(user)
+        requester = db.userbase_data.find_one({"session_id": userData['token']})
+        userInfo = db.userbase_data.find_one({"email": userData['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+        if userInfo:
+            return json_util.dumps(userInfo)
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     # takes listing off page
     def hold_listing(self, userData):
         
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
@@ -437,10 +498,10 @@ class User:
 
 
         if user:
-                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": start_time}})
-                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
-                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
-                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"carNumberPlate": userData["carNumberPlate"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": start_time}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"carNumberPlate": userData["carNumberPlate"]}})
                 # listing no to book 
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
@@ -467,7 +528,9 @@ class User:
         self.timer.cancel()
         # print(userData)
         # check if the user exists
-        user = db.userbase_data.find_one({"email": userData['email']})
+        
+        user = db.userbase_data.find_one({"session_id": userData['token']})
+
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
@@ -476,7 +539,7 @@ class User:
         if user:
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "True"})
-                db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": ""}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": ""}})
                 filter = {"listings.listing_id": userData["listingId"]}
                 newvalues = {"$set" : {'listings': user_listings}}
                 db.userbase_data.update_one(filter, newvalues)
@@ -487,8 +550,6 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def getClosestListings(self, headers, distance): 
-        print("Email value:", headers['email'])
-        print("Email type:", type(headers['email']))
         latitude = 0
         longitude = 0
         latitude = float(headers['lat'])
@@ -512,7 +573,8 @@ class User:
             self.timer.cancel()
         # check if the user exists
         # print(userData)
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
+
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
@@ -547,11 +609,11 @@ class User:
         if user:
             booking_list.append(booking)
             user_listings[listing_no].update({'is_active': "False"})
-            db.userbase_data.update_one({"email": userData['email']}, {"$set": {"pre_booking_time": ""}})
+            db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": ""}})
             filter = {'email': user['email']}
             newvalues = {"$set" : {'recentBookings': booking_list}}
             db.userbase_data.update_one(filter, newvalues)
-            booking.update({"email": userData['email']})
+            booking.update({"email": user['email']})
             del booking["recentbooking_no"]
             listing_booking_list.append(booking)
             filter = {"listings.listing_id": userData["listingId"]}
@@ -585,7 +647,7 @@ class User:
     
     def end_booking(self, headers, userData):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
         user_listings = provider_user.get('listings')
@@ -676,7 +738,7 @@ class User:
 
     
     def addPaymentMethod(self, userData):
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
         if user:
             intent=stripe.SetupIntent.create(
                 customer=user['payment_id'],
@@ -689,7 +751,7 @@ class User:
     
     # https://docs.stripe.com/connect/testing#creating-accounts
     def providerDetails(self, userData):
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
         if user:
             typeOfLink = "account_update" if user["is_stripe_connected"] else "account_onboarding"
             link = stripe.AccountLink.create(
@@ -706,7 +768,9 @@ class User:
             return jsonify({"account_link":link.url})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
+
+        # user = db.userbase_data.find_one({"email": userData['email']})
         if user:
             is_admin = user.get('isAdmin', False)
             if is_admin:
@@ -718,7 +782,7 @@ class User:
             return jsonify({"stripe_connected":user["is_stripe_connected"]})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def allCardList(self, userData):
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
 
         if user:
             respond = stripe.PaymentMethod.list(
@@ -735,7 +799,8 @@ class User:
             return jsonify({"default_payment": user['default_payment_id'], "payments": data, })
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def setDefaultCard(self, headers, userData):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+
         if user:
             try:
 
@@ -753,7 +818,7 @@ class User:
             return jsonify({"default_payment": user['default_payment_id']})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def removeCard(self, headers, userData):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             try:
                 card_id = userData['card_id']
@@ -779,7 +844,8 @@ class User:
             return jsonify({"default_payment": user['default_payment_id'], "cards":other_cards})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def getDefaultCard(self, userData):
-        user = db.userbase_data.find_one({"email": userData['email']})
+        user = db.userbase_data.find_one({"session_id": userData['token']})
+
         if user:
             try:
                 if user['default_payment_id'] != "":
@@ -804,7 +870,8 @@ class User:
     def get_specific_listing(self, headers):
         # user should be able to view listing before login in
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+
         # check if the listing exists
 
         listing_data = db.listing_data.find_one({"listing_id": headers["listingId"]})
@@ -821,12 +888,14 @@ class User:
 
     def get_pre_booking_time(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+
         return json_util.dumps(user["pre_booking_time"])
     
     def get_booking_time(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
+
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         booking_list = user["recentBookings"]
 
         return json_util.dumps(booking_list[-1]["start_time"])
@@ -849,29 +918,31 @@ class User:
             
     def update_user(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
-        if user:
+        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        userInfo = db.userbase_data.find_one({"email": headers['email']})
+        if not userInfo:
+            return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        if not requester:
+            return jsonify({"type": "email", "error": "session id Does Not Exist"}), 402
+        if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
+            return jsonify({"type": "email", "error": "No permission"}), 402
+        if userInfo:
 
             newuser = {
                 "username": userData['username'], 
                 "email" : userData["email"], 
                 "profile_picture": userData['profile_picture'] 
             }
-
-            
-            user.update(newuser)
-            filter = {'email': headers['email']}
-            newvalues = {"$set" : user}
+            userInfo.update(newuser)
+            filter = {'email': userInfo['email']}
+            newvalues = {"$set" : userInfo}
             db.userbase_data.update_one(filter, newvalues)
-
-            return json_util.dumps(user)
+            return json_util.dumps(userInfo)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
     def create_dispute(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"email": headers['email']})
-        print(bool(user))
-        print(headers['email'])
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             dispute = {
                 "dispute_id": uuid.uuid4().hex,
@@ -880,7 +951,7 @@ class User:
                 "end_price": userData['end_price'],
                 "total_time": userData['total_time'],
                 "start_time": userData['start_time'],
-                "dispute_by": headers['email'],
+                "dispute_by": userData['dispute_by'],
                 "dispute_against": userData["dispute_against"],
                 "dispute_message": userData["dispute_message"], 
                 "dispute_image": userData['dispute_images'],
@@ -892,7 +963,7 @@ class User:
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     def resolve_dispute(self, userData, headers):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
 
         if user:
             dispute = {
@@ -912,14 +983,14 @@ class User:
         return json_util.dumps(provider_user['email'])
     
     def get_disputes(self, headers):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user: 
             disputes = db.disputes.find()
             disputes_list = list(disputes)  
             return json_util.dumps(disputes_list)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
         
-    
+    # this function is never used along with its route
     def get_recentBookings(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
@@ -943,7 +1014,7 @@ class User:
     def like(self, userData, headers):
         # Check if the user exists
         #print("Email", headers['email'])
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             chk = False 
             liked_listings = user['liked_listings']
@@ -955,7 +1026,7 @@ class User:
                     break
 
             if chk == True: 
-                db.userbase_data.update_one({"email": headers['email']}, {"$set": {"liked_listings": liked_listings}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"liked_listings": liked_listings}})
                 provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
                 user_listings = provider_user.get('listings')
                 for listing in user_listings: 
@@ -974,7 +1045,7 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def dislike(self, userData, headers):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             chk = False 
             liked_listings = user['liked_listings']
@@ -985,7 +1056,7 @@ class User:
                     chk = True
                     break
             if chk == True: 
-                db.userbase_data.update_one({"email": headers['email']}, {"$set": {"liked_listings": liked_listings}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"liked_listings": liked_listings}})
                 provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
                 user_listings = provider_user.get('listings')
                 for listing in user_listings: 
@@ -1003,7 +1074,7 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def timerPersistence(self, headers):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             if user['pre_booking_time'] != "":
                 return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "carNumberPlate": user['carNumberPlate']}), 200
@@ -1019,16 +1090,16 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     def saveTimer(self, userData, headers):
-        user = db.userbase_data.find_one({"email": headers['email']})
+        user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
-            db.userbase_data.update_one({"email": headers['email']}, {"$set": {"timer": userData["timer"]}})
+            db.userbase_data.update_one({"session_id": headers['token']}, {"$set": {"timer": userData["timer"]}})
             if user['recentBookings']:
                 last_booking_index = len(user['recentBookings']) - 1
                 update_field = f"recentBookings.{last_booking_index}.in_end_booking_phase"
                 db.userbase_data.update_one(
-                    {"email": headers['email']},
+                    {"session_id": headers['token']},
                     {"$set": {update_field: True}}
                 )
             return json_util.dumps("Pass")
-        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
