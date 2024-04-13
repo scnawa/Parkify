@@ -22,7 +22,7 @@ const theme = createTheme({
 });
 
 function ParkEnd() {
-    const [token, setToken] = useState(localStorage.getItem('SID'));
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [feedback, setFeedback] = useState('');
     const [promo, setPromo] = useState('')
     const thumbnailRef = React.useRef();
@@ -98,7 +98,7 @@ function ParkEnd() {
                 }
             };
             fetchEndBooking().then(() => {
-                alert("booking is ended");
+                alert("The booking has ended");
                 navigate('/');
             }).catch(alert);
         })

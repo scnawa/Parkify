@@ -20,7 +20,7 @@ function TimerPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [timer, setTimer] = useState(0);
-    const [token, setToken] = React.useState(localStorage.getItem('SID'));
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
 
     const { listing_id, ListingNo } = location.state || {};
     useEffect(() => {
@@ -63,7 +63,38 @@ function TimerPage() {
     }, []);
 
     const handleEndBooking = () => {
-        navigate('/park-end', { state: { timer, listing_id, ListingNo } });
+        // saveTimer saves the current end time and ends the booking phase, making
+        // the state enter to the current 
+        const saveTimer = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/saveTimer', {
+                    method: 'POST',
+                    headers: {
+                        'token': token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({'timer': timer}),
+                });
+
+                const res = await response.json();
+                if (res.error) {
+                    return Promise.reject(res.error);
+                } else {
+                    return Promise.resolve(res);
+                }
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        };
+        saveTimer()
+            .then(() => {
+                console.log('Save timer success');
+                console.log('state variable timer: ' + timer)
+                navigate('/park-end', { state: { timer, listing_id, ListingNo } });
+            })
+            .catch((error) => {
+                console.error('Save timer failed:', error);
+            });
     };
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);

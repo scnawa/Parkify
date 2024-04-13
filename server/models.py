@@ -54,7 +54,9 @@ class User:
             "current_listing_id": "",
             "current_listing_no": "",
             "profile_picture": "", 
-            "liked_listings": []
+            "liked_listings": [],
+            "carNumberPlate": "",
+            "timer": "",
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
@@ -499,6 +501,7 @@ class User:
                 db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": start_time}})
                 db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
                 db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"carNumberPlate": userData["carNumberPlate"]}})
                 # listing no to book 
                 listing_no = userData["listingNo"] 
                 user_listings[listing_no].update({'is_active': "False"})
@@ -595,8 +598,9 @@ class User:
             "feedback": "",
             "end_image_url": "", 
             "total_time": "",
-            "is_paid": False,
+            "in_end_booking_phase": False,
             "payment_id": "",
+            "carNumberPlate": userData["carNumberPlate"],
         }
 
         ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
@@ -657,7 +661,8 @@ class User:
                     "end_price": discounted_price,
                     "feedback": userData["feedback"],
                     "end_image_url": userData["endImageUrl"], 
-                    "total_time": userData["totalTime"]
+                    "total_time": userData["totalTime"],
+                    "in_end_booking_phase": False
             }
             paymentMethods = stripe.PaymentMethod.list(
                 customer=user['payment_id'],
@@ -985,7 +990,7 @@ class User:
             return json_util.dumps(disputes_list)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
         
-    
+    # this function is never used along with its route
     def get_recentBookings(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
@@ -1072,13 +1077,29 @@ class User:
         user = db.userbase_data.find_one({"session_id": headers['token']})
         if user:
             if user['pre_booking_time'] != "":
-                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
+                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "carNumberPlate": user['carNumberPlate']}), 200
             elif len(user['recentBookings']) != 0:
+                if user['recentBookings'][-1]['in_end_booking_phase'] == True:
+                    return jsonify({"result": "endbooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "timer": user['timer']}), 200
                 if user['recentBookings'][-1]['total_time'] == "":
                     return jsonify({"result": "booking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
                 else:
                     return jsonify({"result": "none"}), 200
             else:
                 return jsonify({"result": "none"}), 200
+        return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+
+    def saveTimer(self, userData, headers):
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+        if user:
+            db.userbase_data.update_one({"session_id": headers['token']}, {"$set": {"timer": userData["timer"]}})
+            if user['recentBookings']:
+                last_booking_index = len(user['recentBookings']) - 1
+                update_field = f"recentBookings.{last_booking_index}.in_end_booking_phase"
+                db.userbase_data.update_one(
+                    {"session_id": headers['token']},
+                    {"$set": {update_field: True}}
+                )
+            return json_util.dumps("Pass")
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 

@@ -11,9 +11,12 @@ import '@splidejs/react-splide/css';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
+import 'leaflet-gesture-handling';
 
 
-import { Tooltip, Container, Grid, Card, CardMedia, CardContent, CardActions, Typography, Box, Button } from '@mui/material';
+
+import { TextField, Tooltip, Container, Grid, Card, CardMedia, CardContent, CardActions, Typography, Box, Button } from '@mui/material';
 
 
 
@@ -26,11 +29,12 @@ const placeholder = L.icon({
 });
 
 const priceStyle = {
-    backgroundColor: 'grey',
+    backgroundColor: '#4CAF50',
     borderRadius: '4px',
     padding: '6.5px',
     display: 'inline-block',
     marginRight: '8px',
+    marginTop: 3,
 };
 
 const availabilityStyle = {
@@ -40,7 +44,7 @@ const availabilityStyle = {
 function ListingPage(props) {
     const navigate = useNavigate();
     // eslint-disable-next-line
-    const [token, setToken] = React.useState(localStorage.getItem('SID'));
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
 
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
@@ -49,6 +53,8 @@ function ListingPage(props) {
     const [totalLikes, setTotalLikes] = useState(0);
 
     const [error, setError] = useState(null);
+    const [numberPlate, setNumberPlate] = useState('');
+    const [isNumberPlateValid, setIsNumberPlateValid] = useState(false);
     // console.log(props);
     useEffect(() => {
         /*         const abortController = new AbortController();
@@ -144,7 +150,8 @@ function ListingPage(props) {
         const data = {
             "token": props.token,
             "listingId": listing_id,
-            "listingNo": ListingNo
+            "listingNo": ListingNo,
+            "carNumberPlate": numberPlate.toUpperCase()
         }
         try {
             const response = await fetch('/hold_listing', {
@@ -156,7 +163,7 @@ function ListingPage(props) {
             });
 
             if (response.ok) {
-                navigate('/book', { state: { listing_id, ListingNo } });
+                navigate('/book', { state: { listing_id, ListingNo, numberPlate } });
                 //console.log("booked")
             } else {
                 alert("Failed to book")
@@ -207,6 +214,18 @@ function ListingPage(props) {
             setLiked(currentlyLiked); // Revert the liked state if the API call fails
         }
     };
+    
+    const validateNumberPlate = (input) => {
+        const isValid = /^[A-Za-z0-9]{6}$/.test(input);
+        setIsNumberPlateValid(isValid);
+    };
+    
+    const handleNumberPlateChange = (event) => {
+        const input = event.target.value;
+        setNumberPlate(input);
+        validateNumberPlate(input);
+    };
+    
 
     return (
         <Container maxWidth="lg">
@@ -262,20 +281,50 @@ function ListingPage(props) {
                                 <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                                     Restrictions: {listing.restrictions}
                                 </Typography>
-                                {/* Price and availability with additional styles */}
-                                <Box sx={{ mt: 2 }}>
-                                    <Typography variant="body1" sx={availabilityStyle}>
-                                        Status: Parking space is available
-                                    </Typography>
-                                </Box>
-                            </CardContent>
-                            <CardActions disableSpacing>
                                 <Typography variant="body1" sx={priceStyle}>
                                     Price: ${listing.price}.00/hr
                                 </Typography>
-                                <Button variant="contained" color="primary" onClick={handleBookNow}>
-                                    Book Now
-                                </Button>
+                            </CardContent>
+                            <CardActions disableSpacing>
+                                <TextField
+                                    label="Number Plate"
+                                    variant="outlined"
+                                    value={numberPlate}
+                                    onChange={handleNumberPlateChange}
+                                    error={!isNumberPlateValid && numberPlate.length > 0}
+                                    inputProps={{
+                                        maxLength: 6,
+                                        style: { textTransform: 'uppercase' }
+                                    }}
+                                    sx={{
+                                        width: '140px',
+                                        height: '37px',
+                                        mr: '7px',
+                                        '.MuiInputBase-input': {
+                                            padding: '7px',
+                                        },
+                                        '.MuiInputLabel-outlined': {
+                                            transform: 'translate(14px, 7px) scale(1)',
+                                        },
+                                        '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+                                            transform: 'translate(14px, -6px) scale(0.75)', 
+                                        }
+                                    }}
+                                />
+                                <Tooltip 
+                                    title={numberPlate.length === 6 && isNumberPlateValid ? "" : (!isNumberPlateValid && numberPlate.length > 0 ? "Invalid number plate" : "Enter 6 character number plate")}
+                                >
+                                    <span>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={handleBookNow}
+                                            disabled={!isNumberPlateValid}
+                                        >
+                                            Book Now
+                                        </Button>
+                                    </span>
+                                </Tooltip>
                                 <Typography component="span" sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
                                     <Tooltip title={!listing.booked_previously ? "Book this listing to be able to like it" : "Click to like"}>
                                         <span>
@@ -286,13 +335,13 @@ function ListingPage(props) {
                                     </Tooltip>
                                     <span>{totalLikes}</span>
                                 </Typography>
-
                             </CardActions>
+
                         </Card>
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{ height: 400, width: '100%' }}>
-                            <MapContainer center={locations} zoom={15} style={{ height: '100%', width: '100%' }}>
+                            <MapContainer center={locations} zoom={15} style={{ height: '100%', width: '100%' }} gestureHandling={true}>
                                 <TileLayer
                                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

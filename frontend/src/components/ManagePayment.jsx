@@ -17,7 +17,7 @@ const theme = createTheme({
 
 function ManagePayment(props) {
     // eslint-disable-next-line
-    const [token, setToken] = React.useState(localStorage.getItem('SID'));
+    const [token, setToken] = React.useState(localStorage.getItem('token'));
     const [defaultCard, setdefaultCard] = React.useState("");
     const [cards, setCards] = React.useState([]);
     const navigate = useNavigate();

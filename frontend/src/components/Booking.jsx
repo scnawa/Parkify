@@ -17,7 +17,7 @@ const theme = createTheme({
 function Booking(props) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { listing_id, ListingNo } = location.state || {};
+    const { listing_id, ListingNo, numberPlate } = location.state || {};
     const [timer, setTimer] = useState('');
     const [initialTime, setinitialTime] = useState(null);
 
@@ -76,7 +76,8 @@ function Booking(props) {
         const data = {
             "token": props.token,
             "listingId": listing_id,
-            "listingNo": ListingNo
+            "listingNo": ListingNo,
+            "carNumberPlate": numberPlate,
         }
         // testing data
         // const data = {
