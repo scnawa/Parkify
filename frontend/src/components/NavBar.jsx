@@ -10,6 +10,8 @@ import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+
 
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 
@@ -310,12 +312,13 @@ function NavBar(props) {
 											'&:hover': {
 												bgcolor: 'black', 
 											},
-											borderRadius: '4px',
-											padding: '10px 16px',
-											mr: '20px'
+											borderRadius: '60px',
+											padding: '0px',  // Adjust padding to better fit the icon
+											mr: { xs: '0px', sm: '40px'},
+											minWidth: '45px',
 										}}
 									>
-										Search
+										<SearchIcon />
 									</Button>
 								</form>
 							)}
