@@ -34,28 +34,28 @@ const theme = createTheme({
 const searchBarStyle = {
 	// from https://stackoverflow.com/questions/67139471/how-can-i-change-the-focused-color-of-a-textfield
 	// Keeps the label transparent when the input is focused
-    "& .MuiInputLabel-root.Mui-focused": {
-        color: "#666666"
-    },
-    // Ensures label stays transparent when there's text in the field (both on focus and blur)
-    "& .MuiInputLabel-root.Mui-filled": {
-        color: "#666666"
-    },
+	"& .MuiInputLabel-root.Mui-focused": {
+		color: "#666666"
+	},
+	// Ensures label stays transparent when there's text in the field (both on focus and blur)
+	"& .MuiInputLabel-root.Mui-filled": {
+		color: "#666666"
+	},
 	// Target the label specifically when the field is filled but not focused
-    "& .MuiInputLabel-root.Mui-filled.MuiInputLabel-shrink": {
-        color: "#666666"
-    },
-    // Removes the underline in all states: normal, focused, and hover
-    "& .MuiInput-underline:after, & .MuiInput-underline:before, & .MuiInput-underline:hover:not(.Mui-disabled):before": {
-        borderBottom: "none"
-    },
+	"& .MuiInputLabel-root.Mui-filled.MuiInputLabel-shrink": {
+		color: "#666666"
+	},
+	// Removes the underline in all states: normal, focused, and hover
+	"& .MuiInput-underline:after, & .MuiInput-underline:before, & .MuiInput-underline:hover:not(.Mui-disabled):before": {
+		borderBottom: "none"
+	},
 	// ensure the label is positioned correctly and acts as expected when viewport decreases
 	"& .MuiInputLabel-root": {
-        maxWidth: 'calc(100% - 24px)', 
-        whiteSpace: 'nowrap', 
-        overflow: 'hidden', 
-        textOverflow: 'ellipsis', 
-    },
+		maxWidth: 'calc(100% - 24px)',
+		whiteSpace: 'nowrap',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	},
 	"display": { xs: 'block', sm: 'block', md: 'block' },
 	"margin-left": "0px",
 	"margin-right": "10px",
@@ -64,24 +64,23 @@ const searchBarStyle = {
 	"borderRadius": '4px',
 	// ensures input text is positioned correctly
 	"& .MuiInputBase-input": {
-        transform: 'translate(0, -38%)', 
-        padding: '10px 12px',  
-    }
-	
-	
-	
+		transform: 'translate(0, -38%)',
+		padding: '10px 12px',
+	}
+
+
+
 }
 
 const font1 = "'Nunito Sans', sans-serif";
 export function rentOutInfoOnclick(props) {
-	console.log("here", props);
 	const fetchAccountLink = async () => {
 		try {
 			const response = await fetch('http://localhost:8080/providerDetails', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'email': props.token
+					'token': props.token
 				},
 			});
 
@@ -106,14 +105,13 @@ function NavBar(props) {
 	const [notiLocation, setnotiLocation] = React.useState(null);
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const token = props.token;
-	const SID = props.SID;
 	const setToken = props.setToken;
-	const setSID = props.setSID;
 	const isAdmin = props.isAdmin;
 	const setIsAdmin = props.setIsAdmin;
+	const email = props.email;
+	const setEmail = props.setEmail;
 	const location = useLocation();
 	const [pages, setPages] = React.useState(['My Parking Spaces']);
-
 	const navigate = useNavigate();
 
 	React.useEffect(() => {
@@ -123,7 +121,6 @@ function NavBar(props) {
 			setPages(['My Parking Spaces']);
 		}
 	}, [isAdmin]);
-
 
 	const userMenuOnclick = (event) => {
 		setUserMenuLocation(event.currentTarget);
@@ -143,7 +140,6 @@ function NavBar(props) {
 	// TODO: navigate different page
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
-		console.log(text);
 		switch (text) {
 			case "MY PARKING SPACES":
 				navigate("/myListing");
@@ -169,7 +165,7 @@ function NavBar(props) {
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
-		Logout(token, SID, setToken, setSID, setIsAdmin);
+		Logout(token, setToken, setIsAdmin, setEmail);
 		navigate("/");
 	}
 	const historyOnclick = () => {
@@ -193,7 +189,7 @@ function NavBar(props) {
 		navigate("/adminViewListings");
 
 	}
-	
+
 	const disputes = () => {
 		setUserMenuLocation(null);
 		navigate("/adminDisputes");
@@ -204,8 +200,6 @@ function NavBar(props) {
 	}
 	const notiLocationClose = (event) => {
 		setnotiLocation(null);
-		console.log("close");
-		console.log(notiLocation);
 	};
 
 	const handleSearchSubmit = async (event) => {
@@ -221,7 +215,6 @@ function NavBar(props) {
 
 			const data = await response.json();
 			if (!data.error) {
-				console.log(data);
 				props.setListings(data);
 			} else {
 				alert(data.error);
@@ -265,7 +258,7 @@ function NavBar(props) {
 									Parkify
 								</Typography>
 							</button>
-							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, marginRight: { sm: 4} }}>
+							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, marginRight: { sm: 4 } }}>
 								{pages.map((item) => (
 									<Button key={item} onClick={pageOnClick}
 										sx={{
@@ -282,7 +275,7 @@ function NavBar(props) {
 							</Box>
 							{(location.pathname === "/" || location.pathname === "/alllistings") && (
 								<form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'row', height: '45px' }}>
-			
+
 									<TextField sx={searchBarStyle}
 										InputLabelProps={{
 											style: {
@@ -291,8 +284,8 @@ function NavBar(props) {
 												left: '12px',
 												// This ensures that the label starts off centered
 												transform: 'translate(0, -50%)',
-												
-												
+
+
 											},
 											shrink: false,
 										}}
@@ -310,11 +303,11 @@ function NavBar(props) {
 											ml: 0.4,
 											bgcolor: 'black',
 											'&:hover': {
-												bgcolor: 'black', 
+												bgcolor: 'black',
 											},
 											borderRadius: '60px',
 											padding: '0px',  // Adjust padding to better fit the icon
-											mr: { xs: '0px', sm: '40px'},
+											mr: { xs: '0px', sm: '40px' },
 											minWidth: '45px',
 										}}
 									>

@@ -16,7 +16,8 @@ const History = (props) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          "email": props.token,
+          "token": props.token,
+          "email": props.email
         }
       });
 
@@ -36,7 +37,8 @@ const History = (props) => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'email': props.token,
+          'token': props.token,
+          "email": props.email,
           'listingId': booking.listing_id
         },
       });
@@ -65,9 +67,9 @@ const History = (props) => {
       <Grid container spacing={3}>
         {bookings.map((booking, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper 
-              elevation={3} 
-              sx={{ p: 2, cursor: 'pointer' }} 
+            <Paper
+              elevation={3}
+              sx={{ p: 2, cursor: 'pointer' }}
               onClick={() => handleCardClick(booking.listing_id)}
             >
               <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
@@ -80,8 +82,8 @@ const History = (props) => {
                 Time: {formatTime(booking.total_time)}
               </Typography>
               <Box display="flex" justifyContent="flex-end" onClick={(e) => e.stopPropagation()}>
-                <Button 
-                  variant="outlined" 
+                <Button
+                  variant="outlined"
                   onClick={() => handleDispute(booking)}
                   sx={{ borderColor: "red", color: "red", ':hover': { bgcolor: 'red', color: 'white', borderColor: 'red' } }}
                 >

@@ -19,7 +19,7 @@ function Payment(props) {
                 const response = await fetch('http://localhost:8080/addPaymentMethod', {
                     method: 'POST',
                     headers: {
-                        'email': props.token,
+                        'token': props.token,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({}),

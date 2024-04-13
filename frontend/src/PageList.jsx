@@ -20,7 +20,6 @@ import Payment from './components/Payment';
 import PaymentAddedSuccess from './components/PaymentAddedSuccess';
 import ProviderDetailsExpried from './components/ProviderDetailsExpried';
 import ProviderDetailsReturn from './components/ProviderDetailsReturn';
-import TestPayment from './components/TestPayment';
 import ManagePayment from './components/ManagePayment';
 import History from './components/History';
 import AdminViewListings from './components/AdminViewListings';
@@ -30,7 +29,7 @@ import DisputePage from './components/DisputePage'
 const PageList = (props) => {
 
   const [token, setToken] = React.useState(localStorage.getItem('token'));
-  const [SID, setSID] = React.useState(localStorage.getItem('SID'));
+  const [email, setEmail] = React.useState(localStorage.getItem('email'));
   const [listings, setListings] = useState([]);
   const [listingDetails, setListingDetails] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false)
@@ -42,7 +41,7 @@ const PageList = (props) => {
           const response = await fetch('http://localhost:8080/checkAdmin', {
             method: 'GET',
             headers: {
-                'email': token,
+                'token': token,
                 'Content-Type': 'application/json',
             },
           });
@@ -62,33 +61,32 @@ const PageList = (props) => {
   //console.log(token, localStorage.getItem('token'));
   return (
     <>
-      <NavBar token={token} SID={SID} setToken={setToken} setSID={setSID} setListings={setListings} 
-      isAdmin={isAdmin} setIsAdmin={setIsAdmin}/>
+      <NavBar token={token} setToken={setToken} setListings={setListings} 
+      isAdmin={isAdmin} setIsAdmin={setIsAdmin} email={email} setEmail={setEmail}/>
       <Routes>
         <Route path="/"element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/create-listings" element={<CreateListings token={token} isAdmin={isAdmin}/>} />
-        <Route path="/myListing" element={<MyListings token={token}/>} />
+        <Route path="/create-listings" element={<CreateListings token={token} isAdmin={isAdmin} email={email}/>} />
+        <Route path="/myListing" element={<MyListings token={token} email={email}/>} />
         <Route path="/editListings" element={<EditListings isAdmin={isAdmin}/>} />
-        <Route path="/alllistings" element={<AllListings token={token} listings={listings}/>} />
-        <Route path="/listing/:listing_id" element={<ListingPage isAdmin={isAdmin} token={token} SID={SID} listingDetails={listingDetails}/>} />
-        <Route path="/book" element={<Booking token={token} SID={SID} />}/>
-        <Route path="/timer" element={<TimerPage token={token} SID={SID}/>}/>
-        <Route path="/park-end" element={<ParkEnd token={token} SID={SID}/>}/>
-        <Route path="/history" element={<History token={token} SID={SID}/>} />
-        <Route path="/customerHistory" element={<CustomerHistory token={token} SID={SID}/>} />
-        <Route path="/login" element={<Login  token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
+        <Route path="/alllistings" element={<AllListings token={token} listings={listings} email={email}/>} />
+        <Route path="/listing/:listing_id" element={<ListingPage isAdmin={isAdmin} token={token} listingDetails={listingDetails} email={email}/>} />
+        <Route path="/book" element={<Booking token={token} />}/>
+        <Route path="/timer" element={<TimerPage token={token}/>}/>
+        <Route path="/park-end" element={<ParkEnd token={token}/>}/>
+        <Route path="/history" element={<History token={token} email={email}/>} />
+        <Route path="/customerHistory" element={<CustomerHistory token={token} email={email}/>} />
+        <Route path="/login" element={<Login  token={token} setToken={setToken} setEmail={setEmail}/>} />
         <Route path="/signup" element={<Signup  />} />
         <Route path="/adminDisputes" element={<AdminDisputes  token={token}/>} />
         <Route path="/paymentAddedSuccess" element={<PaymentAddedSuccess  />} />
         <Route path="/providerDetailsExpired" element={<ProviderDetailsExpried  />} />
         <Route path="/providerDetailsReturn" element={<ProviderDetailsReturn  />} />
-        <Route path="/testPayment" element={<TestPayment/>} />
-        <Route path="/managePayment" element={<ManagePayment/>} />
-        <Route path="/profilepage" element={<ProfilePage token={token} setToken={setToken} SID={SID} setSID={setSID} setIsAdmin={setIsAdmin}/>}/>
-        <Route path="/verify" element={<Verify token={token} setToken={setToken} SID={SID} setSID={setSID}/>} />
-        <Route path="/payment" element={<Payment token={token} stripe={props.stripe} setToken={setToken} SID={SID} setSID={setSID}/>} />
+        <Route path="/managePayment" element={<ManagePayment token={token}/>} />
+        <Route path="/profilepage" element={<ProfilePage token={token} setToken={setToken} setEmail={setEmail} setIsAdmin={setIsAdmin} email={email}/>}/>
+        <Route path="/verify" element={<Verify token={token} setToken={setToken} setEmail={setEmail} email={email}/>} />
+        <Route path="/payment" element={<Payment token={token} stripe={props.stripe} setToken={setToken}/>} />
         <Route path="/adminViewListings" element={<AdminViewListings token={token} isAdmin={isAdmin}/>} />
-        <Route path="/disputePage" element={<DisputePage token={token}/>} />
+        <Route path="/disputePage" element={<DisputePage token={token} email={email}/>} />
 
       </Routes>
     </>

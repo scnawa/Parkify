@@ -1,10 +1,11 @@
-async function GetUser (token) {
+async function GetUser (token, email) {
     try {
       const response = await fetch('/getUserInfo', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'email': token,
+          'token': token,
+          'email': email
         }
       });
 

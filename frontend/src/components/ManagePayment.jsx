@@ -17,7 +17,7 @@ const theme = createTheme({
 
 function ManagePayment(props) {
     // eslint-disable-next-line
-    const [token, setToken] = React.useState(localStorage.getItem('token'));
+    const [token, setToken] = React.useState(localStorage.getItem('SID'));
     const [defaultCard, setdefaultCard] = React.useState("");
     const [cards, setCards] = React.useState([]);
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ function ManagePayment(props) {
                     method: 'Get',
                     headers: {
                         'Content-Type': 'application/json',
-                        'email': token,
+                        'token': token,
                     },
                 });
 

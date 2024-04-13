@@ -87,10 +87,11 @@ function Verify(props) {
         if (data.error) {
           alert(data.error);
         } else {
-          props.setToken(data.email);
-          localStorage.setItem('token', data.email);
-          props.setSID(data.session_id[data.session_id.length-1]);
-          localStorage.setItem('SID', data.session_id[data.session_id.length-1]);
+          props.setToken(data.session_id[data.session_id.length-1]);
+          localStorage.setItem('token', data.session_id[data.session_id.length-1]);
+          props.setEmail(email);
+          localStorage.setItem('email', data.email);
+
           navigate('/');
         }
       } catch (error) {

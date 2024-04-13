@@ -1,39 +1,40 @@
-async function Logout (token, SID, setToken, setSID, setIsAdmin) {
-    try {
-      const response = await fetch('/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: token,
-            currentSessionID: SID,
-        }),
-      });
 
-      const data = await response.json();
-      console.log(data)
-      // sessionID should be removed from local storage all below as well maybe?
-      if (response.status === 200) {
-        setToken(null);
-        setSID(null);
-        setIsAdmin(false);
-        localStorage.removeItem('token');
-      } else {
-        console.error('Logout failed:', data.error);
-        // should we be doing the below stuff on error??
-        setToken(null);
-        setSID(null);
-        localStorage.removeItem('token');
-  
-      }
-    } catch (error) {
-      console.error('An error occurred during logout:', error);
-      setToken(null);
-      setSID(null);
-      localStorage.removeItem('token');
+async function Logout(token, setToken, setIsAdmin, setEmail) {
+	try {
+		const response = await fetch('/logout', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				token: token,
+				currentSessionID: token,
+			}),
+		});
 
-    }
-  };
+		const data = await response.json();
+		// sessionID should be removed from local storage all below as well maybe?
+		if (response.status === 200) {
+			setToken(null);
+			setIsAdmin(false);
+			setEmail(null);
+			localStorage.removeItem('token');
+			localStorage.removeItem('email');
+		} else {
+			console.error('Logout failed:', data.error);
+			// should we be doing the below stuff on error??
+			setToken(null);
+			setEmail(null);
+			localStorage.removeItem('token');
+			localStorage.removeItem('email');
+		}
+	} catch (error) {
+		console.error('An error occurred during logout:', error);
+		setToken(null);
+		setEmail(null);
+		localStorage.removeItem('token');
+		localStorage.removeItem('email');
+	}
+};
 
 export default Logout;

@@ -42,6 +42,7 @@ And i also helped to improve the ui/mobile responsiveness of the nav bar/listing
 Also implemented the mutiple images on listing. So that user can select mutiple images on create listing/edit listing
 and they can also preview/remove them. And implemented the carousel slides on listing detail page to show multiple
 images to user.
+Also tokenized all the route and request.
 
 
 

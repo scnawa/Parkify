@@ -68,7 +68,8 @@ function PublishPopUp(props) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'email': props.token,
+					'token': props.token,
+					'email': props.email,
 				},
 				body: JSON.stringify(data),
 			});
@@ -105,7 +106,8 @@ function PublishPopUp(props) {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'email': props.token,
+						'token': props.token,
+						'email': props.email,
 					},
 					body: JSON.stringify(data),
 				});
