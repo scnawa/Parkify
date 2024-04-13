@@ -1,3 +1,7 @@
+Github account:kamchungl and samlamlkc
+i use samlamlkc to write and commit code on my local pc
+and use kamchungl to merge code on github
+
 Week 1: 
 In week one, we formed a group and decided the project topic as car renting system.
 we discussed our position in the team (Sarvesh as project owner and Ridhvik as Scrum Master),
@@ -18,4 +22,29 @@ week4:
 we actually worked on the sprint one. half of the team is focused on the frontend and others worked on the backend.
 And i am implemented the navbar, create listing, edit listing, remove listing, activate lisitng, deactivate listing
 and the page to show provider's lisitng and perform the above functionality.  
+
+week5-8:
+we disturbuted the work for sprint2 and actually work for it. i implemented the address search bar on create listing,
+study a bit on open map street and leaflet and implemented the map/address geo related stuff to so that we can have maps
+to visualize the listing address. i also i implemented the payment system in both frontend and backend using stripe payment gateway api.
+And i implemented the functionality of register provider on stripe(let provider provide bank detail and personal information), and let them
+update their information, let customer add their payment method(eg. debit/credit card),
+allow customer to manage their payment method(add/remove/set default),
+and actually make the system able to charge on a customer provided payment method and pay the provider 85% of the fee.
+And i also helped to debug the window time timer and the end booking timer.
+
+week9-10:
+we disturbuted rest of the work and actually work for it. i implemented the map on the home page to show all listing as a marker on
+the map and make the marker clickable to show the listing info and redirect user to the listing detail page.
+And i implement css to the plain html timer pages and end booking page to improve the ui.
+Also improved the ui of add payment method page. 
+And i also helped to improve the ui/mobile responsiveness of the nav bar/listing detail/allListingPage page.
+Also implemented the mutiple images on listing. So that user can select mutiple images on create listing/edit listing
+and they can also preview/remove them. And implemented the carousel slides on listing detail page to show multiple
+images to user.
+
+
+
+
+
 
