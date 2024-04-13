@@ -107,7 +107,8 @@ class User:
             "session_id": [],
             "isVerified" : True,
             "isAdmin": True,
-            "disputes": []
+            "disputes": [],
+            "profile_picture": "", 
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
