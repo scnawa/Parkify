@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import './ListingPage.css'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import location from '../assets/location.png';
-import { MapChild } from "./CreateListings";
 import Background from '../assets/car.png';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
@@ -23,23 +22,24 @@ import { Container, Grid, Card, CardMedia, CardContent, CardActions, Typography,
 
 const placeholder = L.icon({
     iconUrl: location,
-    iconSize: [30, 30]
+    iconSize: [30, 35]
 });
 
 const priceStyle = {
-    backgroundColor: 'grey', 
+    backgroundColor: 'grey',
     borderRadius: '4px',
     padding: '6.5px',
-    display: 'inline-block', 
-    marginRight: '8px', 
+    display: 'inline-block',
+    marginRight: '8px',
 };
 
 const availabilityStyle = {
-    color: '#2e7d32', 
-};  
+    color: '#2e7d32',
+};
 
 function ListingPage(props) {
     const navigate = useNavigate();
+    // eslint-disable-next-line
     const [token, setToken] = React.useState(localStorage.getItem('token'));
 
     const { listing_id } = useParams();
@@ -112,13 +112,14 @@ function ListingPage(props) {
             fetchPayment().then((data) => {
                 setDefaultPayment(data['default_payment']);
                 return;
-            }).catch(console.log);
+            }).catch(alert);
         }
 
         // Cleanup function to abort fetch on component unmount
         /*  return () => {
              abortController.abort();
          }; */
+        // eslint-disable-next-line
     }, []);
     const handleBookNow = async () => {
         if (!token) {
@@ -178,9 +179,9 @@ function ListingPage(props) {
     console.log(listing);
 
     const toggleLike = async () => {
-        const currentlyLiked = liked; 
+        const currentlyLiked = liked;
         setLiked(!liked);
-        const endpoint = currentlyLiked ? '/dislike' : '/like'; 
+        const endpoint = currentlyLiked ? '/dislike' : '/like';
         setTotalLikes(currentlyLiked ? totalLikes - 1 : totalLikes + 1);
         try {
             const data = await fetch(endpoint, {
@@ -193,7 +194,7 @@ function ListingPage(props) {
                     listingId: listing.listing_id,
                 }),
             });
-    
+
             if (data.error) {
                 setError(data.error);
                 console.log(error)
@@ -212,19 +213,32 @@ function ListingPage(props) {
             {listing ? (
                 <Grid container spacing={4} mt={2} alignItems="center">
                     <Grid item xs={12} md={7}>
-                        <Card sx={{borderRadius: '16px'}}>
+                        <Card sx={{ borderRadius: '16px' }}>
                             <Splide options={{ type: 'fade', rewind: true, width: '100%', gap: '1rem' }}>
+
                                 {listing.images && listing.images.length > 0 ? (
-                                    listing.images.map((image, index) => (
-                                        <SplideSlide key={index}>
+                                    <>
+                                        <SplideSlide>
                                             <CardMedia
                                                 component="img"
                                                 height="450"
-                                                image={image || listing.image_url || Background}
+                                                image={listing.image_url || Background}
                                                 alt="Parking space"
                                             />
                                         </SplideSlide>
-                                    ))
+
+                                        {listing.images.map((image, index) => (
+
+                                            <SplideSlide key={index + 1}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="450"
+                                                    image={image}
+                                                    alt="Parking space"
+                                                />
+                                            </SplideSlide>
+                                        ))}
+                                    </>
                                 ) : (
                                     <CardMedia
                                         component="img"
@@ -237,7 +251,7 @@ function ListingPage(props) {
                         </Card>
                     </Grid>
                     <Grid item xs={12} md={5} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Card raised sx={{borderRadius: '16px'}}>
+                        <Card raised sx={{ borderRadius: '16px' }}>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="div">
                                     {listing.address}

@@ -428,7 +428,6 @@ class User:
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
         provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        print(provider_user)
         user_listings = provider_user.get('listings')
 
         now = datetime.datetime.now()
@@ -489,7 +488,6 @@ class User:
         print("Email type:", type(headers['email']))
         latitude = 0
         longitude = 0
-        print(headers)
         latitude = float(headers['lat'])
         longitude = float(headers['lon'])
         closestListings = []

@@ -9,8 +9,6 @@ import location from '../assets/location.png';
 import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
 import 'leaflet-gesture-handling';
 
-
-import { MapChild } from "./CreateListings";
 const placeholder = L.icon({
     iconUrl: location,
     iconSize: [30, 35]
@@ -90,7 +88,6 @@ function AllListings(props) {
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
-                    console.log(data)
                     setListings(data);
                     setInitialListingsLoaded(true)
                 } else {
@@ -103,7 +100,6 @@ function AllListings(props) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    console.log(position);
                     const { latitude, longitude } = position.coords;
                     setUserLocation([latitude, longitude]);
                 }
@@ -129,7 +125,6 @@ function AllListings(props) {
         }
     }, [props.listings]);
 
-
     const handlePriceOrderChange = (event) => {
         setPriceOrder(event.target.value);
     };
@@ -151,12 +146,16 @@ function AllListings(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
+        console.log(distance);
+
         fetchListingsSortedByPriceAndDistance(priceOrder, distance);
     };
 
 
 
     const fetchListingsSortedByPriceAndDistance = async (priceOrder, distance) => {
+        console.log(distance);
+
         try {
             const response = await fetch('http://localhost:8080/filterByPriceAndDistance', {
                 method: 'GET',
@@ -182,7 +181,6 @@ function AllListings(props) {
             console.error(error);
         }
     };
-    console.log(userLocation);
 
     return (
         <ThemeProvider theme={theme}>
@@ -263,7 +261,7 @@ function AllListings(props) {
                         })}
                         <PanMap userLocation={userLocation} />
 
-                    </MapContainer>                    
+                    </MapContainer>
                 </Box>
 
                 <Grid container spacing={4} style={{ 'margin-top': '10px' }}>

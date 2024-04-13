@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import { Box, Button, Paper, Typography, createTheme, ThemeProvider, Popover, Autocomplete, TextField, CircularProgress } from '@mui/material';
+import React from 'react';
+import { Box, Button, Paper, Typography, createTheme, ThemeProvider, Popover, Autocomplete, TextField } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TextInputField from './TextInputField';
-import CheckBoxInput from './CheckBoxInput';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import FileInputField from './FileInputField';
 import Background from '../assets/car.png';
@@ -51,7 +50,7 @@ export function MapChild(props) {
 	return null;
 }
 // the general purpose file image processing function is from comp6080 assignment 4
-const uploadFile = (file) => {
+export const uploadFile = (file) => {
 	let targetFile;
 	if (!file) {
 		return Promise.resolve('');
@@ -85,13 +84,16 @@ function CreateListings(props) {
 
 	const [restriction, setRestriction] = React.useState('');
 	const [thumbnail, setThumbnail] = React.useState('');
+	const [thumbnailFile, setThumbnailFile] = React.useState('');
+
 	const [images, setImages] = React.useState([]);
+	const [imagesFiles, setImagesFiles] = React.useState('');
+
 	const thumbnailRef = React.useRef('');
 	const imagesRef = React.useRef('');
 
 
 	const loaded = React.useRef(false);
-	console.log(addressGeo);
 	const location = useLocation();
 	const state = location.state || {};
 	const navigate = useNavigate();
@@ -128,7 +130,6 @@ function CreateListings(props) {
 	}, [address]);
 	const submitForm = (e) => {
 		e.preventDefault();
-		console.log(addressGeo);
 		uploadFile(thumbnail).then((url) => {
 			const data = {
 				email: state.token,
@@ -144,7 +145,6 @@ function CreateListings(props) {
 					"images": images,
 				}
 			}
-			console.log(data);
 
 			const fetchCreateListing = async () => {
 				try {
@@ -186,14 +186,16 @@ function CreateListings(props) {
 
 	}
 	const handleThubnailChange = (e) => {
-		console.log(e.target.files);
+		setThumbnailFile(e.target.value);
 		uploadFile(e.target.files[0]).then((url) => { setThumbnail(url); }).then(() => {
 			thumbnailRef.current = "";
+			setThumbnailFile('');
 		}
 		).catch(alert);
 	}
 	const handleImagesChangle = (e) => {
-		console.log(Array.from(e.target.files)[0]);
+		setImagesFiles(e.target.value);
+
 		let imagePromises = Array.from(e.target.files).map((file) => uploadFile(file));
 		// i handled the multiple images upload similarly in my comp6080 assignment 4
 		// since this part of code is general and i don't know another way to do it
@@ -208,9 +210,11 @@ function CreateListings(props) {
 	}
 
 	const handleThumbnailDelete = () => {
+		setThumbnailFile('');
 		setThumbnail('');
 	}
 	const handleImageDelete = (removeIndex) => {
+		setImagesFiles('');
 		setImages(images.filter((_, index) => index != removeIndex));
 	}
 
@@ -246,6 +250,7 @@ function CreateListings(props) {
 							}}
 							options={addressOptions.map((item => { return { ...item }; }))
 							}
+							isOptionEqualToValue={(option, value) => (option.display_name === value.display_name)}
 							getOptionLabel={(option) => {
 								return `${option.display_name}`;
 							}
@@ -281,7 +286,7 @@ function CreateListings(props) {
 						<TextInputField label="Details:" setFunction={setDetail} value={detail} color="success" variant="outlined" multiline={true} required={true} />
 						<TextInputField label="Restrictions:" setFunction={setRestriction} value={restriction} color="success" variant="outlined" multiline={true} required={true} />
 						{/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
-						<FileInputField multiple={false} color="green" setImage={setThumbnail} onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" />
+						<FileInputField multiple={false} color="green" setImage={setThumbnail} onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" images={thumbnailFile} />
 						{thumbnail ? (
 							<>
 								<ImageListItem>
@@ -303,7 +308,7 @@ function CreateListings(props) {
 								</ImageListItem>
 							</>
 						) : null}
-						<FileInputField multiple={true} color="green" setImage={setImages} onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" />
+						<FileInputField multiple={true} color="green" setImage={setImages} onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" images={imagesFiles} />
 						{images.length != 0 ? (
 							<>
 								<ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
