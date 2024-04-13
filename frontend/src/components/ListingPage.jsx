@@ -14,7 +14,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
-import { Container, Grid, Card, CardMedia, CardContent, CardActions, Typography, Box, Button } from '@mui/material';
+import { Tooltip, Container, Grid, Card, CardMedia, CardContent, CardActions, Typography, Box, Button } from '@mui/material';
 
 
 
@@ -262,14 +262,17 @@ function ListingPage(props) {
                                 <Button variant="contained" color="primary" onClick={handleBookNow}>
                                     Book Now
                                 </Button>
-                                {listing.booked_previously && (
-                                    <IconButton onClick={toggleLike} color="error">
-                                        {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                                        <Typography component="span" sx={{ ml: 1 }}>
-                                            {totalLikes}
-                                        </Typography>
-                                    </IconButton>
-                                )}
+                                <Typography component="span" sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
+                                    <Tooltip title={!listing.booked_previously ? "Book this listing to be able to like it" : "Click to like"}>
+                                        <span>
+                                            <IconButton onClick={toggleLike} color="error" disabled={!listing.booked_previously}>
+                                                {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                    <span>{totalLikes}</span>
+                                </Typography>
+
                             </CardActions>
                         </Card>
                     </Grid>
