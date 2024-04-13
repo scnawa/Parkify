@@ -132,7 +132,8 @@ function CreateListings(props) {
 		e.preventDefault();
 		uploadFile(thumbnail).then((url) => {
 			const data = {
-				email: state.token,
+				token: state.token,
+				email: state.email,
 				listings: {
 					"address": addressGeo.display_name,
 					"lat": addressGeo.lat,
@@ -200,7 +201,6 @@ function CreateListings(props) {
 		// i handled the multiple images upload similarly in my comp6080 assignment 4
 		// since this part of code is general and i don't know another way to do it
 		Promise.allSettled(imagePromises).then((results) => {
-			console.log(results);
 			return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
 		}).then((new_images) => {
 

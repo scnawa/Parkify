@@ -40,7 +40,7 @@ const availabilityStyle = {
 function ListingPage(props) {
     const navigate = useNavigate();
     // eslint-disable-next-line
-    const [token, setToken] = React.useState(localStorage.getItem('token'));
+    const [token, setToken] = React.useState(localStorage.getItem('SID'));
 
     const { listing_id } = useParams();
     const [listing, setListing] = useState(null);
@@ -60,7 +60,7 @@ function ListingPage(props) {
                     method: 'Get',
                     headers: {
                         'Content-Type': 'application/json',
-                        'email': token,
+                        'token': token,
                     },
                 });
 
@@ -82,7 +82,7 @@ function ListingPage(props) {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'email': props.token,
+                        'token': props.token,
                         'listingId': listing_id
                     },
                     /* signal: signal */
@@ -142,7 +142,7 @@ function ListingPage(props) {
         //     "listingNo": ListingNo
         // }
         const data = {
-            "email": props.token,
+            "token": props.token,
             "listingId": listing_id,
             "listingNo": ListingNo
         }
@@ -188,7 +188,7 @@ function ListingPage(props) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'email': props.token,
+                    'token': props.token,
                 },
                 body: JSON.stringify({
                     listingId: listing.listing_id,

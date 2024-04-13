@@ -22,7 +22,7 @@ const theme = createTheme({
 });
 
 function ParkEnd() {
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(localStorage.getItem('SID'));
     const [feedback, setFeedback] = useState('');
     const [promo, setPromo] = useState('')
     const thumbnailRef = React.useRef();
@@ -81,7 +81,7 @@ function ParkEnd() {
                     const response = await fetch('http://localhost:8080/end_booking', {
                         method: 'POST',
                         headers: {
-                            'email': token,
+                            'token': token,
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(data),

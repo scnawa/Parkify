@@ -16,10 +16,12 @@ function CustomerHistory(props) {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'email': props.token,
+            'token': props.token,
+            'email':props.email
           },
         });
         const data = await response.json();
+        console.log(data);
         setListings(data.map(listing => ({ ...listing, label: listing.address })));
       } catch (error) {
         console.error('An error occurred during data fetching:', error);

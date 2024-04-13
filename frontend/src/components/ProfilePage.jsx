@@ -4,29 +4,33 @@ import { Box, Grid, Typography, TextField, Button, Avatar, Stack } from '@mui/ma
 import Logout from './logout';
 import GetUser from './GetUser';
 import defaultProfilePicture from '../../src/assets/user.png';
+import { uploadFile } from './CreateListings';
 
 const ProfilePage = (props) => {
     const [formData, setFormData] = useState({
         name: "",
-        email: props.token,
+        email: "",
     });
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState(defaultProfilePicture);
 
     useEffect(() => {
+        if (!props.token) {
+            navigate('/');
+        }
         const fetchData = async () => {
-          try {
-            const userData = await GetUser(props.token);
-            console.log(userData);
-            setFormData({
-                ...formData,
-                name: userData.username,  
-              });
-          } catch (error) {
-            console.error('Error fetching user:', error);
-          }
+            try {
+                const userData = await GetUser(props.token, props.email);
+                setFormData({
+                    email: userData.email,
+                    name: userData.username,
+                });
+                setProfilePicture(userData.profile_picture)
+            } catch (error) {
+                console.error('Error fetching user:', error);
+            }
         };
-    
+
         fetchData();
     }, [props.token]);
 
@@ -34,24 +38,28 @@ const ProfilePage = (props) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
         try {
             const response = await fetch('/updateUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    email: formData.email
+                    token: props.token,
+                    email: props.email
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    username: formData.name,
+                    email: formData.email,
+                    profile_picture: profilePicture,
+                }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-    
+
             const data = await response.json();
             console.log('User data updated successfully:', data);
             // Handle success, update UI, etc.
@@ -62,36 +70,36 @@ const ProfilePage = (props) => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setProfilePicture(URL.createObjectURL(file));
-        }
+        uploadFile(file).then((url => { setProfilePicture(url) }));
     };
 
     const handleDeleteProfile = async () => {
         if (window.confirm("Are you sure you want to delete this account?")) {
             try {
-                if (!props.isAdmin) {
-                    await Logout(props.token, props.SID, props.setToken, props.setSID, props.setIsAdmin);
-                }
+
                 const response = await fetch('/deleteAccount', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        email: props.token,
+                        token: props.token,
+                        email: props.email
                     }),
                 });
-        
                 if (response.ok) {
                     console.log('Profile deleted successfully!');
                     if (!props.isAdmin) {
-                        navigate(0)
-                    }
-                    else {
+                        props.setToken(null);
+                        props.setEmail(null);
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('email');
                         navigate('/')
                     }
-                    
+                    else {
+                        navigate(0)
+                    }
+
                 } else {
                     console.error('Failed to delete profile. Server response:', response.status, response.statusText);
                 }
@@ -104,9 +112,9 @@ const ProfilePage = (props) => {
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             <Stack spacing={4} alignItems="center">
-            <Typography variant="h4" component="div">
-					{props.isAdmin ? `${props.username}'s Profile` : 'My Profile'}
-				</Typography>
+                <Typography variant="h4" component="div">
+                    {props.isAdmin ? `${props.username}'s Profile` : 'My Profile'}
+                </Typography>
                 <Avatar
                     src={profilePicture}
                     alt="Profile"

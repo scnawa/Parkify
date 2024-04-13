@@ -82,7 +82,8 @@ function EditListings(props) {
                 const response = await fetch('http://localhost:8080/delete_listing', {
                     method: 'DELETE',
                     headers: {
-                        'email': state.token,
+                        'token': state.token,
+                        'email': state.email,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(data),
@@ -98,7 +99,6 @@ function EditListings(props) {
                 return Promise.reject(error);
             }
         };
-        console.log(listing);
         fetchDelete().then((res) => {
             if (props.isAdmin) {
                 navigate('/adminViewListings', { state: { token: state.token } });
@@ -114,19 +114,19 @@ function EditListings(props) {
             const new_listing = { ...listing };
             new_listing["image_url"] = url;
             const data = {
-                email: state.token,
+                token: state.token,
                 listings: {
                     ...new_listing
                 }
             }
-            console.log(data);
             const fetchListings = async () => {
                 try {
                     const response = await fetch('http://localhost:' + '8080/' + 'update_listing', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'email': state.token
+                            'token': state.token,
+                            'email': state.email,
                         },
                         body: JSON.stringify(data),
                     });
@@ -144,7 +144,7 @@ function EditListings(props) {
             return fetchListings();
         }).then(() => {
             if (props.isAdmin) {
-                navigate('/adminViewListings', { state: { token: state.token } });
+                navigate('/adminViewListings', { state: { token: state.token, email: state.email } });
             } else {
                 navigate('/myListing');
             }
@@ -165,7 +165,6 @@ function EditListings(props) {
             thumbnailRef.current = "";
         }
         ).catch(alert);
-        console.log(listing);
 
     }
     const handleImagesChangle = (e) => {
@@ -174,7 +173,6 @@ function EditListings(props) {
         // i handled the multiple images upload similarly in my comp6080 assignment 4
         // since this part of code is general and i don't know another way to do it
         Promise.allSettled(imagePromises).then((results) => {
-            console.log(results);
             return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
         }).then((new_images) => {
             handleChange('images')([...listing.images, ...new_images]);

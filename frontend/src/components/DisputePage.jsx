@@ -36,7 +36,7 @@ const DisputePage = (props) => {
         end_price: booking.end_price,
         total_time: booking.total_time,
         start_time: booking.start_time,
-        dispute_by: props.token,
+        dispute_by: props.email,
         dispute_against: email,
         dispute_message: disputeMessage,
         dispute_images: base64Files
@@ -45,7 +45,8 @@ const DisputePage = (props) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'email': props.token,
+          'token': props.token,
+          'email': props.email
         },
         body: JSON.stringify(dataSend),
       });

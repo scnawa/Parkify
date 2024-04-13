@@ -20,7 +20,7 @@ function TimerPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const [timer, setTimer] = useState(0);
-    const [token, setToken] = React.useState(localStorage.getItem('token'));
+    const [token, setToken] = React.useState(localStorage.getItem('SID'));
 
     const { listing_id, ListingNo } = location.state || {};
     useEffect(() => {
@@ -32,7 +32,7 @@ function TimerPage() {
                 const response = await fetch('http://localhost:8080/getBookingTime', {
                     method: 'GET',
                     headers: {
-                        'email': token,
+                        'token': token,
                         'Content-Type': 'application/json',
                     },
                 });

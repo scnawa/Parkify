@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import MyListings from './MyListings'; 
+import MyListings from './MyListings';
 import ProfilePage from './ProfilePage';
 
 function AdminViewListings(props) {
-  const [selectedUser, setSelectedUser] = useState(null); 
+  const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const location = useLocation();
   const { token } = location.state || {};
@@ -23,9 +23,9 @@ function AdminViewListings(props) {
         const data = await response.json();
         setUsers(data.map(user => ({ ...user, label: `${user.username} (${user.email})` })));
 
-        if(token) {
-          const userWithEmail = data.find(user => user.email === token);
-          if(userWithEmail) {
+        if (token) {
+          const userWithEmail = data.find(user => user.session_id.any((id) => (id === token)));
+          if (userWithEmail) {
             setSelectedUser({ ...userWithEmail, label: `${userWithEmail.username} (${userWithEmail.email})` });
           }
         }
@@ -34,7 +34,7 @@ function AdminViewListings(props) {
       }
     };
     fetchData();
-  }, [token]); 
+  }, [token]);
 
   const handleUserChange = (_, newValue) => {
     setSelectedUser(newValue);
@@ -53,10 +53,10 @@ function AdminViewListings(props) {
         renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" />}
       />
       {selectedUser && (
-        <ProfilePage token={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
+        <ProfilePage token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
       )}
       {selectedUser && (
-        <MyListings key={selectedUser.email} token={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
+        <MyListings key={selectedUser.email} token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
       )}
     </div>
   );
