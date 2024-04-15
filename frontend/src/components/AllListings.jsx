@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel } from "@mui/material";
+import { TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -8,6 +8,32 @@ import 'leaflet/dist/leaflet.css';
 import location from '../assets/location.png';
 import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
 import 'leaflet-gesture-handling';
+
+export const fetchListingsSortedByPriceAndDistance = async (priceOrder, distance, setListings, setTotalPage, userLocation, curPage) => {
+    try {
+        const response = await fetch('http://localhost:8080/filterByPriceAndDistance', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'order': priceOrder,
+                'distance': distance,
+                'lat': userLocation[0],
+                'lon': userLocation[1],
+                'page': curPage - 1,
+            },
+        });
+
+        const data = await response.json();
+        if (!data.error) {
+            setListings(data.listings);
+            setTotalPage(data.totalPage);
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 const placeholder = L.icon({
     iconUrl: location,
@@ -35,15 +61,17 @@ function PanMap(props) {
 function AllListings(props) {
     const [listings, setListings] = useState([]);
     const [priceOrder, setPriceOrder] = useState('');
-    const [distance, setDistance] = useState('10');
+    const [distance, setDistance] = useState('30');
     const [userLocation, setUserLocation] = useState([-33.9062434, 151.23465683738365]);
     const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
+    const [totalPage, setTotalPage] = useState(1);
+    const [curPage, setCurPage] = useState(1);
+
     const navigate = useNavigate();
 
     useEffect(() => {
         // Check if user is currently in a prebooking/booking
         if (props.token) {
-            console.log(props);
             fetch('http://localhost:8080/timerPersistence', {
                 method: 'GET',
                 headers: {
@@ -59,10 +87,10 @@ function AllListings(props) {
                             console.log("in a prebooking")
                         } else if (data.result === "booking") {
                             navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
-                            console.log("in a booking") 
+                            console.log("in a booking")
                         } else if (data.result === "endbooking") {
                             navigate('/park-end', { state: { timer: data.timer, listing_id: data.listingId, ListingNo: data.listingNo } });
-                            console.log("in endbooking") 
+                            console.log("in endbooking")
                         } else if (data.result === "none") {
                             console.log("not in a booking");
                         }
@@ -87,19 +115,22 @@ function AllListings(props) {
                 'token': props.token,
                 'lat': userLocation[0],
                 'lon': userLocation[1],
+                'page': curPage - 1,
             },
         })
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
-                    setListings(data);
+                    setListings(data.listings);
+                    setTotalPage(data.totalPage);
+
                     setInitialListingsLoaded(true)
                 } else {
                     alert(data.error);
                 }
             })
             .catch(error => console.error(error));
-    }, []);
+    }, [curPage]);
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -124,6 +155,8 @@ function AllListings(props) {
     useEffect(() => {
         if (initialListingsLoaded) {
             setListings(props.listings);
+            setTotalPage(props.totalPage);
+            setCurPage(1);
             setPriceOrder('');
             setDistance('')
         }
@@ -150,35 +183,7 @@ function AllListings(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        fetchListingsSortedByPriceAndDistance(priceOrder, distance);
-    };
-
-
-
-    const fetchListingsSortedByPriceAndDistance = async (priceOrder, distance) => {
-        try {
-            const response = await fetch('http://localhost:8080/filterByPriceAndDistance', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'order': priceOrder,
-                    'distance': distance,
-                    'token': props.token,
-                    'lat': userLocation[0],
-                    'lon': userLocation[1],
-
-                },
-            });
-
-            const data = await response.json();
-            if (!data.error) {
-                setListings(data);
-            } else {
-                alert(data.error);
-            }
-        } catch (error) {
-            console.error(error);
-        }
+        fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, props.token, userLocation);
     };
 
     return (
@@ -272,6 +277,11 @@ function AllListings(props) {
                         </Grid>
                     ))}
                 </Grid>
+                <Box sx={{ width: "100%", display: "flex", 'margin-top': '40px', justifyContent: "center" }}>
+                    <Pagination count={totalPage} size="large" page={curPage} onChange={(_, value) => { setCurPage(value); }} />
+
+                </Box>
+
             </Box>
         </ThemeProvider>
     );

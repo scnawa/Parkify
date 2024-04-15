@@ -20,6 +20,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Menu, MenuItem } from '@mui/material';
 import Modal from './Modal';
 import Logout from './logout';
+import { fetchListingsSortedByPriceAndDistance } from './AllListings';
 
 const theme = createTheme({
 	palette: {
@@ -112,6 +113,8 @@ function NavBar(props) {
 	const setEmail = props.setEmail;
 	const location = useLocation();
 	const [pages, setPages] = React.useState(['My Parking Spaces']);
+	const [userLocation, setUserLocation] = React.useState([-33.9062434, 151.23465683738365]);
+
 	const navigate = useNavigate();
 
 	React.useEffect(() => {
@@ -121,6 +124,16 @@ function NavBar(props) {
 			setPages(['My Parking Spaces']);
 		}
 	}, [isAdmin]);
+	React.useEffect(() => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					const { latitude, longitude } = position.coords;
+					setUserLocation([latitude, longitude]);
+				}
+			)
+		}
+	}, []);
 
 	const userMenuOnclick = (event) => {
 		setUserMenuLocation(event.currentTarget);
@@ -205,19 +218,26 @@ function NavBar(props) {
 	const handleSearchSubmit = async (event) => {
 		event.preventDefault();
 		try {
-			const response = await fetch('http://localhost:8080/searchForSpace', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					'query': searchQuery,
-				},
-			});
+			if (searchQuery != "") {
+				console.log("here");
+				const response = await fetch('http://localhost:8080/searchForSpace', {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'query': searchQuery,
+					},
+				});
 
-			const data = await response.json();
-			if (!data.error) {
-				props.setListings(data);
+				const data = await response.json();
+				if (!data.error) {
+					props.setListings(data);
+					props.setTotalPage(1);
+				} else {
+					alert(data.error);
+				}
 			} else {
-				alert(data.error);
+
+				fetchListingsSortedByPriceAndDistance('', '', props.setListings, props.setTotalPage, userLocation, 1);
 			}
 		} catch (error) {
 			console.error(error);
