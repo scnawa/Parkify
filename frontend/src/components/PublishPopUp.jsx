@@ -45,7 +45,6 @@ function PublishPopUp(props) {
 		(props.listings.end_date) ?
 				new dayjs(props.listings.end_date) : new dayjs().utc().add(7, 'day').startOf('day')
 	);
-		
 	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
 	const popoverOnClose = props.popoverOnClose;
@@ -133,7 +132,6 @@ function PublishPopUp(props) {
 	}
 	const isTriggered = Boolean(popLocation);
 	const id = isTriggered ? 'box' : undefined;
-	console.log(isTriggered,popLocation);
 
 	return (<>
 		<ThemeProvider theme={theme}>
