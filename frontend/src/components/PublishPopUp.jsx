@@ -38,14 +38,13 @@ const style = {
 
 function PublishPopUp(props) {
 	const [start, setStart] = useState(
-		(props.listings.startDate) ?
-				new dayjs(props.listings.start_date):null
+		(props.listings.start_date) ?
+				dayjs(props.listings.start_date) : dayjs(dayjs().format('MM/DD/YY'))
 	);
 	const [end, setEnd] = useState(
-		(props.listings.endDate) ?
-				new dayjs(props.listings.end_date):null
+		(props.listings.end_date) ?
+				dayjs(props.listings.end_date) : dayjs(dayjs().add(7, 'day').format('MM/DD/YY'))
 	);
-		
 	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
 	const popoverOnClose = props.popoverOnClose;
@@ -133,7 +132,6 @@ function PublishPopUp(props) {
 	}
 	const isTriggered = Boolean(popLocation);
 	const id = isTriggered ? 'box' : undefined;
-	console.log(isTriggered,popLocation);
 
 	return (<>
 		<ThemeProvider theme={theme}>
