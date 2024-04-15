@@ -39,11 +39,11 @@ const style = {
 function PublishPopUp(props) {
 	const [start, setStart] = useState(
 		(props.listings.start_date) ?
-				new dayjs(props.listings.start_date) : new dayjs().utc().startOf('day')
+				dayjs(props.listings.start_date) : dayjs(dayjs().format('MM/DD/YY'))
 	);
 	const [end, setEnd] = useState(
 		(props.listings.end_date) ?
-				new dayjs(props.listings.end_date) : new dayjs().utc().add(7, 'day').startOf('day')
+				dayjs(props.listings.end_date) : dayjs(dayjs().add(7, 'day').format('MM/DD/YY'))
 	);
 	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
