@@ -183,6 +183,7 @@ function AllListings(props) {
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
         fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, userLocation, 1);
+        setCurPage(1);
     };
 
     return (
