@@ -61,7 +61,7 @@ function PanMap(props) {
 function AllListings(props) {
     const [listings, setListings] = useState([]);
     const [priceOrder, setPriceOrder] = useState('');
-    const [distance, setDistance] = useState('30');
+    const [distance, setDistance] = useState('50');
     const [userLocation, setUserLocation] = useState([-33.9062434, 151.23465683738365]);
     const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
     const [totalPage, setTotalPage] = useState(1);
@@ -182,7 +182,7 @@ function AllListings(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, userLocation, curPage);
+        fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, userLocation, 1);
     };
 
     return (
