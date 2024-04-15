@@ -310,10 +310,10 @@ def saveTimer():
     userData = json.loads(request.data)
     return config.User().saveTimer(userData, headers)
 
-@APP.route('/notifs', methods=['GET'])
-def notifs():
+@APP.route('/getNotifs', methods=['GET'])
+def getNotifs():
     headers = request.headers
-    return config.User().notifs(headers)
+    return config.User().getNotifs(headers)
 
 
 if __name__ == "__main__": 
