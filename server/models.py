@@ -554,6 +554,7 @@ class User:
     def getClosestListings(self, headers, distance): 
         latitude = 0
         longitude = 0
+        print(headers['lat'], headers['lon'])
         latitude = float(headers['lat'])
         longitude = float(headers['lon'])
         closestListings = []

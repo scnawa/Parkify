@@ -68,7 +68,6 @@ function AllListings(props) {
     const [curPage, setCurPage] = useState(1);
 
     const navigate = useNavigate();
-
     useEffect(() => {
         // Check if user is currently in a prebooking/booking
         if (props.token) {
@@ -183,7 +182,7 @@ function AllListings(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, props.token, userLocation);
+        fetchListingsSortedByPriceAndDistance(priceOrder, distance, setListings, setTotalPage, userLocation, curPage);
     };
 
     return (
