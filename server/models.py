@@ -603,7 +603,7 @@ class User:
             "payment_id": "",
             "carNumberPlate": userData["carNumberPlate"],
         }
-
+        notification_message = self.notifs(userData)   
         ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
         ##bookingFoundv2 = [i for i in listing_booking_list if i["listing_id"] == userData["listingId"]]
 
@@ -1103,4 +1103,20 @@ class User:
                 )
             return json_util.dumps("Pass")
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
+    def notifs(self, userData):
+        user = db.userbase_data.find_one({"email": userData['email']})
+        listing_id = userData.get("listingId")
+
+        provider_user = db.userbase_data.find_one({"listings.listing_id": listing_id})
+        provider_email = provider_user["email"]
+        #notification
+        notification_message = f"Your listing with listing ID {listing_id} has been booked."
+
+        db.userbase_data.update_one(
+            {"email": provider_email},
+            {"$push": {"notifications": notification_message}}
+        )
+
+        return notification_message
 
