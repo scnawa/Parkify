@@ -108,7 +108,7 @@ function MyListings(props) {
 	}, [token]);
 
 	const createOnClick = () => {
-		navigate('/create-listings', { state: { token: token, email:props.email } })
+		navigate('/create-listings', { state: { token: token, email: props.email } })
 	};
 	return (
 		<ThemeProvider theme={theme}>
@@ -117,9 +117,9 @@ function MyListings(props) {
 					<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#4caf50' }}>
 						{props.isAdmin ? `${props.username}'s Parking Spaces` : 'Manage Your Parking Spaces'}
 					</Typography>
-					<Button variant="contained" onClick={createOnClick} color="success">
+					{!props.isAdmin && <Button variant="contained" onClick={createOnClick} color="success">
 						Create
-					</Button>
+					</Button>}
 				</Box>
 				<List sx={{ width: '100%' }}>
 					{listings.map((listing, index) => (
