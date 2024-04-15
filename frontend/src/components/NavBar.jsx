@@ -349,7 +349,11 @@ function NavBar(props) {
 										<NotificationsNoneOutlinedIcon />
 
 									</IconButton>
-									<Modal isOpen={notiLocation} setnotiLocation={setnotiLocation} content=""></Modal>
+									<Modal 
+										isOpen={notiLocation} 
+										setnotiLocation={setnotiLocation}
+									>
+									</Modal>
 								</>
 							)}
 							{token && (

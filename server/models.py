@@ -612,7 +612,7 @@ class User:
             "payment_id": "",
             "carNumberPlate": userData["carNumberPlate"],
         }
-        notification_message = self.notifs(userData)   
+        self.notifs(db, provider_user, user_listings[listing_no]["address"], today)
         ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
         ##bookingFoundv2 = [i for i in listing_booking_list if i["listing_id"] == userData["listingId"]]
 
@@ -1127,20 +1127,30 @@ class User:
                 )
             return json_util.dumps("Pass")
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+        
+    def notifs(self, db, provider_user, address, date):
+        # Check if provider_user exists
+        notification_message = f"Your listing {address} has been booked."
+        if provider_user:
+            # Push notification_message to the notifications array
+            db.userbase_data.update_one(
+                {"_id": provider_user["_id"]},
+                {
+                    "$push": {
+                        "notifications": {
+                            "title": address,
+                            "description": notification_message,
+                            "date": date 
+                        }
+                    }
+                }
+            )
+        else:
+            print("Provider user not found.")
     
-    def notifs(self, userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
-        listing_id = userData.get("listingId")
-
-        provider_user = db.userbase_data.find_one({"listings.listing_id": listing_id})
-        provider_email = provider_user["email"]
-        #notification
-        notification_message = f"Your listing with listing ID {listing_id} has been booked."
-
-        db.userbase_data.update_one(
-            {"email": provider_email},
-            {"$push": {"notifications": notification_message}}
-        )
-
-        return notification_message
-
+    def getNotifs(self, headers):
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+        if user:
+            notifications = user.get("notifications", [])
+            return json_util.dumps(notifications)
+        return jsonify({"type": "email", "error": "User Does Not Exist"}), 402

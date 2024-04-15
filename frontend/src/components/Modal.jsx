@@ -2,47 +2,55 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
 import NotificationComponent from './Notifications';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 
-const Modal = ({ isOpen, setnotiLocation, content }) => {
+const Modal = ({ isOpen, setnotiLocation}) => {
+  const [notifications, setNotifications] = useState([]);
+  const [token, setToken] = React.useState(localStorage.getItem('token'));
 
-  // useEffect(() => {
-  //   setModal(isOpen);
-  // }, [isOpen]);
-  /* const openModal = () => {
-    setnotiLocation(true);
-  } */
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch('/getNotifs', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch notifications');
+        }
+        const data = await response.json();
+        setNotifications(data);
+        console.log("Success")
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen]);
+
   const closeModal = () => {
     setnotiLocation(false);
   }
 
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     document.body.classList.add('active-modal');
-  //   } else {
-  //     document.body.classList.remove('active-modal');
-  //   }
-  //   return () => {
-  //     document.body.classList.remove('active-modal');
-  //   };
-  // }, [isOpen]);
-
   return (
     <>
-        {/* <NotificationsIcon onClick={openModal} className="btn-modal" /> */}
         {isOpen && (
             <div className="modal">
                 <div className="modal-content">
+                {notifications.map(notification => (
                   <NotificationComponent
-                    title="New Notification"
-                    description={`New Listing Created: 555 York St Sydney${content}`}
+                    title={notification.title.substring(0, 15)}
+                    description={notification.description}
+                    date={notification.date}
                     onReadClick={closeModal}
                   />
-                  <NotificationComponent
-                    title="New Notification"
-                    description={`Mason has rented UNSW space${content}`}
-                    onReadClick={closeModal}
-                  />
+                ))}
                 <button className="close-modal" onClick={closeModal}>
                   Close
                 </button>
@@ -54,9 +62,7 @@ const Modal = ({ isOpen, setnotiLocation, content }) => {
 }
 
 Modal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
   setnotiLocation: PropTypes.func.isRequired,
-  content: PropTypes.string.isRequired,
 };
 
 export default Modal;
