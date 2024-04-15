@@ -311,7 +311,7 @@ def saveTimer():
     return config.User().saveTimer(userData, headers)
 
 @APP.route('/notifs', methods=['GET'])
-def timerPersistence():
+def notifs():
     headers = request.headers
     return config.User().notifs(headers)
 
