@@ -28,6 +28,7 @@ import stripe
 import datetime
 from datetime import date
 import time
+import math
 
 class User:
     timer = threading.Timer(0, 'hello')
@@ -565,8 +566,13 @@ class User:
                 listing_lat = listing["latitude"]
                 listing_long = listing["longitude"]
 
-            if helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance and listing['is_active'] == "True": 
-                closestListings.append(listing)
+            if listing['is_active'] == "True" and helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance: 
+                now = int(datetime.datetime.now().timestamp() * 1000)
+                start = int(datetime.datetime.strptime(listing['start_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                end = int(datetime.datetime.strptime(listing['end_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                # maybe update the expired listing as is_active = false in both listingDb and userDb
+                if start <= now and now <= end:
+                    closestListings.append(listing)
         return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
@@ -715,14 +721,24 @@ class User:
         else:
             distance = int(headers["distance"])
         nearbyListings = json_util.loads(User.getClosestListings(self,headers,distance))
-
+        page = int(headers['page'])
+        pageSize = 12.0
+        totalPage = math.ceil(len(nearbyListings)/pageSize)
+        start = page*int(pageSize)
+        end = int(page*pageSize)+int(pageSize)
+        if page > totalPage:
+            nearbyListings = []
+        elif page + 1 >= totalPage:
+            nearbyListings = nearbyListings[start:]
+        else :
+            nearbyListings = nearbyListings[start:end]
         if order == "":
-            return json_util.dumps(nearbyListings)
+            return json_util.dumps({'listings':nearbyListings, 'totalPage':totalPage})
 
         if order == "ascending": 
-            return json_util.dumps(sorted(nearbyListings, key = lambda x: int(x["price"])))
+            return json_util.dumps({'listings':sorted(nearbyListings, key = lambda x: int(x["price"])), 'totalPage':totalPage})
         else: 
-            return json_util.dumps(sorted(nearbyListings, key = lambda x:int(x["price"]), reverse = True))
+            return json_util.dumps({'listings':sorted(nearbyListings, key = lambda x:int(x["price"]), reverse = True), 'totalPage':totalPage})
         
     def searchForSpace(self, userData): 
         listings = db.listing_data.find({})
@@ -733,8 +749,13 @@ class User:
         
         for listing in listings: 
             if pattern.search(listing['address']) and listing['is_active'] == "True":
-                listingResults.append(listing) 
-        
+                now = int(datetime.datetime.now().timestamp() * 1000)
+                start = int(datetime.datetime.strptime(listing['start_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                end = int(datetime.datetime.strptime(listing['end_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                # maybe update the expired listing as is_active = false in both listingDb and userDb
+                if start <= now and now <= end:
+                    listingResults.append(listing) 
+    
         return json_util.dumps(listingResults)
 
     
