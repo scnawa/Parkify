@@ -574,6 +574,8 @@ class User:
                 # maybe update the expired listing as is_active = false in both listingDb and userDb
                 if start <= now and now <= end:
                     closestListings.append(listing)
+                else:
+                    print(listing['address'], start,now, end)
         return json_util.dumps(closestListings)
       
     def create_booking(self, userData):
@@ -1125,8 +1127,7 @@ class User:
                 )
             return json_util.dumps("Pass")
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
-    
-    
+        
     def notifs(self, db, provider_user, address, date):
         # Check if provider_user exists
         notification_message = f"Your listing {address} has been booked."
