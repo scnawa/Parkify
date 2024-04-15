@@ -40,23 +40,28 @@ const Modal = ({ isOpen, setnotiLocation}) => {
 
   return (
     <>
-        {isOpen && (
-            <div className="modal">
-                <div className="modal-content">
-                {notifications.map(notification => (
-                  <NotificationComponent
-                    title={notification.title.substring(0, 15)}
-                    description={notification.description}
-                    date={notification.date}
-                    onReadClick={closeModal}
-                  />
-                ))}
-                <button className="close-modal" onClick={closeModal}>
-                  Close
-                </button>
-              </div>
-            </div>
-        )}
+      {isOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            {notifications.length === 0 ? (
+              <p>No notifications</p>
+            ) : (
+              notifications.map(notification => (
+                <NotificationComponent
+                  key={notification.id}
+                  title={notification.title.substring(0, 15)}
+                  description={notification.description}
+                  date={notification.date}
+                  onReadClick={closeModal}
+                />
+              ))
+            )}
+            <button className="close-modal" onClick={closeModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
