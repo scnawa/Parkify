@@ -48,6 +48,7 @@ function TimerPage() {
             }
         };
         fetchBooking().then((data) => {
+            console.log(data);
             const [hoursStr, minutesStr, secondsStr] = data.split(':');
             const preHours = parseInt(hoursStr);
             const preMinutes = parseInt(minutesStr);
