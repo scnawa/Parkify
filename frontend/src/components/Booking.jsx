@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
-import { Paper, Button, createTheme } from '@mui/material';
+import { Typography, Paper, Button, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 const theme = createTheme({
     palette: {
@@ -177,7 +177,12 @@ function Booking(props) {
                         height: '100%',
                     }}
                 >
-
+                    <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
+                        Your Booking Has Been Reserved!
+                    </Typography>
+                    <Typography variant="h5" component="div" sx={{ fontWeight: 'bold', color: 'black', mt: 1 }}>
+                    Please Arrive Within The Time Given Below and Start Your Booking 
+                    </Typography>
                     {initialTime &&
                         <div style={{ display: "flex", flexDirection: "column", rowGap: "30px", height: '100%', justifyContent: 'center', justifyItems: 'space-between' }}>
                             <div style={{ alignSelf: 'center' }}>
