@@ -103,35 +103,38 @@ function TimerPage() {
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     };
     return (
-        <ThemeProvider theme={theme} >
-
-            <div
-                style={{
-                    "backgroundSize": "cover",
-                    height: "70vh",
-                    marginTop: '10px'
-                }}>
+        <ThemeProvider theme={theme}>
+            <div style={{
+                backgroundSize: "cover",
+                height: "70vh",
+                marginTop: '10px'
+            }}>
                 <Paper elevation={4}
                     sx={{
                         p: 2,
                         margin: 'auto',
                         maxWidth: "md",
                         height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'  
                     }}
                 >
-                    <div style={{ display: "flex", flexDirection: "column", rowGap: "30px", height: '100%', justifyContent: 'center', justifyItems: 'space-between' }}>
-                        <div style={{ alignSelf: 'center' }}>
-                            <Typography variant="h3" display="block" gutterBottom color="green.dark">
-                                TIMER: {formatTime(timer)}
-                            </Typography>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "row", justifyContent: 'center' }}>
-                            <Button variant="contained" color="green" onClick={handleEndBooking}>End Booking</Button>
-                        </div>
+                    <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black', alignSelf: 'start' }}>
+                        Your Booking Has Started!
+                    </Typography>
+                    <div style={{ alignSelf: 'center' }}>
+                        <Typography variant="h3" display="block" gutterBottom color="green.dark">
+                            TIMER: {formatTime(timer)}
+                        </Typography>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: 'center', marginBottom: '20px' }}>
+                        <Button variant="contained" color="green" onClick={handleEndBooking}>End Booking</Button>
                     </div>
                 </Paper>
             </div>
         </ThemeProvider>
+
 
     )
 }
