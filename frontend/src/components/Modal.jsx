@@ -38,6 +38,11 @@ const Modal = ({ isOpen, setnotiLocation }) => {
     setnotiLocation(false);
   }
 
+    const splitTitle = (title) => {
+      const titleParts = title.split(',');
+      return titleParts.length > 1 ? titleParts.slice(0, 2).join(',') : title;
+    };
+
   return (
     <>
       {isOpen && (
@@ -49,7 +54,7 @@ const Modal = ({ isOpen, setnotiLocation }) => {
               notifications.map(notification => (
                 <NotificationComponent
                   key={notification.id}
-                  title={notification.title.substring(0, 15)}
+                  title={splitTitle(notification.title)}
                   description={notification.description}
                   date={notification.date}
                   onReadClick={closeModal}
