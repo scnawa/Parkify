@@ -6,6 +6,8 @@ import smtplib
 import random
 import requests
 from geopy.distance import geodesic
+import pandas as pd 
+
 def generateCode():
     return str(random.randrange(100000, 999999))
 
@@ -84,3 +86,37 @@ def sendConfirmationEmail(email, username, amount):
         smtp.login(senderEmail, senderPass)
         smtp.sendmail(senderEmail, email, emailMessageObj.as_string())
     return verificationCode
+
+
+def make_df(db): 
+    users = preprocess_data()
+    user_emails = [user['email'] for user in users]
+    listings_db = db.listing_data.find({})
+    listings = []
+    for listing in listings_db: 
+        listings.append(listing['listing_id'])
+    df = pd.DataFrame(index = user_emails, columns = listings)
+    df.fillna(0, inplace=True)
+
+    for user in users: 
+        if "isAdmin" not in user: 
+            #interaction_score = 0
+            for listing in user['recentBookings']: 
+                df.loc[user['email'], listing['listing_id']] += 1
+            for listing in user['liked_listings']: 
+                df.loc[user['email'], listing['listing_id']] += 1
+            
+    return df
+    
+
+def preprocess_data(db): 
+    userbase = db.userbase_data.find()
+    preprocessed_data = []
+    for user in userbase: 
+        if 'isAdmin' not in user:
+            reqd_data = {}
+            reqd_data['email'] = user['email']
+            reqd_data['recentBookings'] = user['recentBookings']
+            reqd_data['liked_listings'] = user['liked_listings']
+            preprocessed_data.append(reqd_data)
+    return preprocessed_data
