@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
+import { Divider, Card, CardMedia, CardContent, CardActions, TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -66,6 +66,9 @@ function AllListings(props) {
     const [initialListingsLoaded, setInitialListingsLoaded] = useState(false);
     const [totalPage, setTotalPage] = useState(1);
     const [curPage, setCurPage] = useState(1);
+    const [recommendedListings, setRecommendedListings] = useState([]);
+    const [showRecommendations, setShowRecommendations] = useState(false);
+
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -78,27 +81,27 @@ function AllListings(props) {
                     'token': props.token,
                 },
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        if (data.result === "prebooking") {
-                            navigate('/book', { state: { listing_id: data.listingId, ListingNo: data.listingNo, numberPlate: data.carNumberPlate } });
-                            console.log("in a prebooking")
-                        } else if (data.result === "booking") {
-                            navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
-                            console.log("in a booking")
-                        } else if (data.result === "endbooking") {
-                            navigate('/park-end', { state: { timer: data.timer, listing_id: data.listingId, ListingNo: data.listingNo } });
-                            console.log("in endbooking")
-                        } else if (data.result === "none") {
-                            console.log("not in a booking");
-                        }
-
-                    } else {
-                        alert(data.error);
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    if (data.result === "prebooking") {
+                        navigate('/book', { state: { listing_id: data.listingId, ListingNo: data.listingNo, numberPlate: data.carNumberPlate } });
+                        console.log("in a prebooking")
+                    } else if (data.result === "booking") {
+                        navigate('/timer', { state: { listing_id: data.listingId, ListingNo: data.listingNo } });
+                        console.log("in a booking")
+                    } else if (data.result === "endbooking") {
+                        navigate('/park-end', { state: { timer: data.timer, listing_id: data.listingId, ListingNo: data.listingNo } });
+                        console.log("in endbooking")
+                    } else if (data.result === "none") {
+                        console.log("not in a booking");
                     }
-                })
-                .catch(error => console.error(error));
+
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error(error));
         }
     }, []);
 
@@ -117,17 +120,17 @@ function AllListings(props) {
                 'page': curPage - 1,
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    setListings(data.listings);
-                    setTotalPage(data.totalPage);
+        .then(response => response.json())
+        .then(data => {
+            if (!data.error) {
+                setListings(data.listings);
+                setTotalPage(data.totalPage);
 
-                    setInitialListingsLoaded(true)
-                } else {
-                    alert(data.error);
-                }
-            })
+                setInitialListingsLoaded(true)
+            } else {
+                alert(data.error);
+            }
+        })
             .catch(error => console.error(error));
     }, [curPage]);
     useEffect(() => {
@@ -160,6 +163,30 @@ function AllListings(props) {
             setDistance('')
         }
     }, [props.listings]);
+
+    useEffect(() => {
+        if (props.token) {
+            console.log('recommended listings queried')
+            fetch('http://localhost:8080/recommendations', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': props.token,
+                    'email': props.email,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    setRecommendedListings(data);
+                    console.log('recommended listings SET')
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error(error));
+        }
+    }, []);
 
     const handlePriceOrderChange = (event) => {
         setPriceOrder(event.target.value);
@@ -279,9 +306,43 @@ function AllListings(props) {
                 </Grid>
                 <Box sx={{ width: "100%", display: "flex", 'margin-top': '40px', justifyContent: "center" }}>
                     <Pagination count={totalPage} size="large" page={curPage} onChange={(_, value) => { setCurPage(value); }} />
-
                 </Box>
-
+                <Button
+                    variant="contained"
+                    sx={{
+                        bgcolor: '#4caf50',
+                        '&:hover': {
+                            bgcolor: '#4caf50', 
+                        },
+                        color: 'white', 
+                        borderRadius: '4px',
+                        padding: '10px 16px',
+                        my: 2
+                    }}
+                    onClick={() => setShowRecommendations(!showRecommendations)} 
+                    >
+                    {showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
+                </Button>
+                {/* Recommended listings section */}
+                {props.token && showRecommendations && (
+                    <>
+                        <Divider sx={{ my: 4 }} /> 
+                        <Box sx={{ mt: 4, p: 2 }}>
+                            <Typography variant="h5" sx={{ mb: 2, color: 'black', fontWeight: 'medium' }}>
+                                Recommended for You
+                            </Typography>
+                            <Grid container spacing={4} style={{ 'margin-top': '10px' }}>
+                                {recommendedListings.map((listing) => (
+                                    <Grid item xs={12} sm={6} md={4} lg={3} key={listing.listing_id}>
+                                        <Link to={'/listing/' + listing.listing_id} style={{ textDecoration: 'none' }} target="_blank">
+                                            <AllProviderListing listing={listing} height={'100%'} imageHeight={'300px'} objectFit='cover' />
+                                        </Link>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    </>
+                )}
             </Box>
         </ThemeProvider>
     );

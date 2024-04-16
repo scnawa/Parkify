@@ -89,7 +89,7 @@ def sendConfirmationEmail(email, username, amount):
 
 
 def make_df(db): 
-    users = preprocess_data()
+    users = preprocess_data(db)
     user_emails = [user['email'] for user in users]
     listings_db = db.listing_data.find({})
     listings = []
