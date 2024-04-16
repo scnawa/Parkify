@@ -932,7 +932,7 @@ class User:
             if promo_code and promo_code.isalnum():
                 #the last two digits 
                 
-                with open("/Users/adydaddy/capstone-project-3900w09a_parkify/server/promoCodes.txt", "r") as file: 
+                with open("./promoCodes.txt", "r") as file: 
                     for promo in file: 
                         if promo_code == promo.strip():
                             print(promo_code[-2:])
