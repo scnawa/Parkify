@@ -121,15 +121,25 @@ function TimerPage() {
                     }}
                 >
                     <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black', alignSelf: 'start' }}>
-                        Your Booking Has Started!
+                        Your Booking is Underway
                     </Typography>
-                    <div style={{ alignSelf: 'center' }}>
-                        <Typography variant="h3" display="block" gutterBottom color="green.dark">
+                    <div style={{ position: 'relative', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>  {/* Adjust height as needed */}
+                        <Typography variant="h3" display="block" gutterBottom color="green.dark" style={{
+                            position: 'absolute',
+                            top: '-145px', 
+                            left: '50%',
+                            transform: 'translateX(-50%)'
+                        }}>
                             TIMER: {formatTime(timer)}
                         </Typography>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: 'center', marginBottom: '20px' }}>
-                        <Button variant="contained" color="green" onClick={handleEndBooking}>End Booking</Button>
+                        <div style={{ 
+                            position: 'absolute',
+                            top: '-60px',  
+                            left: '50%',
+                            transform: 'translateX(-50%)'
+                        }}>
+                            <Button variant="contained" color="green" onClick={handleEndBooking}>End Booking</Button>
+                        </div>
                     </div>
                 </Paper>
             </div>
