@@ -11,6 +11,7 @@ from pymongo import MongoClient
 import certifi
 import helper
 import stripe
+from pymongo.server_api import ServerApi
 
 
 # Accessing the database
@@ -20,8 +21,6 @@ client = MongoClient(cluster, tlsCAFile=ca)
 db = client.userbase
 
 stripe.api_key = "sk_test_51OxR4GBZWJO5ZDijvkSWr3V71apvw6HNRDyoVJg6Z7zVRTjk78SHGFxTcn0oUJAEViWE35ppf9nlmeKN9aQsoFo500wUemOwNF"
-
-
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
