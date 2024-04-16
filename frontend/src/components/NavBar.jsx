@@ -146,6 +146,7 @@ function NavBar(props) {
 	}
 	const addPaymentOnClick = (props) => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/managePayment");
 		return;
 	}
@@ -155,15 +156,19 @@ function NavBar(props) {
 		const text = e.target.innerText;
 		switch (text) {
 			case "MY PARKING SPACES":
+				setnotiLocation(null);
 				navigate("/myListing");
 				break;
 			case "MANAGE USERS":
+				setnotiLocation(null);
 				navigate("/adminViewListings")
 				break;
 			case "DISPUTES":
+				setnotiLocation(null);
 				navigate("/adminDisputes")
 				break;
 			case "HOME":
+				setnotiLocation(null);
 				navigate("/");
 				break;
 
@@ -171,6 +176,7 @@ function NavBar(props) {
 	}
 	const profileOnClick = (event) => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/profilepage");
 	}
 	const loginOnClick = (event) => {
@@ -178,33 +184,39 @@ function NavBar(props) {
 	}
 	const logOut = (event) => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		Logout(token, setToken, setIsAdmin, setEmail);
 		navigate("/");
 	}
 	const historyOnclick = () => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/history");
 
 	}
 	const customerHistoryOnclick = () => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/customerHistory");
 
 	}
 	const customerRentOutOnclick = () => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/myListing");
 
 	}
 
 	const manageUsers = () => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/adminViewListings");
 
 	}
 
 	const disputes = () => {
 		setUserMenuLocation(null);
+		setnotiLocation(null);
 		navigate("/adminDisputes");
 
 	}
@@ -272,6 +284,7 @@ function NavBar(props) {
 										fontFamily: 'future',
 									}}
 									onClick={() => {
+										setnotiLocation(null);
 										navigate("/");
 									}}
 								>
