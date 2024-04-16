@@ -315,6 +315,10 @@ def getNotifs():
     headers = request.headers
     return config.User().getNotifs(headers)
 
+@APP.route('/recommendations', methods=['GET'])
+def make_reco():
+    headers = request.headers
+    return config.User().make_reco(headers)
 
 if __name__ == "__main__": 
     APP.run(port = config.port)

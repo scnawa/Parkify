@@ -29,6 +29,8 @@ import datetime
 from datetime import date
 import time
 import math
+from sklearn.neighbors import NearestNeighbors
+
 
 class User:
     timer = threading.Timer(0, 'hello')
@@ -1154,3 +1156,29 @@ class User:
             notifications = user.get("notifications", [])
             return json_util.dumps(notifications)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
+    
+    def make_reco(self, headers): 
+        user = db.userbase_data.find_one({"session_id": headers['token']})
+        if user: 
+            matrix_df = helper.make_df(db)
+            # fit the model with the user interactions
+            model = NearestNeighbors(n_neighbors=3, metric='cosine')
+            model.fit(matrix_df)
+            user_interaction = matrix_df.loc[headers['email']]
+            distances, indices = model.kneighbors([user_interaction])
+            # Retrieve recommended car spaces
+            recommendations = []
+            target_user_idx = matrix_df.index.get_loc(headers['email'])
+            for idx in indices.flatten():
+                if idx != target_user_idx:  # Exclude target user
+                    recommendations.extend(matrix_df.iloc[idx][matrix_df.iloc[idx] > 0].index)
+
+            # Remove duplicates and sort recommendations by interaction strength
+            recommendations = list(set(recommendations))
+            recommendations.sort(reverse=True)
+            listings_db = db.listing_data.find({})
+            for listing in listings_db: 
+                if listing['listing_id'] in recommendations: 
+                    recommendations.append(listing)
+                    recommendations.remove(listing['listing_id'])
+            return json_util.dumps(recommendations)
