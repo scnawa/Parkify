@@ -11,6 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
+import logo from '../assets/parkify.png'; // Adjust the path as necessary
+
 
 
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
@@ -27,7 +29,7 @@ const theme = createTheme({
 		green: {
 			main: '#4caf50',
 			light: '#E0F2F1',
-			dark: '#004D40',
+			dark: '#000000',
 			contrastText: '#CDDC39',
 		},
 	},
@@ -273,23 +275,20 @@ function NavBar(props) {
 								"margin": "2px",
 								"padding": "2px",
 							}}>
-								<Typography
-									variant="h6"
-									noWrap
-									component="a"
-									sx={{
-										mr: 0.5,
-										fontWeight: 700,
-										letterSpacing: '.2rem',
-										fontFamily: 'future',
+								<img
+									src={logo}
+									alt="Parkify logo"
+									style={{
+										cursor: 'pointer',
+										width: '100px',  
+										height: 'auto', 
+										marginRight: '0.5rem',
 									}}
 									onClick={() => {
 										setnotiLocation(null);
 										navigate("/");
 									}}
-								>
-									Parkify
-								</Typography>
+								/>
 							</button>
 							<Box sx={{ display: { xs: 'flex', sm: 'flex', md: 'flex' }, flexGrow: 1, marginRight: { sm: 4 } }}>
 								{pages.map((item) => (
@@ -357,7 +356,7 @@ function NavBar(props) {
 										aria-label="notifications"
 										size="large"
 										onClick={notiLocationOnclick}
-										color="inherit"
+										color="dark"
 									>
 										<NotificationsNoneOutlinedIcon />
 
@@ -377,7 +376,7 @@ function NavBar(props) {
 
 										size="large"
 										onClick={userMenuOnclick}
-										color="inherit"
+										color="dark"
 									>
 										<AccountCircle />
 									</IconButton>
