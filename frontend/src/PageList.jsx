@@ -65,11 +65,11 @@ const PageList = (props) => {
       <NavBar token={token} setToken={setToken} setListings={setListings} 
       isAdmin={isAdmin} setIsAdmin={setIsAdmin} email={email} setEmail={setEmail} setTotalPage={setTotalPage}/>
       <Routes>
-        <Route path="/"element={<AllListings token={token} listings={listings} email={email} totalPage={totalPage}/>} />
+        <Route path="/"element={<AllListings isAdmin={isAdmin} token={token} listings={listings} email={email} totalPage={totalPage}/>} />
         <Route path="/create-listings" element={<CreateListings token={token} isAdmin={isAdmin} email={email}/>} />
         <Route path="/myListing" element={<MyListings token={token} email={email}/>} />
         <Route path="/editListings" element={<EditListings isAdmin={isAdmin}/>} />
-        <Route path="/alllistings" element={<AllListings token={token} listings={listings} email={email} totalPage={totalPage}/>} />
+        <Route path="/alllistings" element={<AllListings isAdmin={isAdmin} token={token} listings={listings} email={email} totalPage={totalPage}/>} />
         <Route path="/listing/:listing_id" element={<ListingPage isAdmin={isAdmin} token={token} listingDetails={listingDetails} email={email}/>} />
         <Route path="/book" element={<Booking token={token} />}/>
         <Route path="/timer" element={<TimerPage token={token}/>}/>

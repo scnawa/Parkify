@@ -72,8 +72,9 @@ function AllListings(props) {
 
     const navigate = useNavigate();
     useEffect(() => {
+        console.log(props.isAdmin)
         // Check if user is currently in a prebooking/booking
-        if (props.token) {
+        if (props.token && (!props.isAdmin)) {
             fetch('http://localhost:8080/timerPersistence', {
                 method: 'GET',
                 headers: {
@@ -165,7 +166,7 @@ function AllListings(props) {
     }, [props.listings]);
 
     useEffect(() => {
-        if (props.token) {
+        if (props.token && (!props.isAdmin)) {
             console.log('recommended listings queried')
             fetch('http://localhost:8080/recommendations', {
                 method: 'GET',
@@ -307,22 +308,24 @@ function AllListings(props) {
                 <Box sx={{ width: "100%", display: "flex", 'margin-top': '40px', justifyContent: "center" }}>
                     <Pagination count={totalPage} size="large" page={curPage} onChange={(_, value) => { setCurPage(value); }} />
                 </Box>
-                <Button
-                    variant="contained"
-                    sx={{
-                        bgcolor: '#4caf50',
-                        '&:hover': {
-                            bgcolor: '#4caf50', 
-                        },
-                        color: 'white', 
-                        borderRadius: '4px',
-                        padding: '10px 16px',
-                        my: 2
-                    }}
-                    onClick={() => setShowRecommendations(!showRecommendations)} 
-                    >
-                    {showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
-                </Button>
+                {props.token && (!props.isAdmin) && (
+                    <Button
+                        variant="contained"
+                        sx={{
+                            bgcolor: '#4caf50',
+                            '&:hover': {
+                                bgcolor: '#4caf50', 
+                            },
+                            color: 'white', 
+                            borderRadius: '4px',
+                            padding: '10px 16px',
+                            my: 2
+                        }}
+                        onClick={() => setShowRecommendations(!showRecommendations)} 
+                        >
+                        {showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
+                    </Button>
+                )}
                 {/* Recommended listings section */}
                 {props.token && showRecommendations && (
                     <>
