@@ -88,13 +88,13 @@ def sendConfirmationEmail(email, username, amount):
     return verificationCode
 
 
-def make_df(db): 
-    users = preprocess_data(db)
+def makeDf(db): 
+    users = preprocessData(db)
     user_emails = [user['email'] for user in users]
-    listings_db = db.listing_data.find({})
+    listingsDb = db.listingData.find({})
     listings = []
-    for listing in listings_db: 
-        listings.append(listing['listing_id'])
+    for listing in listingsDb: 
+        listings.append(listing['listingId'])
     df = pd.DataFrame(index = user_emails, columns = listings)
     df.fillna(0, inplace=True)
 
@@ -102,21 +102,21 @@ def make_df(db):
         if "isAdmin" not in user: 
             #interaction_score = 0
             for listing in user['recentBookings']: 
-                df.loc[user['email'], listing['listing_id']] += 1
-            for listing in user['liked_listings']: 
-                df.loc[user['email'], listing['listing_id']] += 1
+                df.loc[user['email'], listing['listingId']] += 1
+            for listing in user['likedListings']: 
+                df.loc[user['email'], listing['listingId']] += 1
             
     return df
     
 
-def preprocess_data(db): 
-    userbase = db.userbase_data.find()
-    preprocessed_data = []
+def preprocessData(db): 
+    userbase = db.userbaseData.find()
+    preprocessedData = []
     for user in userbase: 
         if 'isAdmin' not in user:
-            reqd_data = {}
-            reqd_data['email'] = user['email']
-            reqd_data['recentBookings'] = user['recentBookings']
-            reqd_data['liked_listings'] = user['liked_listings']
-            preprocessed_data.append(reqd_data)
-    return preprocessed_data
+            reqdData = {}
+            reqdData['email'] = user['email']
+            reqdData['recentBookings'] = user['recentBookings']
+            reqdData['likedListings'] = user['likedListings']
+            preprocessedData.append(reqdData)
+    return preprocessedData

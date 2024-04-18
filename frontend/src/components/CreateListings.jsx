@@ -113,7 +113,7 @@ function CreateListings(props) {
 				format: 'json',
 				limit: 5,
 				addressdetails: 1,
-				polygon_geojson: 1,
+				"polygon_geojson": 1,
 				countrycodes: ["AU"],
 			}
 			const mapQuery = new URLSearchParams(mapParameter).toString();
@@ -135,14 +135,14 @@ function CreateListings(props) {
 				token: state.token,
 				email: state.email,
 				listings: {
-					"address": addressGeo.display_name,
+					"address": addressGeo['display_name'],
 					"lat": addressGeo.lat,
 					"lon": addressGeo.lon,
 					"price": rate,
 					"quantity": quantity,
 					"details": detail,
 					"restrictions": restriction,
-					"image_url": url,
+					"imageUrl": url,
 					"images": images,
 				}
 			}
@@ -202,9 +202,9 @@ function CreateListings(props) {
 		// since this part of code is general and i don't know another way to do it
 		Promise.allSettled(imagePromises).then((results) => {
 			return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
-		}).then((new_images) => {
+		}).then((newImages) => {
 
-			setImages([...images, ...new_images]);
+			setImages([...images, ...newImages]);
 			imagesRef.current = "";
 		}).catch(alert);
 	}
@@ -250,9 +250,9 @@ function CreateListings(props) {
 							}}
 							options={addressOptions.map((item => { return { ...item }; }))
 							}
-							isOptionEqualToValue={(option, value) => (option.display_name === value.display_name)}
+							isOptionEqualToValue={(option, value) => (option['display_name'] === value['display_name'])}
 							getOptionLabel={(option) => {
-								return `${option.display_name}`;
+								return `${option['display_name']}`;
 							}
 							}
 							renderInput={(params) => (

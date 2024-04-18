@@ -10,96 +10,96 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 const theme = createTheme({
-    palette: {
-        green: {
-            main: '#00897B',
-            light: '#E0F2F1',
-            dark: '#004D40',
-            contrastText: '#E0F2F1',
-        },
-        anotherGreen: {
-            main: '#4caf50', // Green primary colour
-            light: '#E0F2F1',
-            contrastText: '#E0F2F1',
+	palette: {
+		green: {
+			main: '#00897B',
+			light: '#E0F2F1',
+			dark: '#004D40',
+			contrastText: '#E0F2F1',
+		},
+		anotherGreen: {
+			main: '#4caf50', // Green primary colour
+			light: '#E0F2F1',
+			contrastText: '#E0F2F1',
 
-        },
-        red: {
-            main: '#5e1914', // Green primary colour
-            light: '#E0F2F1',
-            contrastText: '#E0F2F1',
+		},
+		red: {
+			main: '#5e1914', // Green primary colour
+			light: '#E0F2F1',
+			contrastText: '#E0F2F1',
 
 
-        }
-    },
+		}
+	},
 });
 
 function ProviderListing(props) {
-    console.log("providerListings " + props.token)
-    const [popoverLocation, setPopOverLocation] = useState(false);
-    const [listing, _] = useState(props.listing);
-    const [activated, setActivated] = useState(props.listing.is_active === "True");
-    const navigate = useNavigate();
+	console.log("providerListings " + props.token)
+	const [popoverLocation, setPopOverLocation] = useState(false);
+	const [listing, _] = useState(props.listing);
+	const [activated, setActivated] = useState(props.listing.isActive === "True");
+	const navigate = useNavigate();
 
-    const hadnelEdit = () => {
-        navigate('/editListings', { state: { token: props.token, listing: listing, email: props.email } });
+	const hadnelEdit = () => {
+		navigate('/editListings', { state: { token: props.token, listing: listing, email: props.email } });
 
-    }
-    const popoverOnClick = (event) => {
-        setPopOverLocation(event.currentTarget);
-    };
-    const popoverOnClose = () => {
-        setPopOverLocation(null);
-    };
-    return (
+	}
+	const popoverOnClick = (event) => {
+		setPopOverLocation(event.currentTarget);
+	};
+	const popoverOnClose = () => {
+		setPopOverLocation(null);
+	};
+	return (
 
-        <ThemeProvider theme={theme} >
-            <ListItemAvatar >
-                <Avatar
-                    src={listing.image_url !== '' ? listing.image_url : Background}
-                />
-            </ListItemAvatar>
-            <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' }, width: '100%' }}>
-                <Typography variant="h6" component="div">
-                    Address: {listing.address}
-                </Typography>
-                <Typography variant="h6" color="text.secondary">
-                    ${listing.price}
+		<ThemeProvider theme={theme} >
+			<ListItemAvatar >
+				<Avatar
+					src={listing.imageUrl !== '' ? listing.imageUrl : Background}
+				/>
+			</ListItemAvatar>
+			<Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' }, width: '100%' }}>
+				<Typography variant="h6" component="div">
+					Address: {listing.address}
+				</Typography>
+				<Typography variant="h6" color="text.secondary">
+					${listing.price}
 
-                </Typography>
-            </Box>
-            {/* TODO improve the apperance on desktop */}
-            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, width: '100%' }}>
-                <Typography variant="h6" component="div">
-                    {listing.address}
-                </Typography>
-                <Typography variant="h6" color="text.secondary">
-                    ${listing.price}
+				</Typography>
+			</Box>
+			{/* TODO improve the apperance on desktop */}
+			<Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, width: '100%' }}>
+				<Typography variant="h6" component="div">
+					{listing.address}
+				</Typography>
+				<Typography variant="h6" color="text.secondary">
+					${listing.price}
 
-                </Typography>
-            </Box>
-            <Box display='flex' sx={{ width: '100%', "justifyContent": "end" }}>
-                <Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
-                    {activated &&
-                        <Button size="small" color='anotherGreen' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+				</Typography>
+			</Box>
+			<Box display='flex' sx={{ width: '100%', "justifyContent": "end" }}>
+				<Box sx={{ display: 'flex', flexDirection: "column", justifyContent: "space-between", rowGap: 0.4 }}>
+					{activated &&
+						<Button size="small" color='anotherGreen' variant="contained" onClick={popoverOnClick}>Live Status</Button>
 
-                    }
-                    {!activated &&
-                        <Button size="small" color='error' variant="contained" onClick={popoverOnClick}>Live Status</Button>
+					}
+					{!activated &&
+						<Button size="small" color='error' variant="contained" onClick={popoverOnClick}>Live Status</Button>
 
-                    }
-                    <PublishPopUp listings={listing} token={props.token} email={props.email}
-                        popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
-                        popoverOnClose={popoverOnClose} activated={activated} setActivated={setActivated}
-                    />
+					}
+					<PublishPopUp listings={listing} token={props.token} email={props.email}
+						popoverLocation={popoverLocation} setPopOverLocation={setPopOverLocation}
+						popoverOnClose={popoverOnClose} activated={activated} setActivated={setActivated}
+					/>
 
-                    <Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
-                        <Button size="small" color='success' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
-                    </Box>
+					<Box sx={{ display: 'inline-flex', columnGap: 0.3 }}>
+						<Button size="small" color='success' variant="contained" fullWidth onClick={hadnelEdit}>Edit</Button>
+					</Box>
 
-                </Box>
-            </Box>
-        </ThemeProvider>
+				</Box>
+			</Box>
+		</ThemeProvider>
 
-    )
+	)
 }
 export default ProviderListing; 

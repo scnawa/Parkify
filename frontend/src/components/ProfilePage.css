@@ -1,84 +1,90 @@
 .profile-container {
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-between; /* Adjusted for better spacing */
-    align-items: flex-start; /* Align items at the start */
-    width: 70vw;
-    padding: 40px;
-    margin: 5vh auto; /* Centered horizontally */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Roboto', sans-serif; /* Using Roboto for a modern look */
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between; /* Adjusted for better spacing */
+  align-items: flex-start; /* Align items at the start */
+  width: 70vw;
+  padding: 40px;
+  margin: 5vh auto; /* Centered horizontally */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif; /* Using Roboto for a modern look */
 }
 
-.left-box-profile, .right-box-profile {
-    flex: 1;
-    margin: 0 20px; /* Added some margin for spacing */
+.left-box-profile,
+.right-box-profile {
+  flex: 1;
+  margin: 0 20px; /* Added some margin for spacing */
 }
 
 .profile-picture > img {
-    width: 150px; /* Fixed width for consistency */
-    height: 150px; /* Fixed height for a square aspect ratio */
-    border-radius: 50%; /* Circular profile pictures */
-    object-fit: cover; /* Ensure the image covers the area */
-    border: 3px solid #00897B; /* Border color to match the theme */
-    margin-bottom: 15px;
+  width: 150px; /* Fixed width for consistency */
+  height: 150px; /* Fixed height for a square aspect ratio */
+  border-radius: 50%; /* Circular profile pictures */
+  object-fit: cover; /* Ensure the image covers the area */
+  border: 3px solid #00897b; /* Border color to match the theme */
+  margin-bottom: 15px;
 }
 
 .upload-button {
-    background-color: #00897B;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: #00897b;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .upload-button:hover {
-    background-color: #00695c;
+  background-color: #00695c;
 }
 
 .right-box-profile > form {
-    width: 100%; /* Use full width for a consistent look */
+  width: 100%; /* Use full width for a consistent look */
 }
 
 label {
-    display: block; /* Make labels block to ensure inputs align below */
-    color: #555; /* Darker label color for contrast */
-    margin: 12px 0;
+  display: block; /* Make labels block to ensure inputs align below */
+  color: #555; /* Darker label color for contrast */
+  margin: 12px 0;
 }
 
-form > input, form > div > div {
-    width: 100%;
-    margin-top: 8px; /* Add some margin above inputs for spacing */
+form > input,
+form > div > div {
+  width: 100%;
+  margin-top: 8px; /* Add some margin above inputs for spacing */
 }
 
-.submit-profile-button, .delete-profile-button {
-    margin-top: 20px;
-    width: auto; /* Auto width for content padding */
-    margin-right: 10px; /* Space between buttons */
+.submit-profile-button,
+.delete-profile-button {
+  margin-top: 20px;
+  width: auto; /* Auto width for content padding */
+  margin-right: 10px; /* Space between buttons */
 }
 
 .delete-profile-button {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 @media (max-width: 768px) {
-    .profile-container {
-        flex-direction: column;
-        width: 90vw;
-        margin: 10vh auto;
-        padding: 20px;
-    }
+  .profile-container {
+    flex-direction: column;
+    width: 90vw;
+    margin: 10vh auto;
+    padding: 20px;
+  }
 
-    .left-box-profile, .right-box-profile {
-        margin: 0; /* Remove margin for mobile */
-        width: 100%; /* Full width on mobile */
-    }
+  .left-box-profile,
+  .right-box-profile {
+    margin: 0; /* Remove margin for mobile */
+    width: 100%; /* Full width on mobile */
+  }
 
-    .upload-button, .submit-profile-button, .delete-profile-button {
-        width: 100%; /* Full width buttons on mobile */
-        margin-top: 15px;
-    }
+  .upload-button,
+  .submit-profile-button,
+  .delete-profile-button {
+    width: 100%; /* Full width buttons on mobile */
+    margin-top: 15px;
+  }
 }

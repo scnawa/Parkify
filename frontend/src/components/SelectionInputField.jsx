@@ -1,7 +1,7 @@
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 
-function SelectionInputField({ selection, setSelection, selectionNames, label }) {
+function SelectionInputField({ setSelection, selectionNames, label }) {
 	const selectionChoices = selectionNames.map((x, index) => {
 		return (
 			<MenuItem key={index} value={x}>{x}</MenuItem>

@@ -1,4 +1,4 @@
-import {Elements, PaymentElement, useElements, useStripe} from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import PaymentForm from './PaymentForm';
@@ -10,10 +10,10 @@ function Payment(props) {
     const [errorMessage, setErrorMessage] = useState(null);
 
     React.useEffect(() => {
-		if (!props.token) {
-			navigate('/login');
-			return
-		}
+        if (!props.token) {
+            navigate('/login');
+            return
+        }
         const fetchClinetSecret = async () => {
             try {
                 const response = await fetch('http://localhost:8080/addPaymentMethod', {
@@ -35,22 +35,23 @@ function Payment(props) {
                 return Promise.reject(error);
             }
         }
-        fetchClinetSecret().then((data)=> {
-            setClientSecret(data["client_secret"]);
+        fetchClinetSecret().then((data) => {
+            setClientSecret(data["clientSecret"]);
         }).catch(alert);
-	}, []);
+    }, []);
     const options = {
         clientSecret: clientSecret,
-        appearance: {  theme: 'stripe'
-    },
-    };    
+        appearance: {
+            theme: 'stripe'
+        },
+    };
     return (
         <div>
             {clientSecret && (
 
-            <Elements stripe={props.stripe} options={options}>
-                <PaymentForm clientSecret={clientSecret}/>
-            </Elements>
+                <Elements stripe={props.stripe} options={options}>
+                    <PaymentForm clientSecret={clientSecret} />
+                </Elements>
             )}
         </div>
     );

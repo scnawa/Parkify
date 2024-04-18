@@ -1,5 +1,5 @@
 function PaymentAddedSuccess() {
-    return(
+    return (
         <p>You payment method is successfully added</p>
     )
 }

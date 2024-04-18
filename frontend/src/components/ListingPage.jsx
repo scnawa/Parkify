@@ -24,338 +24,332 @@ import { TextField, Tooltip, Container, Grid, Card, CardMedia, CardContent, Card
 
 
 const placeholder = L.icon({
-    iconUrl: location,
-    iconSize: [30, 35]
+	iconUrl: location,
+	iconSize: [30, 35]
 });
 
 const priceStyle = {
-    backgroundColor: '#4CAF50',
-    borderRadius: '4px',
-    padding: '6.5px',
-    display: 'inline-block',
-    marginRight: '8px',
-    marginTop: 3,
+	backgroundColor: '#4CAF50',
+	borderRadius: '4px',
+	padding: '6.5px',
+	display: 'inline-block',
+	marginRight: '8px',
+	marginTop: 3,
 };
 
 const availabilityStyle = {
-    color: '#2e7d32',
+	color: '#2e7d32',
 };
 
 function ListingPage(props) {
-    const navigate = useNavigate();
-    // eslint-disable-next-line
-    const [token, setToken] = React.useState(localStorage.getItem('token'));
+	const navigate = useNavigate();
+	// eslint-disable-next-line
+	const [token, setToken] = React.useState(localStorage.getItem('token'));
 
-    const { listing_id } = useParams();
-    const [listing, setListing] = useState(null);
-    const [defaultPayment, setDefaultPayment] = useState(null);
-    const [liked, setLiked] = useState(false);
-    const [totalLikes, setTotalLikes] = useState(0);
+	const { listingId } = useParams();
+	const [listing, setListing] = useState(null);
+	const [defaultPayment, setDefaultPayment] = useState(null);
+	const [liked, setLiked] = useState(false);
+	const [totalLikes, setTotalLikes] = useState(0);
 
-    const [error, setError] = useState(null);
-    const [numberPlate, setNumberPlate] = useState('');
-    const [isNumberPlateValid, setIsNumberPlateValid] = useState(false);
-    // console.log(props);
-    useEffect(() => {
-        /*         const abortController = new AbortController();
-                const signal = abortController.signal; */
-        // console.log(props);
-        const fetchPayment = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/getDefaultCard', {
-                    method: 'Get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'token': token,
-                    },
-                });
-
-
-                const data = await response.json();
-                if (data.error) {
-                    return Promise.reject(data.error);
-                } else {
-                    return Promise.resolve(data);
-                }
-            } catch (error) {
-                return Promise.reject(error);
-            }
-        };
-
-        const fetchListing = async () => {
-            try {
-                const response = await fetch('/getSpecificListing', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'token': props.token,
-                        'listingId': listing_id
-                    },
-                    /* signal: signal */
-                });
-                const data = await response.json();
-                if (data.error) {
-                    setError(data.error);
-                    console.log(error)
-                } else {
-                    setListing(data);
-                    setLiked(data.has_liked)
-                    setTotalLikes(data.likes)
-                    // console.log(data);
-                }
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log('Request aborted');
-                } else {
-                    console.error(error);
-                    setError("Failed to fetch listing data");
-                }
-            }
-        };
-
-        fetchListing();
-        if (token) {
-            fetchPayment().then((data) => {
-                setDefaultPayment(data['default_payment']);
-                return;
-            }).catch(alert);
-        }
-
-        // Cleanup function to abort fetch on component unmount
-        /*  return () => {
-             abortController.abort();
-         }; */
-        // eslint-disable-next-line
-    }, []);
-    const handleBookNow = async () => {
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-        if (props.isAdmin) {
-            alert("Admins cannot book a listing")
-            return;
-        }
-        if (!defaultPayment) {
-            alert("Please provide customer's payment method before booking");
-            return;
-        }
-        const ListingNo = listing.listing_no;
-        // pass real data
-        // const data = {
-        //     "email": token,
-        //     "listingId": listing_id,
-        //     "listingNo": ListingNo
-        // }
-        const data = {
-            "token": props.token,
-            "listingId": listing_id,
-            "listingNo": ListingNo,
-            "carNumberPlate": numberPlate.toUpperCase()
-        }
-        try {
-            const response = await fetch('/hold_listing', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-                navigate('/book', { state: { listing_id, ListingNo, numberPlate } });
-                //console.log("booked")
-            } else {
-                alert("Failed to book")
-                console.error('Failed to hold listing');
-            }
-        } catch (error) {
-            console.error('API call failed:', error);
-        }
-    };
-    let locations = [50, 50];
-    let mapProps = { ...listing };
-    if (listing && listing.latitude
-        && listing.longitude) {
-        locations = [listing.latitude, listing.longitude];
-        mapProps.lat = listing.latitude;
-        mapProps.lon = listing.longitude;
+	const [error, setError] = useState(null);
+	const [numberPlate, setNumberPlate] = useState('');
+	const [isNumberPlateValid, setIsNumberPlateValid] = useState(false);
+	// console.log(props);
+	useEffect(() => {
+		/*         const abortController = new AbortController();
+				const signal = abortController.signal; */
+		// console.log(props);
+		const fetchPayment = async () => {
+			try {
+				const response = await fetch('http://localhost:8080/getDefaultCard', {
+					method: 'Get',
+					headers: {
+						'Content-Type': 'application/json',
+						'token': token,
+					},
+				});
 
 
-    }
-    console.log(listing);
+				const data = await response.json();
+				if (data.error) {
+					return Promise.reject(data.error);
+				} else {
+					return Promise.resolve(data);
+				}
+			} catch (error) {
+				return Promise.reject(error);
+			}
+		};
 
-    const toggleLike = async () => {
-        const currentlyLiked = liked;
-        setLiked(!liked);
-        const endpoint = currentlyLiked ? '/dislike' : '/like';
-        setTotalLikes(currentlyLiked ? totalLikes - 1 : totalLikes + 1);
-        try {
-            const data = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': props.token,
-                },
-                body: JSON.stringify({
-                    listingId: listing.listing_id,
-                }),
-            });
+		const fetchListing = async () => {
+			try {
+				const response = await fetch('/getSpecificListing', {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'token': props.token,
+						'listingId': listingId
+					},
+					/* signal: signal */
+				});
+				const data = await response.json();
+				if (data.error) {
+					setError(data.error);
+					console.log(error)
+				} else {
+					setListing(data);
+					setLiked(data.hasLiked)
+					setTotalLikes(data.likes)
+					// console.log(data);
+				}
+			} catch (error) {
+				if (error.name === 'AbortError') {
+					console.log('Request aborted');
+				} else {
+					console.error(error);
+					setError("Failed to fetch listing data");
+				}
+			}
+		};
 
-            if (data.error) {
-                setError(data.error);
-                console.log(error)
-            } else {
-                console.log("liked or unliked now")
-            }
-            // Optionally handle the response data if needed
-        } catch (error) {
-            console.error('API call failed:', error);
-            setLiked(currentlyLiked); // Revert the liked state if the API call fails
-        }
-    };
-    
-    const validateNumberPlate = (input) => {
-        const isValid = /^[A-Za-z0-9]{6}$/.test(input);
-        setIsNumberPlateValid(isValid);
-    };
-    
-    const handleNumberPlateChange = (event) => {
-        const input = event.target.value;
-        setNumberPlate(input);
-        validateNumberPlate(input);
-    };
-    
+		fetchListing();
+		if (token) {
+			fetchPayment().then((data) => {
+				setDefaultPayment(data['defaultPayment']);
+				return;
+			}).catch(alert);
+		}
 
-    return (
-        <Container maxWidth="lg">
-            {listing ? (
-                <Grid container spacing={4} mt={2} alignItems="center">
-                    <Grid item xs={12} md={7}>
-                        <Card sx={{ borderRadius: '16px' }}>
-                            <Splide options={{ type: 'fade', rewind: true, width: '100%', gap: '1rem' }}>
+		// Cleanup function to abort fetch on component unmount
+		/*  return () => {
+			 abortController.abort();
+		 }; */
+		// eslint-disable-next-line
+	}, []);
+	const handleBookNow = async () => {
+		if (!token) {
+			navigate("/login");
+			return;
+		}
+		if (props.isAdmin) {
+			alert("Admins cannot book a listing")
+			return;
+		}
+		if (!defaultPayment) {
+			alert("Please provide customer's payment method before booking");
+			return;
+		}
+		const listingNo = listing.listingNo;
+		const data = {
+			"token": props.token,
+			"listingId": listingId,
+			"listingNo": listingNo,
+			"carNumberPlate": numberPlate.toUpperCase()
+		}
+		try {
+			const response = await fetch('/hold_listing', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
 
-                                {listing.images && listing.images.length > 0 ? (
-                                    <>
-                                        <SplideSlide>
-                                            <CardMedia
-                                                component="img"
-                                                height="450"
-                                                image={listing.image_url || Background}
-                                                alt="Parking space"
-                                            />
-                                        </SplideSlide>
+			if (response.ok) {
+				navigate('/book', { state: { listingId, listingNo, numberPlate } });
+				//console.log("booked")
+			} else {
+				alert("Failed to book")
+				console.error('Failed to hold listing');
+			}
+		} catch (error) {
+			console.error('API call failed:', error);
+		}
+	};
+	let locations = [50, 50];
+	let mapProps = { ...listing };
+	if (listing && listing.latitude
+		&& listing.longitude) {
+		locations = [listing.latitude, listing.longitude];
+		mapProps.lat = listing.latitude;
+		mapProps.lon = listing.longitude;
 
-                                        {listing.images.map((image, index) => (
 
-                                            <SplideSlide key={index + 1}>
-                                                <CardMedia
-                                                    component="img"
-                                                    height="450"
-                                                    image={image}
-                                                    alt="Parking space"
-                                                />
-                                            </SplideSlide>
-                                        ))}
-                                    </>
-                                ) : (
-                                    <CardMedia
-                                        component="img"
-                                        height="450"
-                                        image={listing.image_url || Background}
-                                        alt="Parking space"
-                                    />
-                                )}
-                            </Splide>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={5} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Card raised sx={{ borderRadius: '16px' }}>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                    {listing.address}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Description: {listing.details}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                                    Restrictions: {listing.restrictions}
-                                </Typography>
-                                <Typography variant="body1" sx={priceStyle}>
-                                    Price: ${listing.price}.00/hr
-                                </Typography>
-                            </CardContent>
-                            <CardActions disableSpacing>
-                                <TextField
-                                    label="Number Plate"
-                                    variant="outlined"
-                                    value={numberPlate}
-                                    onChange={handleNumberPlateChange}
-                                    error={!isNumberPlateValid && numberPlate.length > 0}
-                                    inputProps={{
-                                        maxLength: 6,
-                                        style: { textTransform: 'uppercase' }
-                                    }}
-                                    sx={{
-                                        width: '140px',
-                                        height: '37px',
-                                        mr: '7px',
-                                        '.MuiInputBase-input': {
-                                            padding: '7px',
-                                        },
-                                        '.MuiInputLabel-outlined': {
-                                            transform: 'translate(14px, 7px) scale(1)',
-                                        },
-                                        '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
-                                            transform: 'translate(14px, -6px) scale(0.75)', 
-                                        }
-                                    }}
-                                />
-                                <Tooltip 
-                                    title={numberPlate.length === 6 && isNumberPlateValid ? "" : (!isNumberPlateValid && numberPlate.length > 0 ? "Invalid number plate" : "Enter 6 character number plate")}
-                                >
-                                    <span>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={handleBookNow}
-                                            disabled={!isNumberPlateValid}
-                                        >
-                                            Book Now
-                                        </Button>
-                                    </span>
-                                </Tooltip>
-                                <Typography component="span" sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
-                                    <Tooltip title={!listing.booked_previously ? "Book this listing to be able to like it" : "Click to like"}>
-                                        <span>
-                                            <IconButton onClick={toggleLike} color="error" disabled={!listing.booked_previously}>
-                                                {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                                            </IconButton>
-                                        </span>
-                                    </Tooltip>
-                                    <span>{totalLikes}</span>
-                                </Typography>
-                            </CardActions>
+	}
+	console.log(listing);
 
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box sx={{ height: 400, width: '100%' }}>
-                            <MapContainer center={locations} zoom={15} style={{ height: '100%', width: '100%' }} gestureHandling={true}>
-                                <TileLayer
-                                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                <Marker icon={placeholder} position={locations} />
-                            </MapContainer>
-                        </Box>
-                    </Grid>
-                </Grid>
-            ) : (
-                <Typography variant="h6" align="center">Loading...</Typography>
-            )}
-        </Container>
-    );
+	const toggleLike = async () => {
+		const currentlyLiked = liked;
+		setLiked(!liked);
+		const endpoint = currentlyLiked ? '/dislike' : '/like';
+		setTotalLikes(currentlyLiked ? totalLikes - 1 : totalLikes + 1);
+		try {
+			const data = await fetch(endpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'token': props.token,
+				},
+				body: JSON.stringify({
+					listingId: listing.listingId,
+				}),
+			});
+
+			if (data.error) {
+				setError(data.error);
+				console.log(error)
+			} else {
+				console.log("liked or unliked now")
+			}
+			// Optionally handle the response data if needed
+		} catch (error) {
+			console.error('API call failed:', error);
+			setLiked(currentlyLiked); // Revert the liked state if the API call fails
+		}
+	};
+
+	const validateNumberPlate = (input) => {
+		const isValid = /^[A-Za-z0-9]{6}$/.test(input);
+		setIsNumberPlateValid(isValid);
+	};
+
+	const handleNumberPlateChange = (event) => {
+		const input = event.target.value;
+		setNumberPlate(input);
+		validateNumberPlate(input);
+	};
+
+
+	return (
+		<Container maxWidth="lg">
+			{listing ? (
+				<Grid container spacing={4} mt={2} alignItems="center">
+					<Grid item xs={12} md={7}>
+						<Card sx={{ borderRadius: '16px' }}>
+							<Splide options={{ type: 'fade', rewind: true, width: '100%', gap: '1rem' }}>
+
+								{listing.images && listing.images.length > 0 ? (
+									<>
+										<SplideSlide>
+											<CardMedia
+												component="img"
+												height="450"
+												image={listing.imageUrl || Background}
+												alt="Parking space"
+											/>
+										</SplideSlide>
+
+										{listing.images.map((image, index) => (
+
+											<SplideSlide key={index + 1}>
+												<CardMedia
+													component="img"
+													height="450"
+													image={image}
+													alt="Parking space"
+												/>
+											</SplideSlide>
+										))}
+									</>
+								) : (
+									<CardMedia
+										component="img"
+										height="450"
+										image={listing.imageUrl || Background}
+										alt="Parking space"
+									/>
+								)}
+							</Splide>
+						</Card>
+					</Grid>
+					<Grid item xs={12} md={5} style={{ display: 'flex', flexDirection: 'column' }}>
+						<Card raised sx={{ borderRadius: '16px' }}>
+							<CardContent>
+								<Typography gutterBottom variant="h5" component="div">
+									{listing.address}
+								</Typography>
+								<Typography variant="body2" color="text.secondary">
+									Description: {listing.details}
+								</Typography>
+								<Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+									Restrictions: {listing.restrictions}
+								</Typography>
+								<Typography variant="body1" sx={priceStyle}>
+									Price: ${listing.price}.00/hr
+								</Typography>
+							</CardContent>
+							<CardActions disableSpacing>
+								<TextField
+									label="Number Plate"
+									variant="outlined"
+									value={numberPlate}
+									onChange={handleNumberPlateChange}
+									error={!isNumberPlateValid && numberPlate.length > 0}
+									inputProps={{
+										maxLength: 6,
+										style: { textTransform: 'uppercase' }
+									}}
+									sx={{
+										width: '140px',
+										height: '37px',
+										mr: '7px',
+										'.MuiInputBase-input': {
+											padding: '7px',
+										},
+										'.MuiInputLabel-outlined': {
+											transform: 'translate(14px, 7px) scale(1)',
+										},
+										'& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+											transform: 'translate(14px, -6px) scale(0.75)',
+										}
+									}}
+								/>
+								<Tooltip
+									title={numberPlate.length === 6 && isNumberPlateValid ? "" : (!isNumberPlateValid && numberPlate.length > 0 ? "Invalid number plate" : "Enter 6 character number plate")}
+								>
+									<span>
+										<Button
+											variant="contained"
+											color="primary"
+											onClick={handleBookNow}
+											disabled={!isNumberPlateValid}
+										>
+											Book Now
+										</Button>
+									</span>
+								</Tooltip>
+								<Typography component="span" sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
+									<Tooltip title={!listing.bookedPreviously ? "Book this listing to be able to like it" : "Click to like"}>
+										<span>
+											<IconButton onClick={toggleLike} color="error" disabled={!listing.bookedPreviously}>
+												{liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+											</IconButton>
+										</span>
+									</Tooltip>
+									<span>{totalLikes}</span>
+								</Typography>
+							</CardActions>
+
+						</Card>
+					</Grid>
+					<Grid item xs={12}>
+						<Box sx={{ height: 400, width: '100%' }}>
+							<MapContainer center={locations} zoom={15} style={{ height: '100%', width: '100%' }} gestureHandling={true}>
+								<TileLayer
+									attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+								/>
+								<Marker icon={placeholder} position={locations} />
+							</MapContainer>
+						</Box>
+					</Grid>
+				</Grid>
+			) : (
+				<Typography variant="h6" align="center">Loading...</Typography>
+			)}
+		</Container>
+	);
 }
 
 export default ListingPage;

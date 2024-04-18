@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 function FileInputField({ multiple, setImage, content, required, color, onChange, inputRef, images }) {
-	let handleChange = (e) => {
+	let handleChange = () => {
 		setImage(images);
 	};
 	if (onChange) {
