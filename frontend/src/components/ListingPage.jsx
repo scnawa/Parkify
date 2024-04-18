@@ -114,7 +114,11 @@ function ListingPage(props) {
 			fetchPayment().then((data) => {
 				setDefaultPayment(data['defaultPayment']);
 				return;
-			}).catch(alert);
+			}).catch((error) => { 
+                if (window.confirm("You need to provide at least one payment method before booking. Redirect now?")) {
+                    navigate("/managePayment");
+                }
+            });
 		}
 
 		// Cleanup function to abort fetch on component unmount
@@ -133,7 +137,10 @@ function ListingPage(props) {
 			return;
 		}
 		if (!defaultPayment) {
-			alert("Please provide customer's payment method before booking");
+            if (window.confirm("You need to provide at least one payment method before booking. Redirect now?")) {
+                navigate("/managePayment");
+                return;
+            }
 			return;
 		}
 		const listingNo = listing.listingNo;

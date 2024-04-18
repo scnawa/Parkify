@@ -101,7 +101,7 @@ function EditListings(props) {
         };
         fetchDelete().then((res) => {
             if (props.isAdmin) {
-                navigate('/adminViewListings', { state: { token: state.token } });
+                navigate('/adminViewListings', { state: { token: state.token, email: state.email } });
             } else {
                 navigate('/myListing');
             }
