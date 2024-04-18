@@ -18,8 +18,6 @@ const theme = createTheme({
 });
 function MyListings(props) {
 	const token = props.token;
-	console.log("mylistings " + token)
-	//const [token, setToken] = React.useState(localStorage.getItem('token'));
 	const [listings, setListings] = React.useState([]);
 	const navigate = useNavigate();
 	React.useEffect(() => {
@@ -81,16 +79,14 @@ function MyListings(props) {
 		};
 
 		fetchStripeStatus().then((data) => {
-			console.log(data);
 			if (data["stripeConnected"] === false) {
-				alert("Redirecting to update provider details");
-
-				rentOutInfoOnclick(props);
-				return;
+				if (window.confirm("You need to update provider details to continue. Redirect now?")) {
+					rentOutInfoOnclick(props);
+					return;
+				} else {
+					navigate(-1)
+				}
 			} else {
-				console.log(data);
-
-				console.log("wrong");
 				return fetchListings();
 			}
 		}).catch((e) => {

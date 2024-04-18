@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import CreateListings from './components/CreateListings';
 import NavBar from './components/NavBar';
 import Login from './components/Login';
@@ -32,7 +32,6 @@ const PageList = (props) => {
 	const [email, setEmail] = React.useState(localStorage.getItem('email'));
 	const [listings, setListings] = useState([]);
 	const [totalPage, setTotalPage] = useState(1);
-	const [listingDetails, setListingDetails] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false)
 
 	React.useEffect(() => {
@@ -57,9 +56,6 @@ const PageList = (props) => {
 		}
 	}, [token]);
 
-
-	const navigate = useNavigate();
-	//console.log(token, localStorage.getItem('token'));
 	return (
 		<>
 			<NavBar token={token} setToken={setToken} setListings={setListings}
@@ -70,7 +66,7 @@ const PageList = (props) => {
 				<Route path="/myListing" element={<MyListings token={token} email={email} />} />
 				<Route path="/editListings" element={<EditListings isAdmin={isAdmin} />} />
 				<Route path="/alllistings" element={<AllListings isAdmin={isAdmin} token={token} listings={listings} email={email} totalPage={totalPage} />} />
-				<Route path="/listing/:listingId" element={<ListingPage isAdmin={isAdmin} token={token} listingDetails={listingDetails} email={email} />} />
+				<Route path="/listing/:listingId" element={<ListingPage isAdmin={isAdmin} token={token} email={email} />} />
 				<Route path="/book" element={<Booking token={token} />} />
 				<Route path="/timer" element={<TimerPage token={token} />} />
 				<Route path="/park-end" element={<ParkEnd token={token} />} />

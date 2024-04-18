@@ -1,4 +1,4 @@
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import PaymentForm from './PaymentForm';
@@ -7,7 +7,6 @@ import PaymentForm from './PaymentForm';
 function Payment(props) {
     const navigate = useNavigate();
     const [clientSecret, setClientSecret] = useState("");
-    const [errorMessage, setErrorMessage] = useState(null);
 
     React.useEffect(() => {
         if (!props.token) {
@@ -38,6 +37,7 @@ function Payment(props) {
         fetchClinetSecret().then((data) => {
             setClientSecret(data["clientSecret"]);
         }).catch(alert);
+        // eslint-disable-next-line
     }, []);
     const options = {
         clientSecret: clientSecret,

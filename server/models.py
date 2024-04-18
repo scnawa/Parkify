@@ -478,7 +478,8 @@ class User:
 
     # takes listing off page
     def holdListing(self, userData):
-        
+        user = db.userbaseData.find_one({"email": 'test@example.com'})
+        print(user)
         # check if the user exists
         user = db.userbaseData.find_one({"sessionId": userData['token']})
         # check if the listing exists
@@ -889,7 +890,6 @@ class User:
         user = db.userbaseData.find_one({"sessionId": headers['token']})
 
         # check if the listing exists
-
         listingData = db.listingData.find_one({"listingId": headers["listingId"]})
         if user: 
             listingData['bookedPreviously'] = False

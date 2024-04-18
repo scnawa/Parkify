@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
@@ -75,7 +74,6 @@ const searchBarStyle = {
 
 }
 
-const font1 = "'Nunito Sans', sans-serif";
 export function rentOutInfoOnclick(props) {
 	const fetchAccountLink = async () => {
 		try {
@@ -111,7 +109,6 @@ function NavBar(props) {
 	const setToken = props.setToken;
 	const isAdmin = props.isAdmin;
 	const setIsAdmin = props.setIsAdmin;
-	const email = props.email;
 	const setEmail = props.setEmail;
 	const location = useLocation();
 	const [pages, setPages] = React.useState(['My Parking Spaces']);
@@ -173,7 +170,8 @@ function NavBar(props) {
 				setnotiLocation(null);
 				navigate("/");
 				break;
-
+			default:
+				break;
 		}
 	}
 	const profileOnClick = (event) => {
@@ -220,20 +218,16 @@ function NavBar(props) {
 		setUserMenuLocation(null);
 		setnotiLocation(null);
 		navigate("/adminDisputes");
-
 	}
+
 	const signUpOnclick = (event) => {
 		navigate("/signup");
 	}
-	const notiLocationClose = (event) => {
-		setnotiLocation(null);
-	};
 
 	const handleSearchSubmit = async (event) => {
 		event.preventDefault();
 		try {
-			if (searchQuery != "") {
-				console.log("here");
+			if (searchQuery !== "") {
 				const response = await fetch('http://localhost:8080/searchForSpace', {
 					method: 'GET',
 					headers: {

@@ -37,10 +37,6 @@ const priceStyle = {
 	marginTop: 3,
 };
 
-const availabilityStyle = {
-	color: '#2e7d32',
-};
-
 function ListingPage(props) {
 	const navigate = useNavigate();
 	// eslint-disable-next-line
@@ -165,7 +161,6 @@ function ListingPage(props) {
 
 			if (response.ok) {
 				navigate('/book', { state: { listingId, listingNo, numberPlate } });
-				//console.log("booked")
 			} else {
 				alert("Failed to book")
 				console.error('Failed to hold listing');

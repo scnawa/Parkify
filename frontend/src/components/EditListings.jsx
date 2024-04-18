@@ -121,7 +121,7 @@ function EditListings(props) {
             }
             const fetchListings = async () => {
                 try {
-                    const response = await fetch('http://localhost:' + '8080/' + 'update_listing', {
+                    const response = await fetch('http://localhost:8080/update_listing', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ function EditListings(props) {
         // i handled the multiple images upload similarly in my comp6080 assignment 4
         // since this part of code is general and i don't know another way to do it
         Promise.allSettled(imagePromises).then((results) => {
-            return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
+            return results.filter((promise) => promise.status === "fulfilled").map((promise) => promise.value);
         }).then((newImages) => {
             handleChange('images')([...listing.images, ...newImages]);
             imagesRef.current = "";
@@ -186,7 +186,7 @@ function EditListings(props) {
     }
     const handleImageDelete = (removeIndex) => {
         setImagesFiles('');
-        handleChange('images')(listing.images.filter((_, index) => index != removeIndex));
+        handleChange('images')(listing.images.filter((_, index) => index !== removeIndex));
     }
 
     return (
@@ -218,7 +218,7 @@ function EditListings(props) {
                         {listing.imageUrl ? (
                             <>
                                 <ImageListItem>
-                                    <img src={listing.imageUrl} style={{ 'height': '200px', 'object-fit': 'cover' }} />
+                                    <img alt="thumbnail" src={listing.imageUrl} style={{ 'height': '200px', 'object-fit': 'cover' }} />
 
                                     <ImageListItemBar
                                         title="thumbnail"
@@ -237,13 +237,13 @@ function EditListings(props) {
                             </>
                         ) : null}
                         <FileInputField multiple={true} color="green" onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" images={imagesFiles} />
-                        {listing.images && listing.images.length != 0 ? (
+                        {listing.images && listing.images.length !== 0 ? (
                             <>
                                 <ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
 
                                     {listing.images.map((image, index) => (
                                         <ImageListItem key={image}>
-                                            <img src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
+                                            <img alt="additional" src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
                                             <ImageListItemBar
                                                 title={"images" + index}
                                                 actionIcon={

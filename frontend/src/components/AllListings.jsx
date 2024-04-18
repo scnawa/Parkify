@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Divider, Card, CardMedia, CardContent, CardActions, TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
+import { Divider, TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -53,7 +53,7 @@ const theme = createTheme({
 function PanMap(props) {
 	const map = useMap();
 	const userLocation = props.userLocation;
-	if (userLocation[0] != -33.9062434 && userLocation[1] != 151.23465683738365) {
+	if (userLocation[0] !== -33.9062434 && userLocation[1] !== 151.23465683738365) {
 		map.panTo(new L.LatLng(userLocation[0], userLocation[1]));
 	}
 	return null;
@@ -104,6 +104,7 @@ function AllListings(props) {
 				})
 				.catch(error => console.error(error));
 		}
+		// eslint-disable-next-line
 	}, []);
 
 
@@ -133,6 +134,7 @@ function AllListings(props) {
 				}
 			})
 			.catch(error => console.error(error));
+		// eslint-disable-next-line
 	}, [curPage]);
 	useEffect(() => {
 		if (navigator.geolocation) {
@@ -163,6 +165,7 @@ function AllListings(props) {
 			setPriceOrder('');
 			setDistance('')
 		}
+		// eslint-disable-next-line
 	}, [props.listings]);
 
 	useEffect(() => {
@@ -187,6 +190,7 @@ function AllListings(props) {
 				})
 				.catch(error => console.error(error));
 		}
+		// eslint-disable-next-line
 	}, []);
 
 	const handlePriceOrderChange = (event) => {
