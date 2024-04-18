@@ -422,8 +422,7 @@ class User:
 
     def getAllUsers(self, headers):
         query = {
-            "isAdmin": {"$ne": True}, 
-            "isVerified": {"$ne": False} 
+            "isAdmin": {"$ne": True}
         }
         projection = {"_id": 0, "username": 1, "email": 1}
 

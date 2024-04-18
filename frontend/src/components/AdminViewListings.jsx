@@ -9,7 +9,9 @@ function AdminViewListings(props) {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [users, setUsers] = useState([]);
 	const location = useLocation();
-	const { token } = location.state || {};
+  // eslint-disable-next-line
+	const { token, email } = location.state || {};
+  // dont remove token above due to usestate 
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -23,8 +25,8 @@ function AdminViewListings(props) {
 				const data = await response.json();
 				setUsers(data.map(user => ({ ...user, label: `${user.username} (${user.email})` })));
 
-				if (token) {
-					const userWithEmail = data.find(user => user.sessionId.any((id) => (id === token)));
+				if (email) {
+					const userWithEmail = data.find(user => user.email === email);
 					if (userWithEmail) {
 						setSelectedUser({ ...userWithEmail, label: `${userWithEmail.username} (${userWithEmail.email})` });
 					}
@@ -34,7 +36,7 @@ function AdminViewListings(props) {
 			}
 		};
 		fetchData();
-	}, [token]);
+	}, [email]);
 
 	const handleUserChange = (_, newValue) => {
 		setSelectedUser(newValue);
