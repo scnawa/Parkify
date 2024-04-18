@@ -98,7 +98,7 @@ export function rentOutInfoOnclick(props) {
 		}
 	};
 	fetchAccountLink().then((data) => {
-		let link = data["account_link"];
+		let link = data["accountLink"];
 		window.location.href = link;
 	}).catch(alert);
 }
@@ -280,8 +280,8 @@ function NavBar(props) {
 									alt="Parkify logo"
 									style={{
 										cursor: 'pointer',
-										width: '100px',  
-										height: 'auto', 
+										width: '100px',
+										height: 'auto',
 										marginRight: '0.5rem',
 									}}
 									onClick={() => {
@@ -361,8 +361,8 @@ function NavBar(props) {
 										<NotificationsNoneOutlinedIcon />
 
 									</IconButton>
-									<Modal 
-										isOpen={notiLocation} 
+									<Modal
+										isOpen={notiLocation}
 										setnotiLocation={setnotiLocation}
 									>
 									</Modal>

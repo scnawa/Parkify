@@ -82,7 +82,7 @@ function MyListings(props) {
 
 		fetchStripeStatus().then((data) => {
 			console.log(data);
-			if (data["stripe_connected"] === false) {
+			if (data["stripeConnected"] === false) {
 				alert("Redirecting to update provider details");
 
 				rentOutInfoOnclick(props);
@@ -123,7 +123,7 @@ function MyListings(props) {
 				</Box>
 				<List sx={{ width: '100%' }}>
 					{listings.map((listing, index) => (
-						<ListItem key={listing.listing_id} sx={{
+						<ListItem key={listing.listingId} sx={{
 							my: 0.5,
 							borderRadius: 1,
 							border: 1,

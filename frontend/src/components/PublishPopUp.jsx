@@ -38,12 +38,12 @@ const style = {
 
 function PublishPopUp(props) {
 	const [start, setStart] = useState(
-		(props.listings.start_date) ?
-				dayjs(props.listings.start_date) : dayjs(dayjs().format('MM/DD/YY'))
+		(props.listings.startDate) ?
+			dayjs(props.listings.startDate) : dayjs(dayjs().format('MM/DD/YY'))
 	);
 	const [end, setEnd] = useState(
-		(props.listings.end_date) ?
-				dayjs(props.listings.end_date) : dayjs(dayjs().add(7, 'day').format('MM/DD/YY'))
+		(props.listings.endDate) ?
+			dayjs(props.listings.endDate) : dayjs(dayjs().add(7, 'day').format('MM/DD/YY'))
 	);
 	const popLocation = props.popoverLocation;
 	const setPopOverLocation = props.setPopOverLocation;
@@ -56,10 +56,10 @@ function PublishPopUp(props) {
 		try {
 			const data = {
 				listings: {
-					"listing_id": props.listings.listing_id,
-					"listing_no": props.listings.listing_no,
-					"start_date": start,
-					"end_date": end,
+					"listingId": props.listings.listingId,
+					"listingNo": props.listings.listingNo,
+					"startDate": start,
+					"endDate": end,
 
 				}
 			}
@@ -97,8 +97,8 @@ function PublishPopUp(props) {
 			try {
 				const data = {
 					listings: {
-						"listing_id": props.listings.listing_id,
-						"listing_no": props.listings.listing_no,
+						"listingId": props.listings.listingId,
+						"listingNo": props.listings.listingNo,
 					}
 				}
 				const response = await fetch('http://localhost:8080/deactivate_listing', {
@@ -136,46 +136,46 @@ function PublishPopUp(props) {
 	return (<>
 		<ThemeProvider theme={theme}>
 
-		<Popover
-			id={id}
-			open={isTriggered}
-			anchorEl={popLocation}
-			onClose={popoverOnClose}
-			anchorOrigin={{
-				vertical: 'bottom',
-				horizontal: 'left',
-			}}
-      	>
-			<div 
-				style={{
-					width: '300px', 
-					height: '300px',
+			<Popover
+				id={id}
+				open={isTriggered}
+				anchorEl={popLocation}
+				onClose={popoverOnClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'left',
 				}}
 			>
-					<Box display='flex' sx={{ flexDirection:'column', justifyContent:'space-around', alignItems: 'center',rowGap:'2px', marginTop:'35px'}}>
-						<div style={{ 
-							display:'flex',
-							flexDirection:'column',
-							justifyContent:'space-around',
+				<div
+					style={{
+						width: '300px',
+						height: '300px',
+					}}
+				>
+					<Box display='flex' sx={{ flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', rowGap: '2px', marginTop: '35px' }}>
+						<div style={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'space-around',
 							alignItems: 'center',
-							rowGap:'15px'
+							rowGap: '15px'
 						}}>
 							<LocalizationProvider dateAdapter={AdapterDayjs}>
 								<DatePicker value={start} onChange={(input) => setStart(input)} />
 							</LocalizationProvider>
-							<Typography variant="button" display="block" gutterBottom sx={{justifySelf:'center'}}>to</Typography>
+							<Typography variant="button" display="block" gutterBottom sx={{ justifySelf: 'center' }}>to</Typography>
 							<LocalizationProvider dateAdapter={AdapterDayjs}>
 								<DatePicker value={end} onChange={(input) => setEnd(input)} />
 							</LocalizationProvider>
 						</div>
 
-						<div style={{ 
-							display:'flex',
-							flexDirection:'column',
-							justifyContent:'space-between',
-							rowGap:'10px',
-							marginTop:'30px'
-							}}
+						<div style={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'space-between',
+							rowGap: '10px',
+							marginTop: '30px'
+						}}
 						>
 							{!activated &&
 								<Button variant="contained" onClick={publishOnClick} >

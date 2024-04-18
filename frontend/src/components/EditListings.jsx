@@ -74,8 +74,8 @@ function EditListings(props) {
         const fetchDelete = async () => {
             const data = {
                 listings: {
-                    "listing_id": listing.listing_id,
-                    "listing_no": listing.listing_no
+                    "listingId": listing.listingId,
+                    "listingNo": listing.listingNo
                 }
             }
             try {
@@ -110,13 +110,13 @@ function EditListings(props) {
 
     const submitForm = (e) => {
         e.preventDefault();
-        uploadFile(listing.image_url).then((url) => {
-            const new_listing = { ...listing };
-            new_listing["image_url"] = url;
+        uploadFile(listing.imageUrl).then((url) => {
+            const newListing = { ...listing };
+            newListing["imageUrl"] = url;
             const data = {
                 token: state.token,
                 listings: {
-                    ...new_listing
+                    ...newListing
                 }
             }
             const fetchListings = async () => {
@@ -154,14 +154,14 @@ function EditListings(props) {
     }
     const handleChange = (field) => {
         return (value) => {
-            const new_listing = { ...listing };
-            new_listing[field] = value;
-            setListing(new_listing);
+            const newListing = { ...listing };
+            newListing[field] = value;
+            setListing(newListing);
         }
     }
     const handleThubnailChange = (e) => {
         setThumbnailFile(e.target.value);
-        uploadFile(e.target.files[0]).then((url) => { handleChange('image_url')(url); }).then(() => {
+        uploadFile(e.target.files[0]).then((url) => { handleChange('imageUrl')(url); }).then(() => {
             thumbnailRef.current = "";
         }
         ).catch(alert);
@@ -174,15 +174,15 @@ function EditListings(props) {
         // since this part of code is general and i don't know another way to do it
         Promise.allSettled(imagePromises).then((results) => {
             return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
-        }).then((new_images) => {
-            handleChange('images')([...listing.images, ...new_images]);
+        }).then((newImages) => {
+            handleChange('images')([...listing.images, ...newImages]);
             imagesRef.current = "";
         }).catch(alert);
     }
 
     const handleThumbnailDelete = () => {
         setThumbnailFile('');
-        handleChange('image_url')('');
+        handleChange('imageUrl')('');
     }
     const handleImageDelete = (removeIndex) => {
         setImagesFiles('');
@@ -215,10 +215,10 @@ function EditListings(props) {
                         {/* <CheckBoxInput setCheckBox={setAmenties} checkBox={amenties} description="" /> */}
                         <p></p>
                         <FileInputField multiple={false} color="green" onChange={handleThubnailChange} inputRef={thumbnailRef} content="Upload Thumbnail" images={thumbnailFile} />
-                        {listing.image_url ? (
+                        {listing.imageUrl ? (
                             <>
                                 <ImageListItem>
-                                    <img src={listing.image_url} style={{ 'height': '200px', 'object-fit': 'cover' }} />
+                                    <img src={listing.imageUrl} style={{ 'height': '200px', 'object-fit': 'cover' }} />
 
                                     <ImageListItemBar
                                         title="thumbnail"

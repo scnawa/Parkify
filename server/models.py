@@ -762,7 +762,7 @@ class User:
                 # return_url="https://localhost:3000/paymentAddedSuccess",
                 # confirm=True
             )
-            return jsonify({"client_secret":intent.client_secret})
+            return jsonify({"clientSecret":intent.client_secret})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     # https://docs.stripe.com/connect/testing#creating-accounts
@@ -781,7 +781,7 @@ class User:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'isStripeConnected': True}}
                 db.userbase_data.update_one(filter, newvalues)
-            return jsonify({"account_link":link.url})
+            return jsonify({"accountLink":link.url})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
         user = db.userbase_data.find_one({"sessionId": userData['token']})
@@ -794,7 +794,7 @@ class User:
             if not account.payouts_enabled:
                 return jsonify({"type": "User", "error": "Please provide or update provider details"}), 402
 
-            return jsonify({"stripe_connected":user["isStripeConnected"]})
+            return jsonify({"stripeConnected":user["isStripeConnected"]})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def allCardList(self, userData):

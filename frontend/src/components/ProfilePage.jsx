@@ -25,7 +25,7 @@ const ProfilePage = (props) => {
                     email: userData.email,
                     name: userData.username,
                 });
-                setProfilePicture(userData.profile_picture)
+                setProfilePicture(userData.profilePicture)
             } catch (error) {
                 console.error('Error fetching user:', error);
             }
@@ -52,7 +52,7 @@ const ProfilePage = (props) => {
                 body: JSON.stringify({
                     username: formData.name,
                     email: formData.email,
-                    profile_picture: profilePicture,
+                    profilePicture: profilePicture,
                 }),
             });
 

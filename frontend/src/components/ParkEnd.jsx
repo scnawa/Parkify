@@ -34,7 +34,7 @@ function ParkEnd() {
 
     const timer = location.state ? location.state.timer : 0;
     const navigate = useNavigate();
-    const { listing_id, ListingNo } = location.state || {};
+    const { listingId, ListingNo } = location.state || {};
 
     React.useEffect(() => {
         if (!token) {
@@ -48,27 +48,11 @@ function ParkEnd() {
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     };
 
-    // testing data
-    // const data = {
-    //     "listings": {
-    //         "listing_no":1,
-    //         'price':7,
-    //         "listing_id":'5998000f7717462684933a534f806d6c',
-
-    //     },
-    //     "booking": {
-    //         "listing_id":'5998000f7717462684933a534f806d6c',
-    //         "total_time":2,
-    //         "feedback": "good",
-    //         "end_image_url": "example.png",
-    //         "recentbooking_no":0,
-    //     },
-    // }
     const handlePayment = (e) => {
         e.preventDefault();
         uploadFile(thumbnail).then((url) => {
             const data = {
-                "listingId": listing_id,
+                "listingId": listingId,
                 "listingNo": ListingNo,
                 "totalTime": timer,
                 "feedback": feedback,
