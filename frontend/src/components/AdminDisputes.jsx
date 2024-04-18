@@ -13,6 +13,7 @@ function AdminDisputes(props) {
 
 	useEffect(() => {
 		fetchData();
+		// eslint-disable-next-line
 	}, [props.token]);
 
 	useEffect(() => {
@@ -24,6 +25,7 @@ function AdminDisputes(props) {
 		}
 		filtered.sort((a, b) => a.resolved - b.resolved);
 		setFilteredDisputes(filtered);
+		// eslint-disable-next-line
 	}, [disputes, filter]);
 
 	const fetchData = async () => {

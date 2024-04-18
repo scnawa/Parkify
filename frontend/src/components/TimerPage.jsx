@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { DigitalClock } from '@mui/x-date-pickers/DigitalClock';
 import { Paper, Button, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import Typography from '@mui/material/Typography';
@@ -20,7 +19,8 @@ function TimerPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [timer, setTimer] = useState(0);
-	const [token, setToken] = React.useState(localStorage.getItem('token'));
+	// eslint-disable-next-line
+	const [token, _] = React.useState(localStorage.getItem('token'));
 
 	const { listingId, listingNo } = location.state || {};
 	useEffect(() => {
@@ -61,6 +61,7 @@ function TimerPage() {
 		return () => {
 			clearInterval(intervalId);
 		};
+		// eslint-disable-next-line
 	}, []);
 
 	const handleEndBooking = () => {
@@ -106,7 +107,7 @@ function TimerPage() {
 		<ThemeProvider theme={theme}>
 			<div style={{
 				backgroundSize: "cover",
-				height: "70vh",
+				height: "80vh",
 				marginTop: '10px'
 			}}>
 				<Paper elevation={4}
@@ -115,29 +116,17 @@ function TimerPage() {
 						margin: 'auto',
 						maxWidth: "md",
 						height: '100%',
-						display: 'flex',
-						flexDirection: 'column',
-						justifyContent: 'space-between'
 					}}
 				>
-					<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black', alignSelf: 'start' }}>
+
+					<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
 						Your Booking is Underway
 					</Typography>
-					<div style={{ position: 'relative', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>  {/* Adjust height as needed */}
-						<Typography variant="h3" display="block" gutterBottom color="green.dark" style={{
-							position: 'absolute',
-							top: '-145px',
-							left: '50%',
-							transform: 'translateX(-50%)'
-						}}>
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '25vh' }}>  {/* Adjust height as needed */}
+						<Typography variant="h3" display="block" gutterBottom color="green.dark">
 							TIMER: {formatTime(timer)}
 						</Typography>
-						<div style={{
-							position: 'absolute',
-							top: '-60px',
-							left: '50%',
-							transform: 'translateX(-50%)'
-						}}>
+						<div>
 							<Button variant="contained" color="green" onClick={handleEndBooking}>End Booking</Button>
 						</div>
 					</div>

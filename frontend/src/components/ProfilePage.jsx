@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Grid, Typography, TextField, Button, Avatar, Stack } from '@mui/material';
-import Logout from './logout';
+import { Box, Typography, TextField, Button, Avatar, Stack } from '@mui/material';
 import GetUser from './GetUser';
 import defaultProfilePicture from '../../src/assets/user.png';
 import { uploadFile } from './CreateListings';
@@ -21,6 +20,7 @@ const ProfilePage = (props) => {
         const fetchData = async () => {
             try {
                 const userData = await GetUser(props.token, props.email);
+                console.log(userData);
                 setFormData({
                     email: userData.email,
                     name: userData.username,
@@ -32,6 +32,7 @@ const ProfilePage = (props) => {
         };
 
         fetchData();
+        // eslint-disable-next-line
     }, [props.token]);
 
     const handleInputChange = (e) => {

@@ -479,7 +479,8 @@ class User:
 
     # takes listing off page
     def holdListing(self, userData):
-        
+        user = db.userbaseData.find_one({"email": 'test@example.com'})
+        print(user)
         # check if the user exists
         user = db.userbaseData.find_one({"sessionId": userData['token']})
         # check if the listing exists
@@ -780,7 +781,7 @@ class User:
             if user["isStripeConnected"]  == False:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'isStripeConnected': True}}
-                db.userbase_data.update_one(filter, newvalues)
+                db.userbaseData.update_one(filter, newvalues)
             return jsonify({"accountLink":link.url})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
@@ -890,7 +891,6 @@ class User:
         user = db.userbaseData.find_one({"sessionId": headers['token']})
 
         # check if the listing exists
-
         listingData = db.listingData.find_one({"listingId": headers["listingId"]})
         if user: 
             listingData['bookedPreviously'] = False

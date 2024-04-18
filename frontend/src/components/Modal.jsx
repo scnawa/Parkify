@@ -5,7 +5,8 @@ import NotificationComponent from './Notifications';
 
 const Modal = ({ isOpen, setnotiLocation }) => {
 	const [notifications, setNotifications] = useState([]);
-	const [token, setToken] = React.useState(localStorage.getItem('token'));
+	// eslint-disable-next-line
+	const [token, _] = React.useState(localStorage.getItem('token'));
 
 	useEffect(() => {
 		const fetchNotifications = async () => {
@@ -32,6 +33,7 @@ const Modal = ({ isOpen, setnotiLocation }) => {
 		if (isOpen) {
 			fetchNotifications();
 		}
+		// eslint-disable-next-line
 	}, [isOpen]);
 
 	const closeModal = () => {

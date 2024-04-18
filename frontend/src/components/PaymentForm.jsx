@@ -1,5 +1,4 @@
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useState } from "react";
 import { Paper, Button, createTheme } from '@mui/material';
 import { ThemeProvider } from "@emotion/react";
 
@@ -18,10 +17,9 @@ const theme = createTheme({
 // the whole component is from https://docs.stripe.com/payments/save-and-reuse?platform=web&ui=elements
 // since i am using the api service so the below code of handling the form is directly provided by the api
 // and i can't modify it except the mui and css stuffs i added
-function PaymentForm(props) {
+function PaymentForm() {
 	const elements = useElements();
 	const stripe = useStripe();
-	const [errorMessage, setErrorMessage] = useState(null);
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
@@ -38,7 +36,7 @@ function PaymentForm(props) {
 		});
 
 		if (error) {
-			setErrorMessage(error.message);
+			alert(error.message);
 		} else {
 		}
 	};
