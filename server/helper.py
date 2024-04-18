@@ -1,5 +1,3 @@
-# first commit
-
 from email.message import EmailMessage
 import ssl
 import smtplib

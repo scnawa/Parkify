@@ -1,11 +1,9 @@
 #first commit 
-import sys
 import json
 from json import dumps
-from flask import Flask, request, send_from_directory, session, redirect
+from flask import Flask, request
 from functools import wraps
 from flask_cors import CORS
-from error import InputError
 import config
 from pymongo import MongoClient
 import certifi
