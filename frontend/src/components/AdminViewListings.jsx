@@ -53,10 +53,10 @@ function AdminViewListings(props) {
 				renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" />}
 			/>
 			{selectedUser && (
-				<ProfilePage token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
+				<ProfilePage key={`profile-${selectedUser.email}`} token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
 			)}
 			{selectedUser && (
-				<MyListings key={selectedUser.email} token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
+				<MyListings key={`listings-${selectedUser.email}`} token={props.token} email={selectedUser.email} isAdmin={props.isAdmin} username={selectedUser.username} />
 			)}
 		</div>
 	);
