@@ -110,7 +110,7 @@ def makeDf(db):
     
 
 def preprocessData(db): 
-    userbase = db.userbase_data.find()
+    userbase = db.userbaseData.find()
     preprocessedData = []
     for user in userbase: 
         if 'isAdmin' not in user:
