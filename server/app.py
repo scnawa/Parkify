@@ -60,7 +60,7 @@ def signup():
     return config.User().signup(userData)
 
 @APP.route('/signup/verify', methods = ['POST'])
-def verify_email(): 
+def verifyEmail(): 
     userData = json.loads(request.data)
     username = config.User().getUsername(userData)
     return helper.sendVerificationEmail(userData['email'], username, 'verification')
@@ -78,9 +78,9 @@ def logout():
     return config.User().logout(userData)
 
 @APP.route('/deleteAccount', methods = ['DELETE'])
-def delete_account(): 
+def deleteAccount(): 
     userData = json.loads(request.data)
-    return config.User().delete_account(userData)
+    return config.User().deleteAccount(userData)
 
 @APP.route('/resetPass', methods = ['POST'])
 def resetPass():
@@ -96,55 +96,55 @@ def resetPass():
 
 
 @APP.route('/create_listing', methods = ['PUT'])
-def create_listing(): 
+def createListing(): 
     userData = json.loads(request.data)
-    return config.User().create_listing(userData)
+    return config.User().createListing(userData)
 
 @APP.route('/deactivate_listing', methods = ['POST'])
-def deactivate_listing(): 
+def deactivateListing(): 
     headers = request.headers
 
     userData = json.loads(request.data)
-    return config.User().deactivate_listing(userData, headers)
+    return config.User().deactivateListing(userData, headers)
 
 @APP.route('/activate_listing', methods = ['POST'])
-def activate_listing(): 
+def activateListing(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().activate_listing(userData, headers)
+    return config.User().activateListing(userData, headers)
 
 @APP.route('/delete_listing', methods = ['DELETE'])
-def delete_listing():
+def deleteListing():
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().delete_listing(userData, headers)
+    return config.User().deleteListing(userData, headers)
 
 @APP.route('/update_listing', methods = ['POST'])
-def update_listing(): 
+def updatelisting(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().update_listing(userData, headers)
+    return config.User().updatelisting(userData, headers)
 
 @APP.route('/get_listings', methods = ['GET'])
-def get_listings(): 
+def getListings(): 
     headers = request.headers
 
-    return config.User().get_listings(headers)
+    return config.User().getListings(headers)
 
 @APP.route('/get_all_users', methods = ['GET'])
-def get_all_users(): 
+def getAllUsers(): 
     headers = request.headers
 
-    return config.User().get_all_users(headers)
+    return config.User().getAllUsers(headers)
 
 @APP.route('/get_listing', methods = ['GET'])
-def get_listing(): 
+def getListing(): 
     userData = request.headers
-    return config.User().get_listing(userData)
+    return config.User().getListing(userData)
 
 @APP.route('/getAllListings', methods = ['GET'])
-def get_all_listings(): 
-    return config.User().get_all_listings()
+def getAllListings(): 
+    return config.User().getAllListings()
 
 @APP.route('/getUserInfo', methods=['GET'])
 def getUserInfo(): 
@@ -158,30 +158,30 @@ def closestListing():
     return config.User().getClosestListings(userData)
 
 @APP.route('/hold_listing', methods = ['POST'])
-def hold_listing(): 
+def holdListing(): 
     userData = json.loads(request.data)
-    return config.User().hold_listing(userData)
+    return config.User().holdListing(userData)
 
 @APP.route('/release_listing', methods = ['POST'])
-def release_listing(): 
+def releaseListing(): 
     userData = json.loads(request.data)
-    return config.User().release_listing(userData)
+    return config.User().releaseListing(userData)
 
 @APP.route('/create_booking', methods = ['POST'])
-def create_booking(): 
+def createBooking(): 
     userData = json.loads(request.data)
-    return config.User().create_booking(userData)
+    return config.User().createBooking(userData)
 
 @APP.route('/remove_recentbooking', methods = ['POST'])
-def remove_recentbooking(): 
+def removeRecentBooking(): 
     userData = json.loads(request.data)
-    return config.User().remove_recentbooking(userData)
+    return config.User().removeRecentBooking(userData)
 
 @APP.route('/end_booking', methods = ['POST'])
-def end_booking():
+def endBooking():
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().end_booking(headers, userData)
+    return config.User().endBooking(headers, userData)
 
 @APP.route('/searchForSpace', methods = ['GET'])
 def searchForSpace(): 
@@ -194,7 +194,7 @@ def filterByPriceAndDistance():
     return config.User().filterByPriceAndDistance(userData)
 
 @APP.route('/addPaymentMethod', methods=['POST'])
-def pay_booking(): 
+def payBooking(): 
     userData = request.headers
     return config.User().addPaymentMethod(userData)
 @APP.route('/providerDetails', methods=['POST'])
@@ -230,62 +230,53 @@ def testPay():
     userData = request.headers
     return config.User().testPay(userData)
 
-# @APP.route('/providePaymentDetails', methods=['POST'])
-# def pay_booking(): 
-#     userData = request.headers
-#     return config.User().providePaymentDetails(userData)
-
-# @APP.route('/payment', methods=['POST'])
-# def pay_booking(): 
-#     userData = request.headers
-#     return config.User().pay_booking(userData)
 @APP.route('/getSpecificListing', methods = ['GET'])
-def get_specific_listing(): 
+def getSpecificListing(): 
     userData = request.headers
-    return config.User().get_specific_listing(userData)
+    return config.User().getSpecificListing(userData)
 
 @APP.route('/getPreBookingTime', methods = ['GET'])
-def get_pre_booking_time(): 
+def getPreBookingTime(): 
     userData = request.headers
-    return config.User().get_pre_booking_time(userData)
+    return config.User().getPreBookingTime(userData)
 
 @APP.route('/getBookingTime', methods = ['GET'])
-def get_booking_time(): 
+def getBookingTime(): 
     userData = request.headers
-    return config.User().get_booking_time(userData)
+    return config.User().getBookingTime(userData)
 
 @APP.route('/updateUser', methods = ['POST'])
-def update_user(): 
+def updateUser(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().update_user(userData, headers)
+    return config.User().updateUser(userData, headers)
     
 @APP.route('/createDispute', methods = ['POST'])
-def create_dispute(): 
+def createDispute(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().create_dispute(userData, headers)
+    return config.User().createDispute(userData, headers)
 
 @APP.route('/getEmail', methods = ['GET'])
-def get_email(): 
+def getEmail(): 
     headers = request.headers
-    return config.User().get_email(headers)
+    return config.User().getEmail(headers)
 
 @APP.route('/getDisputes', methods = ['GET'])
-def get_disputes(): 
+def getDisputes(): 
     headers = request.headers
-    return config.User().get_disputes(headers)
+    return config.User().getDisputes(headers)
     
 @APP.route('/getRecentBookings', methods = ['GET'])
-def get_recentBookings(): 
+def getRecentBookings(): 
     userData = request.headers
-    return config.User().get_recentBookings(userData)
+    return config.User().getRecentBookings(userData)
 
 @APP.route('/resolveDispute', methods = ['POST'])
-def resolve_dispute(): 
+def resolveDispute(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().resolve_dispute(userData, headers)
+    return config.User().resolveDispute(userData, headers)
 
 @APP.route('/like', methods=['POST'])
 def like():
@@ -316,9 +307,9 @@ def getNotifs():
     return config.User().getNotifs(headers)
 
 @APP.route('/recommendations', methods=['GET'])
-def make_reco():
+def makeReco():
     headers = request.headers
-    return config.User().make_reco(headers)
+    return config.User().makeReco(headers)
 
 if __name__ == "__main__": 
     APP.run(port = config.port)

@@ -1,41 +1,24 @@
-from copyreg import constructor
 import json
 import math
-from operator import truediv
-from pickle import FALSE, TRUE
-import this
 import threading
-from unittest import result
-from flask import Flask, jsonify, request, session, redirect
-from jinja2 import Undefined
+from flask import jsonify
 from passlib.hash import pbkdf2_sha256
 import uuid
 import helper
-from requests import delete
 from app import db
 import bson.json_util as json_util
-import boto3
-import urllib.request
-from PIL import Image
-import googlemaps
-from operator import length_hint
-import pandas as pd
-import sys
 import geocoder
-from pygtrie import Trie
 import re
 import stripe
 import datetime
 from datetime import date
-import time
 import math
 from sklearn.neighbors import NearestNeighbors
 
 
 class User:
+    # Initialize a threading timer (Unused and requires implementation)
     timer = threading.Timer(0, 'hello')
-    #def __init__(self):
-     #   self.timer = threading.Thread()
     def signup(self, userData): 
         latitude, longitude = geocoder.ip('me').latlng
         user = { 
@@ -44,37 +27,36 @@ class User:
             "listings": userData["listings"], # one list of dictionaries of different listings
             "creditCards" : userData['creditCards'], 
             "email" : userData["email"], 
-            "session_id": [],
+            "sessionId": [],
             "recentBookings": [],
             "isVerified" : False,
             "latitude": latitude,
             "longitude": longitude,
-            "payment_id": "",
-            "payOut_id": "",
-            "default_payment_id":"",
-            "is_stripe_connected": False,
-            "pre_booking_time": "",
-            "current_listing_id": "",
-            "current_listing_no": "",
-            "profile_picture": "", 
-            "liked_listings": [],
+            "paymentId": "",
+            "payOutId": "",
+            "defaultPaymentId":"",
+            "isStripeConnected": False,
+            "preBookingTime": "",
+            "currentListingId": "",
+            "currentListingNo": "",
+            "profilePicture": "", 
+            "likedListings": [],
             "carNumberPlate": "",
             "timer": "",
 
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
-        #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
             return jsonify({'type': "email", "error": "Email already in use"}), 400
         try:
 
-            user_payment = stripe.Customer.create(
+            userPayment = stripe.Customer.create(
                 name = userData['username'],
                 email = userData["email"],
             )
-            user['payment_id'] = user_payment.id
-            user_payOut = stripe.Account.create(
+            user['paymentId'] = userPayment.id
+            userPayOut = stripe.Account.create(
                 type="custom",
                 country="AU",
                 email=userData["email"],
@@ -84,7 +66,7 @@ class User:
                     "au_becs_debit_payments": {"requested": True},
                 },
             )
-            user['payOut_id'] = user_payOut.id
+            user['payOutId'] = userPayOut.id
 
  
         except stripe.error as e:
@@ -107,15 +89,14 @@ class User:
             "username": userData['username'], 
             "password": userData['password'],
             "email" : userData["email"], 
-            "session_id": [],
+            "sessionId": [],
             "isVerified" : True,
             "isAdmin": True,
             "disputes": [],
-            "profile_picture": "", 
+            "profilePicture": "", 
         }
         user['password'] = pbkdf2_sha256.encrypt(
             user['password'])
-        #user = db.userbase_data.find_one(userData[])
         if db.userbase_data.find_one({"email": userData['email']}): 
             return jsonify({'type': "email", "error": "Email already in use"}), 400 
         if db.userbase_data.insert_one(user):
@@ -123,10 +104,10 @@ class User:
             return json_util.dumps({"type": "SUCCESS"})
 
     def checkAdmin(self, headers): 
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
-            is_admin = user.get('isAdmin', False)
-            return jsonify({'isAdmin': is_admin})
+            isAdmin = user.get('isAdmin', False)
+            return jsonify({'isAdmin': isAdmin})
         return jsonify({'isAdmin': False})
 
     def login(self, userData): 
@@ -145,18 +126,13 @@ class User:
                 if user['isVerified'] == False: 
                     return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
                 currentSessionID = uuid.uuid4().hex
-                while user['session_id'].count(currentSessionID) > 0:
+                while user['sessionId'].count(currentSessionID) > 0:
                         currentSessionID = uuid.uuid4().hex
                 # Add session id for the user
-                sessionID_list = user["session_id"]
-                sessionID_list.append(currentSessionID)
+                sessionIDList = user["sessionId"]
+                sessionIDList.append(currentSessionID)
                 # Updating Session ID and adding new Session ID per Device
-                #user["currentSessionID"] = currentSessionID
-                db.userbase_data.update_many({'email': user['email']}, {"$set": {"session_id": sessionID_list},})
-                    # Add current session id to the user
-                #if "isAdmin" in user: 
-                #    if user['isAdmin'] == True: 
-                #        return jsonify({"admin": True}, {"adminInfo" : json_util.dumps(user)})
+                db.userbase_data.update_many({'email': user['email']}, {"$set": {"sessionId": sessionIDList},})
 
                 return json_util.dumps(user)
             else:
@@ -166,19 +142,19 @@ class User:
 
 
     def logout(self, userData): 
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
         if user: 
-            if not user['session_id'].count(userData['currentSessionID']) > 0: 
+            if not user['sessionId'].count(userData['currentSessionID']) > 0: 
                 return jsonify({'error': "Session Does Not Exist"}), 403
-            user['session_id'].remove(userData['currentSessionID'])
+            user['sessionId'].remove(userData['currentSessionID'])
             db.userbase_data.update_one({"email": user['email']}, {
-                                        "$set": {"session_id": user['session_id']}})
+                                        "$set": {"sessionId": user['sessionId']}})
             return jsonify({'status': "PASS"}), 200
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
     
 
-    def delete_account(self, userData): 
-        requester = db.userbase_data.find_one({"session_id": userData['token']})
+    def deleteAccount(self, userData): 
+        requester = db.userbase_data.find_one({"sessionId": userData['token']})
         userInfo = db.userbase_data.find_one({"email": userData['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -188,16 +164,16 @@ class User:
             return jsonify({"type": "email", "error": "No permission"}), 402
 
         # deleting the same listing within the listings DB so ensure syncronised listings across DBs
-        listing_ids = [listing['listing_id'] for listing in userInfo.get('listings', [])]
-        if listing_ids:
-            for listing_id in listing_ids:
-                db.listing_data.delete_one({"listing_id": listing_id})
-        is_admin = userInfo.get('isAdmin', False)
-        if not is_admin:
-            if userInfo["payment_id"] != "":
-                stripe.Customer.delete(userInfo["payment_id"])
-            if userInfo["payOut_id"] != "":
-                stripe.Account.delete(userInfo["payOut_id"])
+        listingIds = [listing['listingId'] for listing in userInfo.get('listings', [])]
+        if listingIds:
+            for listingId in listingIds:
+                db.listingData.delete_one({"listingId": listingId})
+        isAdmin = userInfo.get('isAdmin', False)
+        if not isAdmin:
+            if userInfo["paymentId"] != "":
+                stripe.Customer.delete(userInfo["paymentId"])
+            if userInfo["payOutId"] != "":
+                stripe.Account.delete(userInfo["payOutId"])
             db.userbase_data.delete_one(userInfo)
             return jsonify({'status': "PASS"}), 200
         db.userbase_data.delete_one(userInfo)
@@ -211,10 +187,8 @@ class User:
         return jsonify({"type": "username", "error": "User Does Not Exist"}), 402
     
     
-    def create_listing(self, userData):
-        # check if the user exists
-        # user = db.userbase_data.find_one({"email": userData['email']})
-        requester = db.userbase_data.find_one({"session_id": userData['token']})
+    def createListing(self, userData):
+        requester = db.userbase_data.find_one({"sessionId": userData['token']})
         userInfo = db.userbase_data.find_one({"email": userData['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -226,36 +200,36 @@ class User:
         if userInfo:
 
             listing = {
-                "listing_id": uuid.uuid4().hex,
-                "listing_no": len(userInfo['listings']),
+                "listingId": uuid.uuid4().hex,
+                "listingNo": len(userInfo['listings']),
                 "address": userData['listings']['address'],
                 "price": userData['listings']['price'],
                 "quantity": userData['listings']['quantity'],
                 "details": userData['listings']['details'],
                 "restrictions": userData['listings']['restrictions'],
-                "image_url": userData['listings']['image_url'], 
+                "imageUrl": userData['listings']['imageUrl'], 
                 "images": userData['listings']['images'],
-                "start_date": "",
-                "end_date": "",
-                "is_active": 'False',
+                "startDate": "",
+                "endDate": "",
+                "isActive": 'False',
                 "latitude": float(userData['listings']['lat']),
                 "longitude": float(userData['listings']['lon']),
                 "recentBookings": [], 
                 "likes": 0
             }
 
-            user_listings = userInfo['listings']
-            user_listings.append(listing)
+            userListings = userInfo['listings']
+            userListings.append(listing)
             filter = {'email': userInfo['email']}
-            newvalues = {"$set" : {'listings': user_listings}}
+            newvalues = {"$set" : {'listings': userListings}}
             db.userbase_data.update_one(filter, newvalues)
-            db.listing_data.insert_one(listing)
+            db.listingData.insert_one(listing)
 
-            return json_util.dumps(listing["listing_id"])
+            return json_util.dumps(listing["listingId"])
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def deactivate_listing(self, userData, headers):
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+    def deactivateListing(self, userData, headers):
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -265,36 +239,39 @@ class User:
             return jsonify({"type": "email", "error": "No permission"}), 402
 
         # check if the listing exists
-        user_listings = userInfo.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+        userListings = userInfo.get('listings')
+        # todo
+        listingFound = [i for i in userListings if i["listingId"] == userData["listings"]["listingId"]]
 
         if userInfo:
 
             if listingFound:
-                listing_no = userData["listings"]["listing_no"] 
-                user_listings[listing_no].update({'start_date': "", 'end_date': "", 'is_active': "False"})
+                # todo
+                listingNo = userData["listings"]["listingNo"] 
+                userListings[listingNo].update({'startDate': "", 'endDate': "", 'isActive': "False"})
                 filter = {'email': userInfo['email']}
-                newvalues = {"$set" : {'listings': user_listings}}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
         
                 # updating the same listing within the listings DB so ensure syncronised listings across DBs
-                listing_id = userData["listings"]["listing_id"] 
-                filter = {'listing_id': listing_id}
+                # todo
+                listingId = userData["listings"]["listingId"] 
+                filter = {'listingId': listingId}
                 newvalues = {
                     "$set": {
-                        'start_date': "",
-                        'end_date': "",
-                        'is_active': "False"
+                        'startDate': "",
+                        'endDate': "",
+                        'isActive': "False"
                     }
                 }
-                db.listing_data.update_one(filter, newvalues)
+                db.listingData.update_one(filter, newvalues)
 
                 return json_util.dumps(userInfo)
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def activate_listing(self, userData, headers):
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+    def activateListing(self, userData, headers):
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -303,39 +280,42 @@ class User:
         if requester['email'] != userInfo['email'] and requester['isAdmin'] == False:
             return jsonify({"type": "email", "error": "No permission"}), 402
 
-        # check if the user exists
-        user = db.userbase_data.find_one({"session_id": headers['token']})
         # check if the listing exists
-        user_listings = userInfo.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+        userListings = userInfo.get('listings')
+        # todo
+        listingFound = [i for i in userListings if i["listingId"] == userData["listings"]["listingId"]]
 
         if userInfo:
             if listingFound:
-                
-                listing_no = userData["listings"]["listing_no"] 
-                user_listings[listing_no].update({'start_date': userData['listings']['start_date'], 'end_date': userData['listings']['end_date'], 'is_active': "True"})
+                # todo
+                listingNo = userData["listings"]["listingNo"] 
+                # todo
+                userListings[listingNo].update({'startDate': userData['listings']['startDate'], 'endDate': userData['listings']['endDate'], 'isActive': "True"})
                 filter = {'email': userInfo['email']}
-                newvalues = {"$set" : {'listings': user_listings}}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
 
                 # updating the same listing within the listings DB so ensure syncronised listings across DBs
-                listing_id = userData["listings"]["listing_id"] 
-                filter = {'listing_id': listing_id}
+                # todo
+                listingId = userData["listings"]["listingId"] 
+                filter = {'listingId': listingId}
                 newvalues = {
                     "$set": {
-                        'start_date': userData['listings']['start_date'],
-                        'end_date': userData['listings']['end_date'],
-                        'is_active': "True"
+                        # todo
+                        'startDate': userData['listings']['startDate'],
+                        # todo
+                        'endDate': userData['listings']['endDate'],
+                        'isActive': "True"
                     }
                 }
-                db.listing_data.update_one(filter, newvalues)
+                db.listingData.update_one(filter, newvalues)
 
                 return json_util.dumps(userInfo)
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def delete_listing(self, userData, headers):
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+    def deleteListing(self, userData, headers):
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -345,34 +325,37 @@ class User:
             return jsonify({"type": "email", "error": "No permission"}), 402
 
         # check if the listing exists
-        user_listings = userInfo.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+        userListings = userInfo.get('listings')
+        # todo
+        listingFound = [i for i in userListings if i["listingId"] == userData["listings"]["listingId"]]
         if userInfo: 
             if listingFound: 
-                listing_no = userData["listings"]["listing_no"]
-                listing_length = len(userInfo['listings'])
-                user_listings.remove(user_listings[listing_no])
-                listing_length = len(userInfo['listings'])
-                while listing_no < listing_length:
-                    user_listings[listing_no].update({'listing_no': user_listings[listing_no]['listing_no'] - 1})
-                    listing_no += 1
+                # todo
+                listingNo = userData["listings"]["listingNo"]
+                listingLength = len(userInfo['listings'])
+                userListings.remove(userListings[listingNo])
+                listingLength = len(userInfo['listings'])
+                while listingNo < listingLength:
+                    userListings[listingNo].update({'listingNo': userListings[listingNo]['listingNo'] - 1})
+                    listingNo += 1
                     
                 filter = {'email': userInfo['email']}
-                newvalues = {"$set" : {'listings': user_listings}}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
 
                 # updating the same listing within the listings DB so ensure syncronised listings across DBs
-                listing_id = userData["listings"]["listing_id"]
-                filter = {'listing_id': listing_id}
-                db.listing_data.delete_one(filter)
+                # todo
+                listingId = userData["listings"]["listingId"]
+                filter = {'listingId': listingId}
+                db.listingData.delete_one(filter)
 
-                return json_util.dumps(user_listings)
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+                return json_util.dumps(userListings)
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
-    def update_listing(self, userData, headers):
+    def updateListing(self, userData, headers):
 
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -382,8 +365,9 @@ class User:
             return jsonify({"type": "email", "error": "No permission"}), 402
 
         # check if the listing exists
-        user_listings = userInfo.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == userData["listings"]["listing_id"]]
+        userListings = userInfo.get('listings')
+        # todo
+        listingFound = [i for i in userListings if i["listingId"] == userData["listings"]["listingId"]]
         if userInfo:
             if listingFound:
 
@@ -393,33 +377,38 @@ class User:
                     "quantity": userData['listings']['quantity'], 
                     "details": userData['listings']['details'],
                     "restrictions": userData['listings']['restrictions'],
-                    "image_url": userData['listings']['image_url'],
+                    # todo
+                    "imageUrl": userData['listings']['imageUrl'],
                     "images": userData['listings']['images'], 
-                    "start_date": userData['listings']['start_date'],
-                    "end_date": userData['listings']['end_date'],
-                    "is_active": userData['listings']['is_active']  
+                    # todo
+                    "startDate": userData['listings']['startDate'],
+                    # todo
+                    "endDate": userData['listings']['endDate'],
+                    # todo
+                    "isActive": userData['listings']['isActive']  
                 }
-                listing_no = userData["listings"]["listing_no"]
-                user_listings = userInfo['listings']
-                user_listings[listing_no].update(listing)
+                # todo
+                listingNo = userData["listings"]["listingNo"]
+                userListings = userInfo['listings']
+                userListings[listingNo].update(listing)
                 filter = {'email': userInfo['email']}
-                newvalues = {"$set" : {'listings': user_listings}}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
 
                 # updating the same listing within the listings DB so ensure syncronised listings across DBs
-                listing_id = userData['listings']['listing_id']
-                filter = {'listing_id': listing_id}
+                listingId = userData['listings']['listingId']
+                filter = {'listingId': listingId}
                 newvalues = {"$set": listing}
-                db.listing_data.update_one(filter, newvalues)
+                db.listingData.update_one(filter, newvalues)
 
 
                 return json_util.dumps(userInfo)
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def get_listings(self, headers):
+    def getListings(self, headers):
         # check if the user exists
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -431,52 +420,52 @@ class User:
             return json_util.dumps(userInfo['listings'])
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
-    def get_all_users(self, headers):
+    def getAllUsers(self, headers):
         query = {
             "isAdmin": {"$ne": True}, 
             "isVerified": {"$ne": False} 
         }
         projection = {"_id": 0, "username": 1, "email": 1}
 
-        users_cursor = db.userbase_data.find(query, projection)
-        users = list(users_cursor)
+        usersCursor = db.userbase_data.find(query, projection)
+        users = list(usersCursor)
         return json_util.dumps(users)
 
      
 
         
 
-    def get_listing(self, headers):
+    def getListing(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        user_listings = user.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == headers["listings"]["listing_id"]]
+        userListings = user.get('listings')
+        listingFound = [i for i in userListings if i["listingId"] == headers["listings"]["listingId"]]
 
         if user:
             if listingFound:
-                listing_no = headers["listings"]["listing_no"] 
-                return json_util.dumps(user_listings[listing_no])
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+                listingNo = headers["listings"]["listingNo"] 
+                return json_util.dumps(userListings[listingNo])
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
 
-    def get_all_listings(self): 
+    def getAllListings(self): 
         
-        all_listings = db.userbase_data.find({},{"_id":0,'listings':1})
-        all_active_listings = []
-        for listing_dict in all_listings: 
-            if bool(listing_dict):
-                for listing in listing_dict['listings']:
-                    if listing['is_active'] == "True":  
+        allListings = db.userbase_data.find({},{"_id":0,'listings':1})
+        allActiveListings = []
+        for listingDict in allListings: 
+            if bool(listingDict):
+                for listing in listingDict['listings']:
+                    if listing['isActive'] == "True":  
                     
-                        all_active_listings.append(listing)
+                        allActiveListings.append(listing)
 
-        return json_util.dumps(all_active_listings)
+        return json_util.dumps(allActiveListings)
 
 
     def getUserInfo(self, userData): 
-        requester = db.userbase_data.find_one({"session_id": userData['token']})
+        requester = db.userbase_data.find_one({"sessionId": userData['token']})
         userInfo = db.userbase_data.find_one({"email": userData['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -489,67 +478,66 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     # takes listing off page
-    def hold_listing(self, userData):
+    def holdListing(self, userData):
         
         # check if the user exists
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        user_listings = provider_user.get('listings')
+        providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+        userListings = providerUser.get('listings')
 
         now = datetime.datetime.now()
-        start_time = now.strftime("%H:%M:%S")
+        startTime = now.strftime("%H:%M:%S")
 
 
         if user:
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": start_time}})
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_id": userData["listingId"]}})
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"current_listing_no": userData["listingNo"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"preBookingTime": startTime}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"currentListingId": userData["listingId"]}})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"currentListingNo": userData["listingNo"]}})
                 db.userbase_data.update_one({"email": user['email']}, {"$set": {"carNumberPlate": userData["carNumberPlate"]}})
                 # listing no to book 
-                listing_no = userData["listingNo"] 
-                user_listings[listing_no].update({'is_active': "False"})
-                filter = {"listings.listing_id": userData["listingId"]}
-                newvalues = {"$set" : {'listings': user_listings}}
+                listingNo = userData["listingNo"] 
+                userListings[listingNo].update({'isActive': "False"})
+                filter = {"listings.listingId": userData["listingId"]}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
-                filter = {"listing_id": userData["listingId"]}
-                newvalues = {"$set" : user_listings[listing_no]}
-                db.listing_data.update_one(filter, newvalues)
+                filter = {"listingId": userData["listingId"]}
+                newvalues = {"$set" : userListings[listingNo]}
+                db.listingData.update_one(filter, newvalues)
                 self.timer = threading.Timer(600, User.timer_thread, args=(User, userData,))
                 self.timer.start()
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def timer_thread(self, userData): 
+    def timerThread(self, userData): 
         # release listing 
-        User.release_listing(self, userData)
+        User.releaseListing(self, userData)
 
 
 
 
     # puts listing on page
-    def release_listing(self, userData):
+    def releaseListing(self, userData):
         self.timer.cancel()
-        # print(userData)
         # check if the user exists
         
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
 
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        user_listings = provider_user.get('listings')
+        providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+        userListings = providerUser.get('listings')
 
 
         if user:
-                listing_no = userData["listingNo"] 
-                user_listings[listing_no].update({'is_active': "True"})
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": ""}})
-                filter = {"listings.listing_id": userData["listingId"]}
-                newvalues = {"$set" : {'listings': user_listings}}
+                listingNo = userData["listingNo"] 
+                userListings[listingNo].update({'isActive': "True"})
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"preBookingTime": ""}})
+                filter = {"listings.listingId": userData["listingId"]}
+                newvalues = {"$set" : {'listings': userListings}}
                 db.userbase_data.update_one(filter, newvalues)
-                filter = {"listing_id": userData["listingId"]}
-                newvalues = {"$set" : user_listings[listing_no]}
-                db.listing_data.update_one(filter, newvalues)
+                filter = {"listingId": userData["listingId"]}
+                newvalues = {"$set" : userListings[listingNo]}
+                db.listingData.update_one(filter, newvalues)
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
@@ -560,162 +548,163 @@ class User:
         latitude = float(headers['lat'])
         longitude = float(headers['lon'])
         closestListings = []
-        for listing in db.listing_data.find({}): 
-            listing_lat = 0
-            listing_long = 0
+        for listing in db.listingData.find({}): 
+            listingLat = 0
+            listingLong = 0
             if 'latitude' not in listing.keys() or 'longitude' not in listing.keys(): 
-                listing_lat, listing_long = helper.calcLatLong(listing['address'])
+                listingLat, listingLong = helper.calcLatLong(listing['address'])
             else:
-                listing_lat = listing["latitude"]
-                listing_long = listing["longitude"]
+                listingLat = listing["latitude"]
+                listingLong = listing["longitude"]
 
-            if listing['is_active'] == "True" and helper.calculateDistance(latitude, listing_lat, longitude, listing_long) <= distance: 
+            if listing['isActive'] == "True" and helper.calculateDistance(latitude, listingLat, longitude, listingLong) <= distance: 
                 now = int(datetime.datetime.now().timestamp() * 1000)
-                start = int(datetime.datetime.strptime(listing['start_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
-                end = int(datetime.datetime.strptime(listing['end_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
-                # maybe update the expired listing as is_active = false in both listingDb and userDb
+                start = int(datetime.datetime.strptime(listing['startDate'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                end = int(datetime.datetime.strptime(listing['endDate'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                # maybe update the expired listing as isActive = false in both listingDb and userDb
                 if start <= now and now <= end:
                     closestListings.append(listing)
                 else:
                     print(listing['address'], start,now, end)
         return json_util.dumps(closestListings)
       
-    def create_booking(self, userData):
+    def createBooking(self, userData):
         if self.timer:
             self.timer.cancel()
         # check if the user exists
-        # print(userData)
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
 
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        user_listings = provider_user.get('listings')
-        booking_list = user["recentBookings"]
+        providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+        userListings = providerUser.get('listings')
+        bookingList = user["recentBookings"]
 
-        listing_no = userData["listingNo"]
+        listingNo = userData["listingNo"]
 
-        listing_booking_list = user_listings[listing_no]["recentBookings"]
+        listingBookingList = userListings[listingNo]["recentBookings"]
 
         now = datetime.datetime.now()
-        start_time = now.strftime("%H:%M:%S")
+        startTime = now.strftime("%H:%M:%S")
         today = str(date.today())
 
         booking = {
-            "address": user_listings[listing_no]["address"],
-            "listing_id": userData["listingId"],
-            "recentbooking_no": len(user["recentBookings"]),
+            "address": userListings[listingNo]["address"],
+            "listingId": userData["listingId"],
+            "recentBookingNo": len(user["recentBookings"]),
             "date": today,
-            "start_time": start_time,
-            "end_price": "",
+            "startTime": startTime,
+            "endPrice": "",
             "feedback": "",
-            "end_image_url": "", 
-            "total_time": "",
-            "in_end_booking_phase": False,
-            "payment_id": "",
+            "endImageUrl": "", 
+            "totalTime": "",
+            "inEndBookingPhase": False,
+            "paymentId": "",
             "carNumberPlate": userData["carNumberPlate"],
         }
-        self.notifs(db, provider_user, user_listings[listing_no]["address"], today)
-        ##bookingFound = [i for i in booking_list if i["listing_id"] == userData["listingId"]]
-        ##bookingFoundv2 = [i for i in listing_booking_list if i["listing_id"] == userData["listingId"]]
+        self.notifs(db, providerUser, userListings[listingNo]["address"], today)
 
         if user:
-            booking_list.append(booking)
-            user_listings[listing_no].update({'is_active': "False"})
-            db.userbase_data.update_one({"email": user['email']}, {"$set": {"pre_booking_time": ""}})
+            bookingList.append(booking)
+            userListings[listingNo].update({'isActive': "False"})
+            db.userbase_data.update_one({"email": user['email']}, {"$set": {"preBookingTime": ""}})
             filter = {'email': user['email']}
-            newvalues = {"$set" : {'recentBookings': booking_list}}
+            newvalues = {"$set" : {'recentBookings': bookingList}}
             db.userbase_data.update_one(filter, newvalues)
             booking.update({"email": user['email']})
-            del booking["recentbooking_no"]
-            listing_booking_list.append(booking)
-            filter = {"listings.listing_id": userData["listingId"]}
-            newvalues = {"$set" : {'listings': user_listings}}
+            del booking["recentBookingNo"]
+            listingBookingList.append(booking)
+            filter = {"listings.listingId": userData["listingId"]}
+            newvalues = {"$set" : {'listings': userListings}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listing_id": userData["listingId"]}
-            newvalues = {"$set" : user_listings[listing_no]}
-            db.listing_data.update_one(filter, newvalues)
+            filter = {"listingId": userData["listingId"]}
+            newvalues = {"$set" : userListings[listingNo]}
+            db.listingData.update_one(filter, newvalues)
             return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def remove_recentbooking(self, userData):
+    def removeRecentBooking(self, userData):
         # check if the user exists
         user = db.userbase_data.find_one({"email": userData['email']})
         # check if the listing exists
-        booking_list = user["recentBookings"]
+        bookingList = user["recentBookings"]
 
         if user:
-            recentBooking_no = userData["booking"]["recentbooking_no"]
-            recentBooking_length = len(user['recentBookings'])
-            booking_list.remove(booking_list[recentBooking_no])
-            recentBooking_length = len(user['recentBookings'])
-            while recentBooking_no < recentBooking_length:
-                booking_list[recentBooking_no].update({'recentbooking_no': booking_list[recentBooking_no]['recentbooking_no'] - 1})
-                recentBooking_no += 1                
+            # todo
+            recentBookingNo = userData["booking"]["recentBookingNo"]
+            recentBookingLength = len(user['recentBookings'])
+            bookingList.remove(bookingList[recentBookingNo])
+            recentBookingLength = len(user['recentBookings'])
+            while recentBookingNo < recentBookingLength:
+                bookingList[recentBookingNo].update({'recentBookingNo': bookingList[recentBookingNo]['recentBookingNo'] - 1})
+                recentBookingNo += 1                
             filter = {'email': user['email']}
-            newvalues = {"$set" : {'recentBookings': booking_list}}
+            newvalues = {"$set" : {'recentBookings': bookingList}}
             db.userbase_data.update_one(filter, newvalues)
             return json_util.dumps(user["recentBookings"]) # HOW IS THIS WORKING EVEN THOUGH IM NOT UPDATING USER
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def end_booking(self, headers, userData):
+    def endBooking(self, headers, userData):
         # check if the user exists
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         # check if the listing exists
-        provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-        user_listings = provider_user.get('listings')
-        booking_list = user["recentBookings"]
+        providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+        userListings = providerUser.get('listings')
+        bookingList = user["recentBookings"]
         if user:
-            listing_no = userData["listingNo"]
-            listing_booking_list = user_listings[listing_no]["recentBookings"]
-            end_price = math.ceil(int(userData["totalTime"])/3600) * int(user_listings[listing_no]["price"])
-            discounted_price = self.apply_promo_code(end_price, userData["promoCode"])
+            listingNo = userData["listingNo"]
+            listingBookingList = userListings[listingNo]["recentBookings"]
+            endPrice = math.ceil(int(userData["totalTime"])/3600) * int(userListings[listingNo]["price"])
+            #todo
+            discountedPrice = self.applyPromoCode(endPrice, userData["promoCode"])
             booking = {
-                    "end_price": discounted_price,
+                    "endPrice": discountedPrice,
                     "feedback": userData["feedback"],
-                    "end_image_url": userData["endImageUrl"], 
-                    "total_time": userData["totalTime"],
-                    "in_end_booking_phase": False
+                    # todo
+                    "endImageUrl": userData["endImageUrl"], 
+                    # todo
+                    "totalTime": userData["totalTime"],
+                    "inEndBookingPhase": False
             }
             paymentMethods = stripe.PaymentMethod.list(
-                customer=user['payment_id'],
+                customer=user['paymentId'],
                 limit=3
             )
-            if len(paymentMethods.data) <= 0 or user['default_payment_id'] == "":
+            if len(paymentMethods.data) <= 0 or user['defaultPaymentId'] == "":
                 return jsonify({"type": "payment", "error": "payment failed"}), 402
  
-            paymentMethodId = user['default_payment_id']
+            paymentMethodId = user['defaultPaymentId']
             try:
                 stripe.PaymentIntent.create(
-                    amount=int(discounted_price * 100),
+                    amount=int(discountedPrice * 100),
                     currency='AUD',
-                    customer=user['payment_id'],
+                    customer=user['paymentId'],
                     payment_method=paymentMethodId,
                     off_session=True,
                     confirm=True,
                 )
                 stripe.Transfer.create(
-                    amount=int(discounted_price * 0.85 * 100),
+                    amount=int(discountedPrice * 0.85 * 100),
                     currency="AUD",
-                    destination=provider_user['payOut_id'],
+                    destination=providerUser['payOutId'],
                 )
-                helper.sendConfirmationEmail(user['email'], user['username'], discounted_price)
+                helper.sendConfirmationEmail(user['email'], user['username'], discountedPrice)
             # err handling from https://docs.stripe.com/payments/without-card-authentication
             except stripe.error.CardError as e:
                 return json.dumps({'error': e.user_message}), 200
 
-            user_listings[listing_no].update({'is_active': "True"})
-            booking_list[-1].update(booking)
-            listing_booking_list[-1].update(booking)
+            userListings[listingNo].update({'isActive': "True"})
+            bookingList[-1].update(booking)
+            listingBookingList[-1].update(booking)
             filter = {'email': user['email']}
-            newvalues = {"$set" : {'recentBookings': booking_list}}
+            newvalues = {"$set" : {'recentBookings': bookingList}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listings.listing_id": userData["listingId"]}
-            newvalues = {"$set" : {'listings': user_listings}}
+            filter = {"listings.listingId": userData["listingId"]}
+            newvalues = {"$set" : {'listings': userListings}}
             db.userbase_data.update_one(filter, newvalues)
-            filter = {"listing_id": userData["listingId"]}
-            newvalues = {"$set" : user_listings[listing_no]}
-            db.listing_data.update_one(filter, newvalues)
-            return json_util.dumps(discounted_price)
+            filter = {"listingId": userData["listingId"]}
+            newvalues = {"$set" : userListings[listingNo]}
+            db.listingData.update_one(filter, newvalues)
+            return json_util.dumps(discountedPrice)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
     
@@ -746,18 +735,18 @@ class User:
             return json_util.dumps({'listings':sorted(nearbyListings, key = lambda x:int(x["price"]), reverse = True), 'totalPage':totalPage})
         
     def searchForSpace(self, userData): 
-        listings = db.listing_data.find({})
+        listings = db.listingData.find({})
         listingResults = []
         
         # regex
         pattern = re.compile(re.escape(userData['query']), re.IGNORECASE)
         
         for listing in listings: 
-            if pattern.search(listing['address']) and listing['is_active'] == "True":
+            if pattern.search(listing['address']) and listing['isActive'] == "True":
                 now = int(datetime.datetime.now().timestamp() * 1000)
-                start = int(datetime.datetime.strptime(listing['start_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
-                end = int(datetime.datetime.strptime(listing['end_date'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
-                # maybe update the expired listing as is_active = false in both listingDb and userDb
+                start = int(datetime.datetime.strptime(listing['startDate'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                end = int(datetime.datetime.strptime(listing['endDate'][:-1]+'+00:00', "%Y-%m-%dT%H:%M:%S.%f%z").timestamp() * 1000)
+                # maybe update the expired listing as isActive = false in both listingDb and userDb
                 if start <= now and now <= end:
                     listingResults.append(listing) 
     
@@ -765,10 +754,10 @@ class User:
 
     
     def addPaymentMethod(self, userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
         if user:
             intent=stripe.SetupIntent.create(
-                customer=user['payment_id'],
+                customer=user['paymentId'],
                 automatic_payment_methods={"enabled": True},
                 # return_url="https://localhost:3000/paymentAddedSuccess",
                 # confirm=True
@@ -778,174 +767,175 @@ class User:
     
     # https://docs.stripe.com/connect/testing#creating-accounts
     def providerDetails(self, userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
         if user:
-            typeOfLink = "account_update" if user["is_stripe_connected"] else "account_onboarding"
+            typeOfLink = "account_update" if user["isStripeConnected"] else "account_onboarding"
             link = stripe.AccountLink.create(
-                account=user['payOut_id'],
+                account=user['payOutId'],
                 refresh_url="https://localhost:3000/providerDetailsExpired",
                 return_url="https://localhost:3000/providerDetailsReturn",
                 type=typeOfLink,
                 collection_options={"fields": "eventually_due"},
             )
-            if user["is_stripe_connected"]  == False:
+            if user["isStripeConnected"]  == False:
                 filter = {'email': user['email']}
-                newvalues = {"$set" : {'is_stripe_connected': True}}
+                newvalues = {"$set" : {'isStripeConnected': True}}
                 db.userbase_data.update_one(filter, newvalues)
             return jsonify({"account_link":link.url})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
 
-        # user = db.userbase_data.find_one({"email": userData['email']})
         if user:
-            is_admin = user.get('isAdmin', False)
-            if is_admin:
+            isAdmin = user.get('isAdmin', False)
+            if isAdmin:
                 return jsonify({"type": "User", "error": "Admin Account"}), 402
-            account = stripe.Account.retrieve(user['payOut_id'])
+            account = stripe.Account.retrieve(user['payOutId'])
             if not account.payouts_enabled:
                 return jsonify({"type": "User", "error": "Please provide or update provider details"}), 402
 
-            return jsonify({"stripe_connected":user["is_stripe_connected"]})
+            return jsonify({"stripe_connected":user["isStripeConnected"]})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
     def allCardList(self, userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
 
         if user:
             respond = stripe.PaymentMethod.list(
-                customer=user['payment_id'],
+                customer=user['paymentId'],
             )
             data = respond.data
-            if (len(data) != 0) and (user['default_payment_id'] == ""):
-                user['default_payment_id'] = data[0].id
+            if (len(data) != 0) and (user['defaultPaymentId'] == ""):
+                user['defaultPaymentId'] = data[0].id
                 filter = {'email': user['email']}
-                newvalues = {"$set" : {'default_payment_id': data[0].id}}
+                newvalues = {"$set" : {'defaultPaymentId': data[0].id}}
                 db.userbase_data.update_one(filter, newvalues)
 
 
-            return jsonify({"default_payment": user['default_payment_id'], "payments": data, })
+            return jsonify({"defaultPayment": user['defaultPaymentId'], "payments": data, })
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
+    
     def setDefaultCard(self, headers, userData):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
 
         if user:
             try:
-
-                card_id = userData['default_card']
+                # todo
+                cardId = userData['defaultCard']
                 respond = stripe.Customer.retrieve_payment_method(
-                    user['payment_id'],
-                    card_id,
+                    user['paymentId'],
+                    cardId,
                 )
-                user['default_payment_id'] = card_id
+                user['defaultPaymentId'] = cardId
                 filter = {'email': user['email']}
-                newvalues = {"$set" : {'default_payment_id': card_id}}
+                newvalues = {"$set" : {'defaultPaymentId': cardId}}
                 db.userbase_data.update_one(filter, newvalues)
             except stripe.error as e:    
                 return json.dumps({'error': e.user_message}), 400
-            return jsonify({"default_payment": user['default_payment_id']})
+            return jsonify({"defaultPayment": user['defaultPaymentId']})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def removeCard(self, headers, userData):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
             try:
-                card_id = userData['card_id']
+                cardId = userData['cardId']
                 respond = stripe.PaymentMethod.list(
-                    customer=user['payment_id'],
+                    customer=user['paymentId'],
                 )
                 data = respond.data
-                match_data = [(x) for x in data if x.id == card_id]
-                if len(match_data) == 0:
-                    return json.dumps({'error': "No matched card_id"}), 400
-                other_cards = [(x) for x in data if x.id != card_id]
-                stripe.PaymentMethod.detach(card_id)
-                if user['default_payment_id'] == card_id:
-                    new_default = ""
-                    if  len(other_cards) != 0:
-                        new_default = other_cards[0].id
-                    user['default_payment_id'] = new_default
+                matchData = [(x) for x in data if x.id == cardId]
+                if len(matchData) == 0:
+                    return json.dumps({'error': "No matched cardId"}), 400
+                otherCards = [(x) for x in data if x.id != cardId]
+                stripe.PaymentMethod.detach(cardId)
+                if user['defaultPaymentId'] == cardId:
+                    newDefault = ""
+                    if  len(otherCards) != 0:
+                        newDefault = otherCards[0].id
+                    user['defaultPaymentId'] = newDefault
                     filter = {'email': user['email']}
-                    newvalues = {"$set" : {'default_payment_id': new_default}}
+                    newvalues = {"$set" : {'defaultPaymentId': newDefault}}
                     db.userbase_data.update_one(filter, newvalues)
             except stripe.error as e:    
                 return json.dumps({'error': e.user_message}), 400
-            return jsonify({"default_payment": user['default_payment_id'], "cards":other_cards})
+            return jsonify({"defaultPayment": user['defaultPaymentId'], "cards":otherCards})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def getDefaultCard(self, userData):
-        user = db.userbase_data.find_one({"session_id": userData['token']})
+        user = db.userbase_data.find_one({"sessionId": userData['token']})
 
         if user:
             try:
-                if user['default_payment_id'] != "":
-                    return jsonify({"default_payment": user['default_payment_id']})
+                if user['defaultPaymentId'] != "":
+                    return jsonify({"defaultPayment": user['defaultPaymentId']})
                 respond = stripe.PaymentMethod.list(
-                    customer=user['payment_id'],
+                    customer=user['paymentId'],
                 )
                 data = respond.data
-                if (len(data) != 0) and (user['default_payment_id'] == ""):
-                    user['default_payment_id'] = data[0].id
+                if (len(data) != 0) and (user['defaultPaymentId'] == ""):
+                    user['defaultPaymentId'] = data[0].id
                     filter = {'email': user['email']}
-                    newvalues = {"$set" : {'default_payment_id': data[0].id}}
+                    newvalues = {"$set" : {'defaultPaymentId': data[0].id}}
                     db.userbase_data.update_one(filter, newvalues)
-                    return jsonify({"default_payment": user['default_payment_id']})
+                    return jsonify({"defaultPayment": user['defaultPaymentId']})
                 return jsonify({"type": "User", "error": "User Does Not have a default payment method"}), 402
 
             except stripe.error as e:    
                 return json.dumps({'error': e.user_message}), 400
-            return jsonify({"default_payment": user['default_payment_id'], "cards":other_cards})
+            return jsonify({"defaultPayment": user['defaultPaymentId'], "cards":otherCards})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
-    def get_specific_listing(self, headers):
+    def getSpecificListing(self, headers):
         # user should be able to view listing before login in
         # check if the user exists
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
 
         # check if the listing exists
 
-        listing_data = db.listing_data.find_one({"listing_id": headers["listingId"]})
+        listingData = db.listingData.find_one({"listingId": headers["listingId"]})
         if user: 
-            listing_data['booked_previously'] = False
-            listing_data['has_liked'] = False
+            listingData['bookedPreviously'] = False
+            listingData['hasLiked'] = False
             for listing in user['recentBookings']: 
-                if listing['listing_id'] == headers['listingId']: 
-                    listing_data['booked_previously'] = True
-                    if any(liked_listing['listing_id'] == headers["listingId"] for liked_listing in user['liked_listings']):
-                        listing_data['has_liked'] = True
+                if listing['listingId'] == headers['listingId']: 
+                    listingData['bookedPreviously'] = True
+                    if any(likedListing['listingId'] == headers["listingId"] for likedListing in user['likedListings']):
+                        listingData['hasLiked'] = True
                     break
-        return json_util.dumps(listing_data)
+        return json_util.dumps(listingData)
 
-    def get_pre_booking_time(self, headers):
+    def getPreBookingTime(self, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
 
-        return json_util.dumps(user["pre_booking_time"])
+        return json_util.dumps(user["preBookingTime"])
     
-    def get_booking_time(self, headers):
+    def getBookingTime(self, headers):
         # check if the user exists
 
-        user = db.userbase_data.find_one({"session_id": headers['token']})
-        booking_list = user["recentBookings"]
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
+        bookingList = user["recentBookings"]
 
-        return json_util.dumps(booking_list[-1]["start_time"])
+        return json_util.dumps(bookingList[-1]["startTime"])
     
-    def apply_promo_code(self, booking_price, promo_code):
+    def applyPromoCode(self, bookingPrice, promoCode):
 
-            if promo_code and promo_code.isalnum():
+            if promoCode and promoCode.isalnum():
                 #the last two digits 
                 
                 with open("./promoCodes.txt", "r") as file: 
                     for promo in file: 
-                        if promo_code == promo.strip():
-                            print(promo_code[-2:])
-                            discount_percentage = int(promo_code[-2:]) 
-                            discounted_price = booking_price - (booking_price * discount_percentage / 100)
-                            return discounted_price
-                return booking_price
+                        if promoCode == promo.strip():
+                            print(promoCode[-2:])
+                            discountPercentage = int(promoCode[-2:]) 
+                            discountedPrice = bookingPrice - (bookingPrice * discountPercentage / 100)
+                            return discountedPrice
+                return bookingPrice
             else:
-                return booking_price
+                return bookingPrice
             
-    def update_user(self, userData, headers):
+    def updateUser(self, userData, headers):
         # check if the user exists
-        requester = db.userbase_data.find_one({"session_id": headers['token']})
+        requester = db.userbase_data.find_one({"sessionId": headers['token']})
         userInfo = db.userbase_data.find_one({"email": headers['email']})
         if not userInfo:
             return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
@@ -958,7 +948,7 @@ class User:
             newuser = {
                 "username": userData['username'], 
                 "email" : userData["email"], 
-                "profile_picture": userData['profile_picture'] 
+                "profilePicture": userData['profilePicture'] 
             }
             userInfo.update(newuser)
             filter = {'email': userInfo['email']}
@@ -967,37 +957,43 @@ class User:
             return json_util.dumps(userInfo)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
 
-    def create_dispute(self, userData, headers):
+    def createDispute(self, userData, headers):
         # check if the user exists
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
             dispute = {
-                "dispute_id": uuid.uuid4().hex,
+                "disputeId": uuid.uuid4().hex,
                 "address": userData['address'],
                 "date": userData['date'],
-                "end_price": userData['end_price'],
-                "total_time": userData['total_time'],
-                "start_time": userData['start_time'],
-                "dispute_by": userData['dispute_by'],
-                "dispute_against": userData["dispute_against"],
-                "dispute_message": userData["dispute_message"], 
-                "dispute_image": userData['dispute_images'],
+                # todo
+                "endPrice": userData['endPrice'],
+                # todo
+                "totalTime": userData['totalTime'],
+                # todo
+                "startTime": userData['startTime'],
+                # todo
+                "disputeBy": userData['disputeBy'],
+                # todo
+                "disputeAgainst": userData["disputeAgainst"],
+                # todo
+                "disputeMessage": userData["disputeMessage"], 
+                # todo
+                "disputeImage": userData['disputeImages'],
                 "resolved": False 
             }
-            print(dispute)
             db.disputes.insert_one(dispute)
             return jsonify({"message": "Dispute successfully created"}), 200
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def resolve_dispute(self, userData, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+    def resolveDispute(self, userData, headers):
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
 
         if user:
             dispute = {
                 "resolved": True 
             }
-            dispute_id = userData['dispute_id']
-            filter = {'dispute_id': dispute_id}
+            disputeId = userData['disputeId']
+            filter = {'disputeId': disputeId}
             newvalues = {"$set": dispute}
             db.disputes.update_one(filter, newvalues)
             return jsonify({"message": "Dispute successfully resolved"}), 200
@@ -1005,111 +1001,109 @@ class User:
 
             
 
-    def get_email(self, headers):
-        provider_user = db.userbase_data.find_one({"listings.listing_id": headers["listingId"]})
-        return json_util.dumps(provider_user['email'])
+    def getEmail(self, headers):
+        providerUser = db.userbase_data.find_one({"listings.listingId": headers["listingId"]})
+        return json_util.dumps(providerUser['email'])
     
-    def get_disputes(self, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+    def getDisputes(self, headers):
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user: 
             disputes = db.disputes.find()
-            disputes_list = list(disputes)  
-            return json_util.dumps(disputes_list)
+            disputesList = list(disputes)  
+            return json_util.dumps(disputesList)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
         
     # this function is never used along with its route
-    def get_recentBookings(self, headers):
+    def getRecentBookings(self, headers):
         # check if the user exists
         user = db.userbase_data.find_one({"email": headers['email']})
         # check if the listing exists
-        user_listings = user.get('listings')
-        listingFound = [i for i in user_listings if i["listing_id"] == headers["listingId"]]
+        userListings = user.get('listings')
+        listingFound = [i for i in userListings if i["listingId"] == headers["listingId"]]
 
         listing = db.userbase_data.find_one(
-            {"listings.listing_id": headers["listingId"]},
+            {"listings.listingId": headers["listingId"]},
             {"listings.$": 1}
         )
 
-        recent_bookings = listing.get('listings', [])[0].get('recentBookings', [])
+        recentBookings = listing.get('listings', [])[0].get('recentBookings', [])
 
         if user:
             if listingFound:
-                return json_util.dumps(recent_bookings)
-            return jsonify({"type": "listing_id", "error": "Listing Does Not Exist"}), 402
+                return json_util.dumps(recentBookings)
+            return jsonify({"type": "listingId", "error": "Listing Does Not Exist"}), 402
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def like(self, userData, headers):
         # Check if the user exists
-        #print("Email", headers['email'])
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
             chk = False 
-            liked_listings = user['liked_listings']
-            user_recent_bookings = user.get('recentBookings')
-            for listing in user_recent_bookings: 
-                if listing['listing_id'] == userData['listingId']: 
-                    liked_listings.append(listing)
+            likedListings = user['likedListings']
+            userRecentBookings = user.get('recentBookings')
+            for listing in userRecentBookings: 
+                if listing['listingId'] == userData['listingId']: 
+                    likedListings.append(listing)
                     chk = True
                     break
 
             if chk == True: 
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"liked_listings": liked_listings}})
-                provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-                user_listings = provider_user.get('listings')
-                for listing in user_listings: 
-                    if listing['listing_id'] == userData['listingId']: 
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"likedListings": likedListings}})
+                providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+                userListings = providerUser.get('listings')
+                for listing in userListings: 
+                    if listing['listingId'] == userData['listingId']: 
                         listing['likes'] += 1
-                db.userbase_data.update_one({"listings.listing_id": userData["listingId"]}, {"$set": {"listings": user_listings}})
+                db.userbase_data.update_one({"listings.listingId": userData["listingId"]}, {"$set": {"listings": userListings}})
                 # Check if the listing exists
-                listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
+                listing = db.listingData.find_one({"listingId": userData["listingId"]})
                 if listing: 
-                    db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": 1}})
+                    db.listingData.update_one({"_id": listing["_id"]}, {"$inc": {"likes": 1}})
                 
                 
-            #listing_found = [i for i in user_recent_bookings if i["listing_id"] == userData["listingId"]]
             
             return jsonify({"message": "liked"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def dislike(self, userData, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
             chk = False 
-            liked_listings = user['liked_listings']
-            user_recent_bookings = user.get('recentBookings')
-            for listing in user_recent_bookings: 
-                if listing['listing_id'] == userData['listingId']: 
-                    liked_listings.remove(listing)
+            likedListings = user['likedListings']
+            userRecentBookings = user.get('recentBookings')
+            for listing in userRecentBookings: 
+                if listing['listingId'] == userData['listingId']: 
+                    likedListings.remove(listing)
                     chk = True
                     break
             if chk == True: 
-                db.userbase_data.update_one({"email": user['email']}, {"$set": {"liked_listings": liked_listings}})
-                provider_user = db.userbase_data.find_one({"listings.listing_id": userData["listingId"]})
-                user_listings = provider_user.get('listings')
-                for listing in user_listings: 
-                    if listing['listing_id'] == userData['listingId']: 
+                db.userbase_data.update_one({"email": user['email']}, {"$set": {"likedListings": likedListings}})
+                providerUser = db.userbase_data.find_one({"listings.listingId": userData["listingId"]})
+                userListings = providerUser.get('listings')
+                for listing in userListings: 
+                    if listing['listingId'] == userData['listingId']: 
                         listing['likes'] -= 1
                         if listing['likes'] < 0: 
                             listing['likes'] = 0
-                db.userbase_data.update_one({"listings.listing_id": userData["listingId"]}, {"$set": {"listings": user_listings}})
+                db.userbase_data.update_one({"listings.listingId": userData["listingId"]}, {"$set": {"listings": userListings}})
                 # Check if the listing exists
-                listing = db.listing_data.find_one({"listing_id": userData["listingId"]})
+                listing = db.listingData.find_one({"listingId": userData["listingId"]})
                 if listing: 
                     if listing.get("likes", 0) > 0: 
-                        db.listing_data.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
+                        db.listingData.update_one({"_id": listing["_id"]}, {"$inc": {"likes": -1}})
             return jsonify({"message": "disliked"}), 200
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     
     def timerPersistence(self, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
-            if user['pre_booking_time'] != "":
-                return jsonify({"result": "prebooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "carNumberPlate": user['carNumberPlate']}), 200
+            if user['preBookingTime'] != "":
+                return jsonify({"result": "prebooking", "listingId": user['currentListingId'], "listingNo": user['currentListingNo'], "carNumberPlate": user['carNumberPlate']}), 200
             elif len(user['recentBookings']) != 0:
-                if user['recentBookings'][-1]['in_end_booking_phase'] == True:
-                    return jsonify({"result": "endbooking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no'], "timer": user['timer']}), 200
-                if user['recentBookings'][-1]['total_time'] == "":
-                    return jsonify({"result": "booking", "listingId": user['current_listing_id'], "listingNo": user['current_listing_no']}), 200
+                if user['recentBookings'][-1]['inEndBookingPhase'] == True:
+                    return jsonify({"result": "endbooking", "listingId": user['currentListingId'], "listingNo": user['currentListingNo'], "timer": user['timer']}), 200
+                if user['recentBookings'][-1]['totalTime'] == "":
+                    return jsonify({"result": "booking", "listingId": user['currentListingId'], "listingNo": user['currentListingNo']}), 200
                 else:
                     return jsonify({"result": "none"}), 200
             else:
@@ -1117,31 +1111,31 @@ class User:
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
 
     def saveTimer(self, userData, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
-            db.userbase_data.update_one({"session_id": headers['token']}, {"$set": {"timer": userData["timer"]}})
+            db.userbase_data.update_one({"sessionId": headers['token']}, {"$set": {"timer": userData["timer"]}})
             if user['recentBookings']:
-                last_booking_index = len(user['recentBookings']) - 1
-                update_field = f"recentBookings.{last_booking_index}.in_end_booking_phase"
+                lastBookingIndex = len(user['recentBookings']) - 1
+                updateField = f"recentBookings.{lastBookingIndex}.inEndBookingPhase"
                 db.userbase_data.update_one(
-                    {"session_id": headers['token']},
-                    {"$set": {update_field: True}}
+                    {"sessionId": headers['token']},
+                    {"$set": {updateField: True}}
                 )
             return json_util.dumps("Pass")
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
         
-    def notifs(self, db, provider_user, address, date):
-        # Check if provider_user exists
-        notification_message = f"Your listing {address} has been booked."
-        if provider_user:
-            # Push notification_message to the notifications array
+    def notifs(self, db, providerUser, address, date):
+        # Check if providerUser exists
+        notificationMessage = f"Your listing {address} has been booked."
+        if providerUser:
+            # Push notificationMessage to the notifications array
             db.userbase_data.update_one(
-                {"_id": provider_user["_id"]},
+                {"_id": providerUser["_id"]},
                 {
                     "$push": {
                         "notifications": {
                             "title": address,
-                            "description": notification_message,
+                            "description": notificationMessage,
                             "date": date 
                         }
                     }
@@ -1151,34 +1145,34 @@ class User:
             print("Provider user not found.")
     
     def getNotifs(self, headers):
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user:
             notifications = user.get("notifications", [])
             return json_util.dumps(notifications)
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402
     
-    def make_reco(self, headers): 
-        user = db.userbase_data.find_one({"session_id": headers['token']})
+    def makeReco(self, headers): 
+        user = db.userbase_data.find_one({"sessionId": headers['token']})
         if user: 
-            matrix_df = helper.make_df(db)
+            matrixDf = helper.makeDf(db)
             # fit the model with the user interactions
             model = NearestNeighbors(n_neighbors=3, metric='cosine')
-            model.fit(matrix_df)
-            user_interaction = matrix_df.loc[headers['email']]
-            distances, indices = model.kneighbors([user_interaction])
+            model.fit(matrixDf)
+            userInteraction = matrixDf.loc[headers['email']]
+            distances, indices = model.kneighbors([userInteraction])
             # Retrieve recommended car spaces
             recommendations = []
-            target_user_idx = matrix_df.index.get_loc(headers['email'])
+            targetUserIdx = matrixDf.index.get_loc(headers['email'])
             for idx in indices.flatten():
-                if idx != target_user_idx:  # Exclude target user
-                    recommendations.extend(matrix_df.iloc[idx][matrix_df.iloc[idx] > 0].index)
+                if idx != targetUserIdx:  # Exclude target user
+                    recommendations.extend(matrixDf.iloc[idx][matrixDf.iloc[idx] > 0].index)
 
             # Remove duplicates and sort recommendations by interaction strength
             recommendations = list(set(recommendations))
             recommendations.sort(reverse=True)
-            listings_db = db.listing_data.find({})
-            for listing in listings_db: 
-                if listing['listing_id'] in recommendations: 
+            listingsDb = db.listingData.find({})
+            for listing in listingsDb: 
+                if listing['listingId'] in recommendations: 
                     recommendations.append(listing)
-                    recommendations.remove(listing['listing_id'])
+                    recommendations.remove(listing['listingId'])
             return json_util.dumps(recommendations)
