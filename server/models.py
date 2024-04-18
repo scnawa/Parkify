@@ -780,7 +780,7 @@ class User:
             if user["isStripeConnected"]  == False:
                 filter = {'email': user['email']}
                 newvalues = {"$set" : {'isStripeConnected': True}}
-                db.userbase_data.update_one(filter, newvalues)
+                db.userbaseData.update_one(filter, newvalues)
             return jsonify({"accountLink":link.url})
         return jsonify({"type": "User", "error": "User Does Not Exist"}), 402
     def userIsprovider(self,userData):
