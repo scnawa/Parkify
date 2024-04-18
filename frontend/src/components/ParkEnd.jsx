@@ -34,7 +34,7 @@ function ParkEnd() {
 
     const timer = location.state ? location.state.timer : 0;
     const navigate = useNavigate();
-    const { listingId, ListingNo } = location.state || {};
+    const { listingId, listingNo } = location.state || {};
 
     React.useEffect(() => {
         if (!token) {
@@ -53,7 +53,7 @@ function ParkEnd() {
         uploadFile(thumbnail).then((url) => {
             const data = {
                 "listingId": listingId,
-                "listingNo": ListingNo,
+                "listingNo": listingNo,
                 "totalTime": timer,
                 "feedback": feedback,
                 "endImageUrl": url,

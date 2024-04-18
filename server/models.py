@@ -117,7 +117,7 @@ class User:
 
             db.userbase_data.update_one({"email": userData['email']}, {
                                         "$set": {"isVerified": user['isVerified']}})
-        if user: 
+        if user:
             if user['isVerified'] == False: 
                 return jsonify({"type": "Unverified User", "error": "The user has not verified their email"}), 405
 
@@ -504,7 +504,7 @@ class User:
                 filter = {"listingId": userData["listingId"]}
                 newvalues = {"$set" : userListings[listingNo]}
                 db.listingData.update_one(filter, newvalues)
-                self.timer = threading.Timer(600, User.timer_thread, args=(User, userData,))
+                self.timer = threading.Timer(600, User.timerThread, args=(User, userData,))
                 self.timer.start()
                 return json_util.dumps("Pass")
         return jsonify({"type": "email", "error": "User Does Not Exist"}), 402

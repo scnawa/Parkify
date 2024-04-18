@@ -91,9 +91,9 @@ def sendConfirmationEmail(email, username, amount):
 def makeDf(db): 
     users = preprocessData(db)
     user_emails = [user['email'] for user in users]
-    listings_db = db.listing_data.find({})
+    listingsDb = db.listingData.find({})
     listings = []
-    for listing in listings_db: 
+    for listing in listingsDb: 
         listings.append(listing['listingId'])
     df = pd.DataFrame(index = user_emails, columns = listings)
     df.fillna(0, inplace=True)

@@ -86,13 +86,13 @@ function AllListings(props) {
 				.then(data => {
 					if (!data.error) {
 						if (data.result === "prebooking") {
-							navigate('/book', { state: { listingId: data.listingId, ListingNo: data.listingNo, numberPlate: data.carNumberPlate } });
+							navigate('/book', { state: { listingId: data.listingId, listingNo: data.listingNo, numberPlate: data.carNumberPlate } });
 							console.log("in a prebooking")
 						} else if (data.result === "booking") {
-							navigate('/timer', { state: { listingId: data.listingId, ListingNo: data.listingNo } });
+							navigate('/timer', { state: { listingId: data.listingId, listingNo: data.listingNo } });
 							console.log("in a booking")
 						} else if (data.result === "endbooking") {
-							navigate('/park-end', { state: { timer: data.timer, listingId: data.listingId, ListingNo: data.listingNo } });
+							navigate('/park-end', { state: { timer: data.timer, listingId: data.listingId, listingNo: data.listingNo } });
 							console.log("in endbooking")
 						} else if (data.result === "none") {
 							console.log("not in a booking");

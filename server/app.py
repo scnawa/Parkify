@@ -120,10 +120,10 @@ def deleteListing():
     return config.User().deleteListing(userData, headers)
 
 @APP.route('/update_listing', methods = ['POST'])
-def updatelisting(): 
+def updateListing(): 
     headers = request.headers
     userData = json.loads(request.data)
-    return config.User().updatelisting(userData, headers)
+    return config.User().updateListing(userData, headers)
 
 @APP.route('/get_listings', methods = ['GET'])
 def getListings(): 

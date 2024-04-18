@@ -22,7 +22,7 @@ function TimerPage() {
 	const [timer, setTimer] = useState(0);
 	const [token, setToken] = React.useState(localStorage.getItem('token'));
 
-	const { listingId, ListingNo } = location.state || {};
+	const { listingId, listingNo } = location.state || {};
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			setTimer((prevTimer) => prevTimer + 1);
@@ -91,7 +91,7 @@ function TimerPage() {
 			.then(() => {
 				console.log('Save timer success');
 				console.log('state variable timer: ' + timer)
-				navigate('/park-end', { state: { timer, listingId, ListingNo } });
+				navigate('/park-end', { state: { timer, listingId, listingNo } });
 			})
 			.catch((error) => {
 				console.error('Save timer failed:', error);

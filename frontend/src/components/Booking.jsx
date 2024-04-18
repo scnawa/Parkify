@@ -17,7 +17,7 @@ const theme = createTheme({
 function Booking(props) {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { listingId, ListingNo, numberPlate } = location.state || {};
+	const { listingId, listingNo, numberPlate } = location.state || {};
 	const [timer, setTimer] = useState('');
 	const [initialTime, setinitialTime] = useState(null);
 
@@ -76,7 +76,7 @@ function Booking(props) {
 		const data = {
 			"token": props.token,
 			"listingId": listingId,
-			"listingNo": ListingNo,
+			"listingNo": listingNo,
 			"carNumberPlate": numberPlate,
 		}
 		const fetchCreateBook = async () => {
@@ -101,7 +101,7 @@ function Booking(props) {
 			}
 		};
 		fetchCreateBook().then(() => {
-			navigate('/timer', { state: { listingId, ListingNo } });
+			navigate('/timer', { state: { listingId, listingNo } });
 		}).catch(alert);
 	};
 
@@ -122,7 +122,7 @@ function Booking(props) {
 		const data = {
 			"token": props.token,
 			"listingId": listingId,
-			"listingNo": ListingNo
+			"listingNo": listingNo
 		}
 		try {
 			const response = await fetch('/release_listing', {
