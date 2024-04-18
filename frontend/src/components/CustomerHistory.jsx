@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Paper, Typography, Button, Box } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function CustomerHistory(props) {
 	const [selectedListing, setSelectedListing] = useState(null);
@@ -28,6 +28,7 @@ function CustomerHistory(props) {
 			}
 		};
 		fetchData();
+		// eslint-disable-next-line
 	}, []);
 
 	const handleListingChange = (_, newValue) => {

@@ -1,6 +1,5 @@
-import { Avatar, Box, Button, ListItemAvatar, ListItemText, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Box, Button, ListItemText, ThemeProvider, createTheme } from "@mui/material";
 import { useState } from "react";
-import PublishPopUp from "./PublishPopUp";
 const theme = createTheme({
 	palette: {
 		green: {
@@ -45,11 +44,10 @@ function debitCard(card, isDefault) {
 	);
 }
 function CustomerCard(props) {
-	const [card, setCard] = useState(props.card);
-	// const [token, setToken] = useState();
+	// eslint-disable-next-line
+	const [card, _] = useState(props.card);
 	let cardInfo = null;
 	let isDefault = props.defaultCard === card.id;
-	console.log(props.defaultCard);
 	switch (card.type) {
 		case "au_becs_debit":
 			cardInfo = debitCard(card, isDefault);
@@ -57,6 +55,8 @@ function CustomerCard(props) {
 		case "card":
 			cardInfo = creditCard(card, isDefault);
 			break
+		default:
+			break;
 
 	}
 	const fetchSetDefault = async () => {

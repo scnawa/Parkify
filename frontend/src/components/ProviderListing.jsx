@@ -1,12 +1,10 @@
-import { Box, Button, Card, CardContent, CardMedia, ListItem, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 import Background from '../assets/car.png'
 import PublishPopUp from "./PublishPopUp";
 import { useState } from "react";
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 const theme = createTheme({
@@ -34,8 +32,8 @@ const theme = createTheme({
 });
 
 function ProviderListing(props) {
-	console.log("providerListings " + props.token)
 	const [popoverLocation, setPopOverLocation] = useState(false);
+	// eslint-disable-next-line
 	const [listing, _] = useState(props.listing);
 	const [activated, setActivated] = useState(props.listing.isActive === "True");
 	const navigate = useNavigate();

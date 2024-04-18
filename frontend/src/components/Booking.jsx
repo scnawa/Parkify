@@ -18,7 +18,6 @@ function Booking(props) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { listingId, listingNo, numberPlate } = location.state || {};
-	const [timer, setTimer] = useState('');
 	const [initialTime, setinitialTime] = useState(null);
 
 	useEffect(() => {
@@ -36,10 +35,8 @@ function Booking(props) {
 					throw new Error('Failed to get time info');
 				}
 				const preTimer = await response.json();
-				console.log(preTimer);
 				//get current time
 				const currentTime = Date.now();
-				console.log(currentTime);
 
 				const [hoursStr, minutesStr, secondsStr] = preTimer.split(':');
 				const preHours = parseInt(hoursStr);
@@ -49,27 +46,15 @@ function Booking(props) {
 				preTime.setHours(preHours, preMinutes, preSeconds, 0);
 				const timeDifference = Math.round((preTime.getTime() + 600000 - currentTime) / (1000));
 				setinitialTime(timeDifference);
-				setTimer(timeDifference);
 			} catch (error) {
 				console.error('Error getting time info:', error.message);
 			}
 		};
 
-		// const interval = setInterval(() => {
-		//     setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
-		// }, 1000);
-
 		fetchPreBookingTimer();
 
 		return;
 	}, [props.token]);
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
-		}, 1000);
-		return () => clearInterval(interval);
-	}, [])
-
 
 	const handleIamHereClick = () => {
 		//createBooking();
@@ -155,7 +140,7 @@ function Booking(props) {
 			<div
 				style={{
 					"backgroundSize": "cover",
-					height: "70vh",
+					height: "85vh",
 					marginTop: '10px'
 				}}>
 				<Paper elevation={4}
@@ -166,14 +151,18 @@ function Booking(props) {
 						height: '100%',
 					}}
 				>
-					<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
-						Your Booking Has Been Reserved!
-					</Typography>
-					<Typography variant="h5" component="div" sx={{ fontWeight: 'bold', color: 'black', mt: 1 }}>
-						Please Arrive Within The Time Given Below and Start Your Booking
-					</Typography>
+					<div>
+						<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
+							Your Booking Has Been Reserved!
+						</Typography>
+
+						<Typography variant="h5" component="div" sx={{ fontWeight: 'bold', color: 'black', mt: 1 }}>
+							Please Arrive Within The Time Given Below and Start Your Booking
+						</Typography>
+					</div>
+
 					{initialTime &&
-						<div style={{ display: "flex", flexDirection: "column", rowGap: "30px", height: '100%', justifyContent: 'center', justifyItems: 'space-between' }}>
+						<div style={{ display: "flex", flexDirection: "column", rowGap: "30px", justifyItems: 'space-between', marginTop: '100px' }}>
 							<div style={{ alignSelf: 'center' }}>
 								<CountdownCircleTimer
 									isPlaying

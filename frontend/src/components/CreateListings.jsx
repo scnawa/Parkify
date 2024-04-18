@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Paper, Typography, createTheme, ThemeProvider, Popover, Autocomplete, TextField } from '@mui/material';
+import { Box, Button, Paper, Typography, createTheme, ThemeProvider, Autocomplete, TextField } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TextInputField from './TextInputField';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -149,7 +149,7 @@ function CreateListings(props) {
 
 			const fetchCreateListing = async () => {
 				try {
-					const response = await fetch('http://localhost:' + '8080/' + 'create_listing', {
+					const response = await fetch('http://localhost:8080/create_listing', {
 						method: 'PUT',
 						headers: {
 							'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ function CreateListings(props) {
 		// i handled the multiple images upload similarly in my comp6080 assignment 4
 		// since this part of code is general and i don't know another way to do it
 		Promise.allSettled(imagePromises).then((results) => {
-			return results.filter((promise) => promise.status == "fulfilled").map((promise) => promise.value);
+			return results.filter((promise) => promise.status === "fulfilled").map((promise) => promise.value);
 		}).then((newImages) => {
 
 			setImages([...images, ...newImages]);
@@ -215,7 +215,7 @@ function CreateListings(props) {
 	}
 	const handleImageDelete = (removeIndex) => {
 		setImagesFiles('');
-		setImages(images.filter((_, index) => index != removeIndex));
+		setImages(images.filter((_, index) => index !== removeIndex));
 	}
 
 	return (
@@ -290,7 +290,7 @@ function CreateListings(props) {
 						{thumbnail ? (
 							<>
 								<ImageListItem>
-									<img src={thumbnail} style={{ 'height': '200px', 'object-fit': 'cover' }} />
+									<img alt="uploaded thumbnail" src={thumbnail} style={{ 'height': '200px', 'object-fit': 'cover' }} />
 
 									<ImageListItemBar
 										title="thumbnail"
@@ -309,13 +309,13 @@ function CreateListings(props) {
 							</>
 						) : null}
 						<FileInputField multiple={true} color="green" setImage={setImages} onChange={handleImagesChangle} inputRef={imagesRef} content="Upload Additional Images" images={imagesFiles} />
-						{images.length != 0 ? (
+						{images.length !== 0 ? (
 							<>
 								<ImageList sx={{ width: '100%', height: 250 }} cols={3} rowHeight={150}>
 
 									{images.map((image, index) => (
 										<ImageListItem key={image}>
-											<img src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
+											<img alt="additional images" src={image} style={{ 'height': '150px', 'object-fit': 'contain' }} />
 											<ImageListItemBar
 												title={"images" + index}
 												actionIcon={

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Box, Button, Popover, Typography, createTheme } from '@mui/material';
 import "react-multi-date-picker/styles/colors/green.css"
@@ -19,22 +18,6 @@ const theme = createTheme({
 		contrastText: '#ffffff',
 	},
 });
-// modal style is from https://mui.com/material-ui/react-modal/
-const style = {
-	minWidth: '320',
-	position: 'absolute',
-
-	bgcolor: 'background.paper',
-	transform: 'translate(-50%, -50%)',
-
-	left: '50%',
-	display: 'flex',
-	border: '2px solid #000',
-
-	flexDirection: 'column',
-	top: '50%',
-
-};
 
 function PublishPopUp(props) {
 	const [start, setStart] = useState(

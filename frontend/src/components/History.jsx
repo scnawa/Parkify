@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardActions, Container, Paper, Grid, Typography, Button, Box } from '@mui/material';
+import { Card, CardContent, CardActions, Container, Grid, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const History = (props) => {
@@ -8,6 +8,7 @@ const History = (props) => {
 
 	useEffect(() => {
 		fetchBookings();
+		// eslint-disable-next-line
 	}, []);
 
 	const fetchBookings = async () => {
