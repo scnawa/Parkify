@@ -18,7 +18,7 @@ const theme = createTheme({
 		contrastText: '#ffffff',
 	},
 });
-
+// popup used for contain manage the publish dates of listing
 function PublishPopUp(props) {
 	const [start, setStart] = useState(
 		(props.listings.startDate) ?
@@ -29,6 +29,7 @@ function PublishPopUp(props) {
 			dayjs(props.listings.endDate) : dayjs(dayjs().add(7, 'day').format('MM/DD/YY'))
 	);
 	const popLocation = props.popoverLocation;
+	// controll the popover
 	const setPopOverLocation = props.setPopOverLocation;
 	const popoverOnClose = props.popoverOnClose;
 	const activated = props.activated;
@@ -66,7 +67,7 @@ function PublishPopUp(props) {
 			return Promise.reject(error);
 		}
 	}
-	// TODO: send request to backend and send notification
+	// send request to backend and send notification
 	const publishOnClick = (event) => {
 		fetchPublish().then(() => {
 			setActivated(true);
@@ -74,7 +75,7 @@ function PublishPopUp(props) {
 		}).catch(alert);
 		setPopOverLocation(false);
 	}
-	// TODO: send request to backend and send notification
+	// request to backend and send notification
 	const deactivateOnClick = (event) => {
 		const fetchPublish = async () => {
 			try {
@@ -113,6 +114,7 @@ function PublishPopUp(props) {
 		}).catch(alert);
 		setPopOverLocation(false);
 	}
+	// track the status of the popup
 	const isTriggered = Boolean(popLocation);
 	const id = isTriggered ? 'box' : undefined;
 

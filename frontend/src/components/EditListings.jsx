@@ -53,10 +53,11 @@ const uploadFile = (file) => {
     reader.readAsDataURL(targetFile);
     return dataPromise;
 }
-
+// The page to perform editing of a listing and removal of listing
 function EditListings(props) {
     const { state } = useLocation();
     const [listing, setListing] = React.useState(state.listing);
+    // ref is used to controll the state of a file input to perform preview image remove
     const thumbnailRef = React.useRef('');
     const imagesRef = React.useRef('');
     const [thumbnailFile, setThumbnailFile] = React.useState('');
@@ -69,6 +70,7 @@ function EditListings(props) {
         }
         // eslint-disable-next-line
     }, [state.token]);
+    // handle remove of listing
     const handleRemove = (event) => {
         const fetchDelete = async () => {
             const data = {

@@ -11,7 +11,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// the return page after the provider details link is expried
 function ProviderDetailsExpried() {
 	return (
 		<ThemeProvider theme={theme}>

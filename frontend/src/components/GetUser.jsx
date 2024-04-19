@@ -1,3 +1,4 @@
+// The function to get a user information
 async function GetUser(token, email) {
 	try {
 		const response = await fetch('/getUserInfo', {

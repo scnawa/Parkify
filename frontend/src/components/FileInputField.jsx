@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+// The input field for file input wrapped the mui component
 function FileInputField({ multiple, setImage, content, required, color, onChange, inputRef, images }) {
 	let handleChange = () => {
 		setImage(images);

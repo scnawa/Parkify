@@ -50,6 +50,7 @@ const theme = createTheme({
 		},
 	},
 });
+// used to controll to map, center the map and zoom in the map
 function PanMap(props) {
 	const map = useMap();
 	const userLocation = props.userLocation;
@@ -58,6 +59,7 @@ function PanMap(props) {
 	}
 	return null;
 }
+// The page to contains all the activated listings for user to navigate
 function AllListings(props) {
 	const [listings, setListings] = useState([]);
 	const [priceOrder, setPriceOrder] = useState('');

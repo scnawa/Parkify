@@ -20,7 +20,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The page that user end a parking and ready for payment
 function ParkEnd() {
 	// eslint-disable-next-line
 	const [token, _] = useState(localStorage.getItem('token'));
@@ -32,7 +32,7 @@ function ParkEnd() {
 
 	const [thumbnail, setThumbnail] = useState('');
 	const location = useLocation();
-
+	// the time of booking duration
 	const timer = location.state ? location.state.timer : 0;
 	const navigate = useNavigate();
 	const { listingId, listingNo } = location.state || {};
@@ -49,7 +49,7 @@ function ParkEnd() {
 		const remainingSeconds = seconds % 60;
 		return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 	};
-
+	// send promoCode and empty slot to backend and perform the end booking
 	const handlePayment = (e) => {
 		e.preventDefault();
 		uploadFile(thumbnail).then((url) => {

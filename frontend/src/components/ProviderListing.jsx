@@ -16,13 +16,13 @@ const theme = createTheme({
 			contrastText: '#E0F2F1',
 		},
 		anotherGreen: {
-			main: '#4caf50', // Green primary colour
+			main: '#4caf50', // Green second colour
 			light: '#E0F2F1',
 			contrastText: '#E0F2F1',
 
 		},
 		red: {
-			main: '#5e1914', // Green primary colour
+			main: '#5e1914', // red primary colour
 			light: '#E0F2F1',
 			contrastText: '#E0F2F1',
 
@@ -30,11 +30,12 @@ const theme = createTheme({
 		}
 	},
 });
-
+// used to show individual porvider listing details
 function ProviderListing(props) {
 	const [popoverLocation, setPopOverLocation] = useState(false);
 	// eslint-disable-next-line
 	const [listing, _] = useState(props.listing);
+	// status of the availability of the listing
 	const [activated, setActivated] = useState(props.listing.isActive === "True");
 	const navigate = useNavigate();
 
