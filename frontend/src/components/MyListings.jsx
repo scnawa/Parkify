@@ -19,6 +19,7 @@ const theme = createTheme({
 function MyListings(props) {
 	const token = props.token;
 	const [listings, setListings] = React.useState([]);
+	const [isAdmin, setIsAdmin] = React.useState(props.isAdmin);
 	const navigate = useNavigate();
 	React.useEffect(() => {
 		if (!token) {
@@ -77,20 +78,41 @@ function MyListings(props) {
 				console.error(error);
 			}
 		};
-
-		fetchStripeStatus().then((data) => {
-			if (data["stripeConnected"] === false) {
-				if (window.confirm("You need to update provider details to continue. Redirect now?")) {
-					rentOutInfoOnclick(props);
-					return;
-				} else {
-					navigate(-1)
-				}
-			} else {
-				return fetchListings();
+		const fetchAdmin = async () => {
+			try {
+				const response = await fetch('http://localhost:8080/checkAdmin', {
+					method: 'GET',
+					headers: {
+						'token': token,
+						'Content-Type': 'application/json',
+					},
+				});
+				const data = await response.json();
+				setIsAdmin(data.isAdmin)
+				return data;
+			} catch (error) {
+				console.error('An error occurred during data fetching:', error);
 			}
+		};
+		fetchAdmin().then((data) => {
+			if (data.isAdmin === false) {
+				fetchStripeStatus().then((isStripe) => {
+					if (isStripe["stripeConnected"] === false) {
+						if (window.confirm("You need to update provider details to continue. Redirect now?")) {
+							rentOutInfoOnclick(props);
+							return;
+						} else {
+							navigate(-1);
+							return;
+						}
+					} else {
+						return fetchListings();
+					}
+				})
+			}
+			return fetchListings();
 		}).catch((e) => {
-			if (!props.isAdmin) {
+			if (!isAdmin) {
 				if (window.confirm("You need to update provider details to continue. Redirect now?")) {
 					rentOutInfoOnclick(props);
 					return;
@@ -111,9 +133,9 @@ function MyListings(props) {
 			<Box display='flex' flexDirection="column" sx={{ justifyContent: "space-between", margin: 2 }}>
 				<Box display='flex' justifyContent="space-between" alignItems="center" mb={4}>
 					<Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#4caf50' }}>
-						{props.isAdmin ? `${props.username}'s Parking Spaces` : 'Manage Your Parking Spaces'}
+						{isAdmin ? `${props.username}'s Parking Spaces` : 'Manage Your Parking Spaces'}
 					</Typography>
-					{!props.isAdmin && <Button variant="contained" onClick={createOnClick} color="success">
+					{!isAdmin && <Button variant="contained" onClick={createOnClick} color="success">
 						Create
 					</Button>}
 				</Box>
