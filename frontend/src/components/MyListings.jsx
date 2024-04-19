@@ -97,6 +97,7 @@ function MyListings(props) {
 		fetchAdmin().then((data) => {
 			if (data.isAdmin === false) {
 				fetchStripeStatus().then((isStripe) => {
+					console.log(isStripe);
 					if (isStripe["stripeConnected"] === false) {
 						if (window.confirm("You need to update provider details to continue. Redirect now?")) {
 							rentOutInfoOnclick(props);
@@ -108,9 +109,18 @@ function MyListings(props) {
 					} else {
 						return fetchListings();
 					}
+				}).catch((e) => {
+					if (window.confirm("You need to update provider details to continue. Redirect now?")) {
+						rentOutInfoOnclick(props);
+						return;
+					} else {
+						navigate(-1);
+						return;
+					}
 				})
+			} else {
+				return fetchListings();
 			}
-			return fetchListings();
 		}).catch((e) => {
 			if (!isAdmin) {
 				if (window.confirm("You need to update provider details to continue. Redirect now?")) {
