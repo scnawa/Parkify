@@ -172,6 +172,7 @@ function AllListings(props) {
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log(props.isAdmin)
             if (props.token && (!props.isAdmin)) {
                 try {
                     // First fetch to check the number of users

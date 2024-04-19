@@ -21,12 +21,14 @@ async function Logout(token, setToken, setIsAdmin, setEmail) {
 			setEmail(null);
 			localStorage.removeItem('token');
 			localStorage.removeItem('email');
+			localStorage.removeItem('isAdmin');
 		} else {
 			console.error('Logout failed:', data.error);
 			setToken(null);
 			setEmail(null);
 			localStorage.removeItem('token');
 			localStorage.removeItem('email');
+			localStorage.removeItem('isAdmin');
 		}
 	} catch (error) {
 		console.error('An error occurred during logout:', error);
@@ -34,6 +36,7 @@ async function Logout(token, setToken, setIsAdmin, setEmail) {
 		setEmail(null);
 		localStorage.removeItem('token');
 		localStorage.removeItem('email');
+		localStorage.removeItem('isAdmin');
 	}
 };
 

@@ -32,7 +32,7 @@ const PageList = (props) => {
 	const [email, setEmail] = React.useState(localStorage.getItem('email'));
 	const [listings, setListings] = useState([]);
 	const [totalPage, setTotalPage] = useState(1);
-	const [isAdmin, setIsAdmin] = useState(false)
+	const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin'))
 
 	React.useEffect(() => {
 		if (token) {
@@ -47,6 +47,8 @@ const PageList = (props) => {
 					});
 					const data = await response.json();
 					setIsAdmin(data.isAdmin)
+					localStorage.setItem('isAdmin', data.isAdmin);
+					//set local storage for admin
 				} catch (error) {
 					console.error('An error occurred during data fetching:', error);
 				}
