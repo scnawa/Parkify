@@ -10,9 +10,8 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The component to render a provider listing
 function AllProviderListing({ listing, height, imageHeight, objectFit }) {
-	console.log(imageHeight);
 	return (
 		<ThemeProvider theme={theme}>
 			<Card sx={{ display: 'flex', height: { height }, flexDirection: 'column', borderRadius: '16px' }}>

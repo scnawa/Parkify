@@ -13,13 +13,13 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The page is to show the window time and let user cancel or confirm their pre booking
 function Booking(props) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { listingId, listingNo, numberPlate } = location.state || {};
 	const [initialTime, setinitialTime] = useState(null);
-
+	// fetch the timer from backend for persistence 
 	useEffect(() => {
 		const fetchPreBookingTimer = async () => {
 			try {
@@ -37,7 +37,7 @@ function Booking(props) {
 				const preTimer = await response.json();
 				//get current time
 				const currentTime = Date.now();
-
+				// calculate the time and give a readible format
 				const [hoursStr, minutesStr, secondsStr] = preTimer.split(':');
 				const preHours = parseInt(hoursStr);
 				const preMinutes = parseInt(minutesStr);
@@ -57,7 +57,6 @@ function Booking(props) {
 	}, [props.token]);
 
 	const handleIamHereClick = () => {
-		//createBooking();
 		const data = {
 			"token": props.token,
 			"listingId": listingId,

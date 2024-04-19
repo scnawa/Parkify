@@ -1,4 +1,5 @@
 
+// The function to handle logout
 async function Logout(token, setToken, setIsAdmin, setEmail) {
 	try {
 		const response = await fetch('/logout', {
@@ -13,7 +14,7 @@ async function Logout(token, setToken, setIsAdmin, setEmail) {
 		});
 
 		const data = await response.json();
-		// sessionID should be removed from local storage all below as well maybe?
+		// remove all status of the user
 		if (response.status === 200) {
 			setToken(null);
 			setIsAdmin(false);
@@ -22,7 +23,6 @@ async function Logout(token, setToken, setIsAdmin, setEmail) {
 			localStorage.removeItem('email');
 		} else {
 			console.error('Logout failed:', data.error);
-			// should we be doing the below stuff on error??
 			setToken(null);
 			setEmail(null);
 			localStorage.removeItem('token');

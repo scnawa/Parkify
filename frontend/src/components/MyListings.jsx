@@ -16,6 +16,7 @@ const theme = createTheme({
 		},
 	},
 });
+// page to show provider Listings and perform related operations
 function MyListings(props) {
 	const token = props.token;
 	const [listings, setListings] = React.useState([]);
@@ -33,6 +34,7 @@ function MyListings(props) {
 			navigate('/login');
 			return
 		}
+		// fetch the is the user provided all the provider details
 		const fetchStripeStatus = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/userIsprovider', {
@@ -54,7 +56,7 @@ function MyListings(props) {
 				return Promise.reject(error);
 			}
 		};
-
+		// fetch the provider listing
 		const fetchListings = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/get_listings', {
@@ -78,6 +80,7 @@ function MyListings(props) {
 				console.error(error);
 			}
 		};
+		// fetch is the user is an admin
 		const fetchAdmin = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/checkAdmin', {
@@ -94,6 +97,7 @@ function MyListings(props) {
 				console.error('An error occurred during data fetching:', error);
 			}
 		};
+		// if user is not a provider and not an admin, prevent from them visiting the page
 		fetchAdmin().then((data) => {
 			if (data.isAdmin === false) {
 				fetchStripeStatus().then((isStripe) => {

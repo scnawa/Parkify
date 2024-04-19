@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Modal.css';
 import NotificationComponent from './Notifications';
-
+// The component Modal to contains all the notifications 
 const Modal = ({ isOpen, setnotiLocation }) => {
 	const [notifications, setNotifications] = useState([]);
 	// eslint-disable-next-line
 	const [token, _] = React.useState(localStorage.getItem('token'));
-
+	// fetch Notifications on load
 	useEffect(() => {
 		const fetchNotifications = async () => {
 			try {

@@ -36,7 +36,7 @@ const priceStyle = {
 	marginRight: '8px',
 	marginTop: 3,
 };
-
+// The page to show the listing details and let user perform booking
 function ListingPage(props) {
 	const navigate = useNavigate();
 	// eslint-disable-next-line
@@ -51,11 +51,9 @@ function ListingPage(props) {
 	const [error, setError] = useState(null);
 	const [numberPlate, setNumberPlate] = useState('');
 	const [isNumberPlateValid, setIsNumberPlateValid] = useState(false);
-	// console.log(props);
 	useEffect(() => {
-		/*         const abortController = new AbortController();
-				const signal = abortController.signal; */
-		// console.log(props);
+		// To ensure user have entered their payment method in their account
+		// otherwise stop them from booking
 		const fetchPayment = async () => {
 			try {
 				const response = await fetch('http://localhost:8080/getDefaultCard', {
@@ -97,7 +95,6 @@ function ListingPage(props) {
 					setListing(data);
 					setLiked(data.hasLiked)
 					setTotalLikes(data.likes)
-					// console.log(data);
 				}
 			} catch (error) {
 				if (error.name === 'AbortError') {
@@ -169,6 +166,7 @@ function ListingPage(props) {
 			console.error('API call failed:', error);
 		}
 	};
+	// set the listing location for the map below
 	let locations = [50, 50];
 	let mapProps = { ...listing };
 	if (listing && listing.latitude
@@ -179,8 +177,7 @@ function ListingPage(props) {
 
 
 	}
-	console.log(listing);
-
+	// controll the like button with liked or disliked state
 	const toggleLike = async () => {
 		const currentlyLiked = liked;
 		setLiked(!liked);

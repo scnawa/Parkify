@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardActions, Container, Grid, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+// the page to contains booking history and perform dispute
 const History = (props) => {
 	const navigate = useNavigate();
 	const [bookings, setBookings] = useState([]);
@@ -53,7 +53,7 @@ const History = (props) => {
 			console.error('An error occurred:', error);
 		}
 	};
-
+	// format the time of the booking from milli sec to readible form
 	const formatTime = (totalSeconds) => {
 		const hours = Math.ceil(totalSeconds / 3600);
 		return `${hours} hr${hours > 1 ? 's' : ''}`;

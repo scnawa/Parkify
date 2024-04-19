@@ -12,7 +12,7 @@ const theme = createTheme({
 	},
 });
 
-
+// the component to show a credit card
 function creditCard(card, isDefault) {
 	return (
 		<>
@@ -28,6 +28,8 @@ function creditCard(card, isDefault) {
 	);
 
 }
+
+// the component to show a debit card
 function debitCard(card, isDefault) {
 	return (
 		<>
@@ -43,11 +45,13 @@ function debitCard(card, isDefault) {
 		</>
 	);
 }
+// The component show a added payment of user and let user set it as default or remove it 
 function CustomerCard(props) {
 	// eslint-disable-next-line
 	const [card, _] = useState(props.card);
 	let cardInfo = null;
 	let isDefault = props.defaultCard === card.id;
+	// render different component based on the type of payment method 
 	switch (card.type) {
 		case "au_becs_debit":
 			cardInfo = debitCard(card, isDefault);

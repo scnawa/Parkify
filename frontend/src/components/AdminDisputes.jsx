@@ -3,7 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, CardActions, Button, Modal, C
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-
+// The page for admin to handle disputes
 function AdminDisputes(props) {
 	const [disputes, setDisputes] = useState([]);
 	const [filteredDisputes, setFilteredDisputes] = useState([]);
@@ -15,7 +15,7 @@ function AdminDisputes(props) {
 		fetchData();
 		// eslint-disable-next-line
 	}, [props.token]);
-
+	// To handle the dispute filter change to show only resolved/unresolved disputes
 	useEffect(() => {
 		let filtered = [...disputes];
 		if (filter === 'unresolved') {
@@ -27,7 +27,7 @@ function AdminDisputes(props) {
 		setFilteredDisputes(filtered);
 		// eslint-disable-next-line
 	}, [disputes, filter]);
-
+	// fetch the disputes from backend
 	const fetchData = async () => {
 		try {
 			const response = await fetch('getDisputes', {
@@ -81,7 +81,7 @@ function AdminDisputes(props) {
 	const handleChangeFilter = (event) => {
 		setFilter(event.target.value);
 	};
-
+	// format the time of booking from milli sec to readible format
 	const formatTime = (totalSeconds) => {
 		const hours = Math.ceil(totalSeconds / 3600);
 		return `${hours} hr${hours > 1 ? 's' : ''}`;

@@ -73,7 +73,7 @@ const searchBarStyle = {
 
 
 }
-
+// fetch the link that redirect to stripe to update the provider details
 export function rentOutInfoOnclick(props) {
 	const fetchAccountLink = async () => {
 		try {
@@ -112,10 +112,11 @@ function NavBar(props) {
 	const setEmail = props.setEmail;
 	const location = useLocation();
 	const [pages, setPages] = React.useState(['My Parking Spaces']);
+	// the default location is on UNSW
 	const [userLocation, setUserLocation] = React.useState([-33.9062434, 151.23465683738365]);
 
 	const navigate = useNavigate();
-
+	// show different pages on admin or user account
 	React.useEffect(() => {
 		if (isAdmin) {
 			setPages(["MANAGE USERS", "DISPUTES"]);
@@ -123,6 +124,8 @@ function NavBar(props) {
 			setPages(['My Parking Spaces']);
 		}
 	}, [isAdmin]);
+	// if user enable the location permission
+	// set user location to their physical location
 	React.useEffect(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
@@ -150,7 +153,7 @@ function NavBar(props) {
 		return;
 	}
 
-	// TODO: navigate different page
+	// navigate different page on menu if on click
 	const pageOnClick = (e) => {
 		const text = e.target.innerText;
 		switch (text) {

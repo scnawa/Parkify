@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+// The component of the notification pop up
 const NotificationComponent = ({ title, description, date, onReadClick }) => {
 	return (
 		<div className="notification-component">

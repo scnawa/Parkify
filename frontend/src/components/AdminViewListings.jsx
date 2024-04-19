@@ -4,15 +4,16 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import MyListings from './MyListings';
 import ProfilePage from './ProfilePage';
-
+// The page for admin to perform operation on user listings and user profile
 function AdminViewListings(props) {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [users, setUsers] = useState([]);
 	const location = useLocation();
-  // eslint-disable-next-line
+	// eslint-disable-next-line
 	const { token, email } = location.state || {};
-  // dont remove token above due to usestate 
+	// dont remove token above due to usestate 
 
+	// fetch the list of users to view their listings
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -41,7 +42,7 @@ function AdminViewListings(props) {
 	const handleUserChange = (_, newValue) => {
 		setSelectedUser(newValue);
 	};
-
+	// render the selection search bar and the selected user info
 	return (
 		<div>
 			<Autocomplete

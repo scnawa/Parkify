@@ -11,7 +11,7 @@ const theme = createTheme({
         },
     },
 });
-
+// The return page after a payment method is added
 function PaymentAddedSuccess() {
     return (
         <ThemeProvider theme={theme}>

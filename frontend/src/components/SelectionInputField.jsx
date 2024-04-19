@@ -1,6 +1,6 @@
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
-
+// compoenet for input selection field
 function SelectionInputField({ setSelection, selectionNames, label }) {
 	const selectionChoices = selectionNames.map((x, index) => {
 		return (

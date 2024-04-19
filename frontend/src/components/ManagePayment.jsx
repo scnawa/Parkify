@@ -14,7 +14,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The page to show all the customer payment method and perform related operations on them
 function ManagePayment(props) {
 	// eslint-disable-next-line
 	const [token, setToken] = React.useState(localStorage.getItem('token'));

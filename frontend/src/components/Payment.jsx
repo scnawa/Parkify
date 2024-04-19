@@ -13,6 +13,8 @@ function Payment(props) {
             navigate('/login');
             return
         }
+        // clientSecret is used by stripe to handle the request
+        // since the payment details is sent directly to stripe
         const fetchClinetSecret = async () => {
             try {
                 const response = await fetch('http://localhost:8080/addPaymentMethod', {
@@ -34,6 +36,8 @@ function Payment(props) {
                 return Promise.reject(error);
             }
         }
+        // clientSecret is used by stripe to handle the request
+        // since the payment details is sent directly to stripe
         fetchClinetSecret().then((data) => {
             setClientSecret(data["clientSecret"]);
         }).catch(alert);

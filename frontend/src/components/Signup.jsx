@@ -12,7 +12,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The signUp page to handle user sign up
 function Signup(props) {
 	const [email, setEmail] = React.useState('');
 	const [username, setUsername] = React.useState('');
@@ -24,7 +24,7 @@ function Signup(props) {
 
 	const handleSignup = async () => {
 		if (password !== confirmPassword) {
-			alert('Passwords need to match!'); // set password fields to red?
+			alert('Passwords need to match!');
 			return;
 		}
 
