@@ -9,9 +9,6 @@ const NotificationComponent = ({ title, description, date, onReadClick }) => {
 				<p>{description}</p>
 				<p>{date}</p>
 			</div>
-			<button className="read-button" onClick={onReadClick}>
-				Read
-			</button>
 		</div>
 	);
 };

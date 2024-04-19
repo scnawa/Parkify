@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Divider, TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
+import { Tooltip, Divider, TextField, Box, Grid, ThemeProvider, Typography, createTheme, Button, MenuItem, FormControl, Select, InputLabel, Pagination } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import AllProviderListing from "./AllProviderListing";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
@@ -168,30 +168,52 @@ function AllListings(props) {
 		// eslint-disable-next-line
 	}, [props.listings]);
 
-	useEffect(() => {
-		if (props.token && (!props.isAdmin)) {
-			console.log('recommended listings queried')
-			fetch('http://localhost:8080/recommendations', {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					'token': props.token,
-					'email': props.email,
-				},
-			})
-				.then(response => response.json())
-				.then(data => {
-					if (!data.error) {
-						setRecommendedListings(data);
-						console.log('recommended listings SET')
-					} else {
-						alert(data.error);
-					}
-				})
-				.catch(error => console.error(error));
-		}
-		// eslint-disable-next-line
-	}, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            if (props.token && (!props.isAdmin)) {
+                try {
+                    // First fetch to check the number of users
+                    const responseUsers = await fetch('http://localhost:8080/get_all_users', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    const users = await responseUsers.json();
+                    
+                    // Check the number of users
+                    if (users.length < 3) {
+                        setRecommendedListings(false);
+                        console.log('Not enough users for recommendations');
+                        return; // Exit if not enough users
+                    }
+
+                    // If there are enough users, fetch recommendations
+                    console.log('Recommended listings queried');
+                    const responseRecommendations = await fetch('http://localhost:8080/recommendations', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'token': props.token,
+                            'email': props.email,
+                        },
+                    });
+                    const data = await responseRecommendations.json();
+                    if (!data.error) {
+                        setRecommendedListings(data);
+                        console.log('Recommended listings SET');
+                    } else {
+                        alert(data.error);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        };
+
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 	const handlePriceOrderChange = (event) => {
 		setPriceOrder(event.target.value);
@@ -313,22 +335,30 @@ function AllListings(props) {
 					<Pagination count={totalPage} size="large" page={curPage} onChange={(_, value) => { setCurPage(value); }} />
 				</Box>
 				{props.token && (!props.isAdmin) && (
-					<Button
-						variant="contained"
-						sx={{
-							bgcolor: '#4caf50',
-							'&:hover': {
-								bgcolor: '#4caf50',
-							},
-							color: 'white',
-							borderRadius: '4px',
-							padding: '10px 16px',
-							my: 2
-						}}
-						onClick={() => setShowRecommendations(!showRecommendations)}
-					>
-						{showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
-					</Button>
+                    <Tooltip
+                        title={recommendedListings === false ? "We cannot recommend you any listings since we have less than three users. Please check later" : ""}
+                    >
+                        <span>
+                            <Button
+                                variant="contained"
+                                disabled={!recommendedListings}
+                                sx={{
+                                    bgcolor: '#4caf50',
+                                    '&:hover': {
+                                        bgcolor: '#4caf50',
+                                    },
+                                    color: 'white',
+                                    borderRadius: '4px',
+                                    padding: '10px 16px',
+                                    my: 2
+                                }}
+                                onClick={() => setShowRecommendations(!showRecommendations)}
+                            >
+                                {showRecommendations ? 'Hide Recommendations' : 'Show Recommendations'}
+                            </Button>
+                        </span>
+                    </Tooltip>
+				
 				)}
 				{/* Recommended listings section */}
 				{props.token && showRecommendations && (
