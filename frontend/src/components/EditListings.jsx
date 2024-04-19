@@ -56,7 +56,6 @@ const uploadFile = (file) => {
 
 function EditListings(props) {
     const { state } = useLocation();
-    console.log("editListings " + state.token)
     const [listing, setListing] = React.useState(state.listing);
     const thumbnailRef = React.useRef('');
     const imagesRef = React.useRef('');

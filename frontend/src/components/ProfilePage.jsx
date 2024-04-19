@@ -20,7 +20,6 @@ const ProfilePage = (props) => {
         const fetchData = async () => {
             try {
                 const userData = await GetUser(props.token, props.email);
-                console.log(userData);
                 setFormData({
                     email: userData.email,
                     name: userData.username,

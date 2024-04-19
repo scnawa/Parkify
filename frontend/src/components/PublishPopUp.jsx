@@ -143,13 +143,28 @@ function PublishPopUp(props) {
 							alignItems: 'center',
 							rowGap: '15px'
 						}}>
-							<LocalizationProvider dateAdapter={AdapterDayjs}>
-								<DatePicker value={start} onChange={(input) => setStart(input)} />
-							</LocalizationProvider>
-							<Typography variant="button" display="block" gutterBottom sx={{ justifySelf: 'center' }}>to</Typography>
-							<LocalizationProvider dateAdapter={AdapterDayjs}>
-								<DatePicker value={end} onChange={(input) => setEnd(input)} />
-							</LocalizationProvider>
+							{activated &&
+								<>
+									<LocalizationProvider dateAdapter={AdapterDayjs}>
+										<DatePicker value={start} readOnly />
+									</LocalizationProvider>
+									<Typography variant="button" display="block" gutterBottom sx={{ justifySelf: 'center' }}>to</Typography>
+									<LocalizationProvider dateAdapter={AdapterDayjs}>
+										<DatePicker value={end} readOnly />
+									</LocalizationProvider>
+								</>
+							}
+							{!activated &&
+								<>
+									<LocalizationProvider dateAdapter={AdapterDayjs}>
+										<DatePicker value={start} maxDate={end} disablePast onChange={(input) => setStart(input)} />
+									</LocalizationProvider>
+									<Typography variant="button" display="block" gutterBottom sx={{ justifySelf: 'center' }}>to</Typography>
+									<LocalizationProvider dateAdapter={AdapterDayjs}>
+										<DatePicker value={end} minDate={start} disablePast onChange={(input) => setEnd(input)} />
+									</LocalizationProvider>
+								</>
+							}
 						</div>
 
 						<div style={{
