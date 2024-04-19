@@ -15,8 +15,8 @@ from pymongo.server_api import ServerApi
 # Accessing the database
 ca = certifi.where()
 cluster = "mongodb+srv://sarveshwanzare10:tj4R9si00EuyLo2t@userbase.i3dtjoy.mongodb.net/?retryWrites=true&w=majority&appName=userbase"
-#client = MongoClient(cluster, tlsCAFile=ca)
-client = MongoClient(cluster, server_api=ServerApi('1'))
+client = MongoClient(cluster, tlsCAFile=ca)
+#client = MongoClient(cluster, server_api=ServerApi('1'))
 db = client.userbase
 
 stripe.api_key = "sk_test_51OxR4GBZWJO5ZDijvkSWr3V71apvw6HNRDyoVJg6Z7zVRTjk78SHGFxTcn0oUJAEViWE35ppf9nlmeKN9aQsoFo500wUemOwNF"
