@@ -25,3 +25,39 @@ we were pretty much at par with our target for sprint one towards the end of the
 I completed all of the user authentication backend functions in a day and then helped in create listing function 
 and wrote API calls on which the frontend will request from and then set up the database on MongoDB. 
 Ady collaborated with me in designing the database. 
+
+Week 5: 
+In Week 5, we had the demo for sprint 1. The demo went really well and we got full marks. However, the tutor was not 
+too happy with the UI design of the web app so we set out to change it and got the review of the tutor after which he liked it in sprint 2. 
+After the sprint 1 demo, we had the retrospective meeting and decided what went well, what would we need to improve on, and what can be changed. 
+Later in the week, we had a call for deciding tasks for sprint 2. In which I delegated tasks to different team members. Tasks were delegated to people 
+based on the difficulty of the task and the competancy of the person handling it on time. 
+
+Week 6: 
+In Week 6, I worked on the searching function. In order to implement the search function, I had used Tries so that the search works for incomplete 
+queries and the search result is accurate. Afterwards, I implemented the filtering feature, the app filters by price and distance but in order to 
+get the n nearest listings, I had to figure out the location of the user first, so I used the geocoder library to get that. A lot of research went into that part 
+but I managed to figure it out in the end. Ady helped me a little in this functionality. I returned the favour by helping him draft out the logic for create listings 
+and bookings. 
+
+Week 7: 
+In Week 7, we met in the tutorial and I figured out that frontend was not done at all for the upcoming sprint. Having finished my tasks for sprint 2, I decided to help 
+out my teammates with any bugs/issues they were facing and I implemented threads for keeping the timer system persistent in our system, ironically this was one of the harder
+parts as the persistence kept breaking until we used threads. 
+
+Week 8: 
+In Week 8, we had the demo for our second sprint. Although it was very hectic to meet our goals, we managed to do it at the end of the day. Sprint 2 demo was also successful
+and the tutor liked our product all in all. There were a few minor routing bugs that needed to be tended to but we kept that for sprint 3 as our primary goal was to meet the functionality. 
+After the demo, we again had our retrospective meeting in which we reflected on what went well, what needed to change and what could be done better. After this, we had a meeting to discuss
+the disputes part for admin for final demo. We spent hours on brainstorming on the design and the implementation of the functionality and after 2 hours of brainstorming and arguing, we came to a conclusion. 
+We divded the tasks for final demo and got to work. 
+
+Week 9: 
+In Week 9, we fixed some of the design issues and routing bugs that we prevalent and then I implemented the likes and dislikes functionality and helped my teammates with any of the bugs 
+that they were facing. I implemented any additional routes that were required by the frontend and gave some feedback on design changes that needed to be done which the frontend team later implemented. 
+
+Week 10: 
+In Week 10, after completing the likes and dislikes, I started implementing the recommendations system. We were contemplating whether or not we should implement ML based recommendations or not but I insisted on 
+doing ML based recommendations and took sole responsibility of it. I spent hours researching which method I should apply before coming to the conclusion that using a hybrid of Collaborative and Content based methods is 
+the best to implement for our use case. Later in the week, we had the final demo which went successfully according to me. The tutor was quite happy with the functionalities and then we started working on the final report 
+for the project. All in all, the course was very fun to do and I have made friendships that would last a lifetime along the way!
