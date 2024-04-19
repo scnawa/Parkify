@@ -47,7 +47,6 @@ const PageList = (props) => {
 					});
 					const data = await response.json();
 					setIsAdmin(data.isAdmin)
-					console.log(data)
 				} catch (error) {
 					console.error('An error occurred during data fetching:', error);
 				}
