@@ -479,7 +479,6 @@ class User:
     # takes listing off page
     def holdListing(self, userData):
         user = db.userbaseData.find_one({"email": 'test@example.com'})
-        print(user)
         # check if the user exists
         user = db.userbaseData.find_one({"sessionId": userData['token']})
         # check if the listing exists
@@ -544,7 +543,6 @@ class User:
     def getClosestListings(self, headers, distance): 
         latitude = 0
         longitude = 0
-        print(headers['lat'], headers['lon'])
         latitude = float(headers['lat'])
         longitude = float(headers['lon'])
         closestListings = []
@@ -564,8 +562,6 @@ class User:
                 # maybe update the expired listing as isActive = false in both listingDb and userDb
                 if start <= now and now <= end:
                     closestListings.append(listing)
-                else:
-                    print(listing['address'], start,now, end)
         return json_util.dumps(closestListings)
       
     def createBooking(self, userData):
@@ -924,7 +920,6 @@ class User:
                 with open("./promoCodes.txt", "r") as file: 
                     for promo in file: 
                         if promoCode == promo.strip():
-                            print(promoCode[-2:])
                             discountPercentage = int(promoCode[-2:]) 
                             discountedPrice = bookingPrice - (bookingPrice * discountPercentage / 100)
                             return discountedPrice
