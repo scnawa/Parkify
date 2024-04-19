@@ -71,6 +71,7 @@ export const uploadFile = (file) => {
 	return dataPromise;
 }
 const mapApi = 'https://nominatim.openstreetmap.org/search?'
+// The page to let user create the listing
 function CreateListings(props) {
 	const [detail, setDetail] = React.useState('');
 
@@ -88,7 +89,8 @@ function CreateListings(props) {
 
 	const [images, setImages] = React.useState([]);
 	const [imagesFiles, setImagesFiles] = React.useState('');
-
+	// ref is used to controll and reset the file input field
+	// so that we can perform delete on preview image and perform re-upload
 	const thumbnailRef = React.useRef('');
 	const imagesRef = React.useRef('');
 
@@ -105,6 +107,7 @@ function CreateListings(props) {
 		// eslint-disable-next-line
 	}, [props.token]);
 	// https://stackoverflow.com/questions/42217121/how-to-start-search-only-when-user-stops-typing
+	// delay the search to prevent user typing to fast and annoy the api server
 	React.useEffect(() => {
 		setOptions([]);
 		const delaySearch = setTimeout(() => {
@@ -128,8 +131,10 @@ function CreateListings(props) {
 		}, 380);
 		return () => clearTimeout(delaySearch);
 	}, [address]);
+	// The submission of listing form
 	const submitForm = (e) => {
 		e.preventDefault();
+		// convert the file first
 		uploadFile(thumbnail).then((url) => {
 			const data = {
 				token: state.token,
@@ -181,7 +186,7 @@ function CreateListings(props) {
 			});
 	}
 	let locations = [-33.9062434, 151.23465683738365];
-
+	// set the random default location to user input if provided
 	if (addressGeo && addressGeo.lat && addressGeo.lon) {
 		locations = [addressGeo.lat, addressGeo.lon];
 

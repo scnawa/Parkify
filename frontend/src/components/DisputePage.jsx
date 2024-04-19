@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TextField, Button, Box, Typography } from '@mui/material';
-
+// The page for user to make a dispute
 const DisputePage = (props) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const { booking, email } = location.state;
 	const [disputeMessage, setDisputeMessage] = useState('');
 	const [selectedFiles, setSelectedFiles] = useState([]);
-
+	// handle dispute file upload
 	const handleFileSelect = (event) => {
 		setSelectedFiles([...event.target.files]);
 	};
-
+	// convert the file image to base 64
 	const convertImageToBase64 = (file) => {
 		const reader = new FileReader();
 		return new Promise((resolve, reject) => {

@@ -11,7 +11,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// the return page after user entered the provider details
 function ProviderDetailsReturn() {
 	return (
 		<ThemeProvider theme={theme}>

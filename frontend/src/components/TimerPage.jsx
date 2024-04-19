@@ -14,7 +14,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// component on the timer page to track the time customer spent on booking
 function TimerPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -24,6 +24,7 @@ function TimerPage() {
 
 	const { listingId, listingNo } = location.state || {};
 	useEffect(() => {
+		// set interval to update the timer every second
 		const intervalId = setInterval(() => {
 			setTimer((prevTimer) => prevTimer + 1);
 		}, 1000);
@@ -48,7 +49,7 @@ function TimerPage() {
 			}
 		};
 		fetchBooking().then((data) => {
-			console.log(data);
+			// To format the time from milli sec to readible form
 			const [hoursStr, minutesStr, secondsStr] = data.split(':');
 			const preHours = parseInt(hoursStr);
 			const preMinutes = parseInt(minutesStr);

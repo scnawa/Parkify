@@ -12,12 +12,14 @@ const theme = createTheme({
 		},
 	},
 });
-
+// The page for user login
 function Login(props) {
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
 	const navigate = useNavigate();
-
+	// redirect user to homepage on success or redirect them to verify page
+	// if they haven't entered the verification code yet
+	// otherwise alert the failure
 	const handleLogin = async () => {
 		try {
 			const response = await fetch('/login', {

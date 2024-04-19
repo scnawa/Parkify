@@ -3,12 +3,13 @@ import { Container, Grid, Paper, Typography, Button, Box } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
-
+// The page that contains the booking record of customers on the provider listings
+// and let provider perfomr dispute
 function CustomerHistory(props) {
 	const [selectedListing, setSelectedListing] = useState(null);
 	const [listings, setListings] = useState([]);
 	const navigate = useNavigate();
-
+	// fetch the listings of the provider
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -43,7 +44,7 @@ function CustomerHistory(props) {
 		const hours = Math.ceil(totalSeconds / 3600);
 		return `${hours} hr${hours > 1 ? 's' : ''}`;
 	};
-
+	// autocomplete to let provider select or search a listing
 	return (
 		<div>
 			<Autocomplete

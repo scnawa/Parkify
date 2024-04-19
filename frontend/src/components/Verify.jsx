@@ -12,7 +12,7 @@ const theme = createTheme({
 		},
 	},
 });
-
+// component of the verify page used to handle user verification code input
 function Verify(props) {
 	const location = useLocation();
 	const { email, password } = location.state || {};
@@ -20,7 +20,7 @@ function Verify(props) {
 	const navigate = useNavigate();
 	const inputRefs = useRef(Array(6).fill(0).map(() => React.createRef()));
 	const [confirmedCode, setConfirmedCode] = useState('')
-
+	// fetch the verification code on load
 	useEffect(() => {
 		const fetchData = async () => {
 			try {

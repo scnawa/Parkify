@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Avatar, Stack } from '@mui/material
 import GetUser from './GetUser';
 import defaultProfilePicture from '../../src/assets/user.png';
 import { uploadFile } from './CreateListings';
-
+// The page to show the user profile details and perform related oeprations
 const ProfilePage = (props) => {
     const [formData, setFormData] = useState({
         name: "",
