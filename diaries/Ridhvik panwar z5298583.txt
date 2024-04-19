@@ -1,0 +1,10 @@
+
+Ridhvik Panwar z5298583
+
+Week 1: 
+In this week, we formed a group and decided the project topic as car renting system.
+(Sarvesh as project owner and Ridhvik as Scrum Master),
+the language and framework that we design to build our frontend and backend. eg. React and Python.
+Weeks 2-4: Added image functionalities like adding images and removing images. Also, worked on several helper functions like verification of email and confirmation.
+Weeks 5-8: Implemented Promo Code Functionality and Listing Confirmation Message for providers
+Weeks 9-10: Worked on notifications (backend) and final report. 
