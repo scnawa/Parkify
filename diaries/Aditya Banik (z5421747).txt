@@ -4,7 +4,6 @@ Roles were designated for both backend and frontend teams, along with the select
 The project owner was identified as Sarvesh, with Ridhvik appointed as the Scrum Master. I was appointed as a Backend Developer
 
 
-
 Week 2: 
 
 During the second week, our attention shifted towards crafting the Proposal. 
@@ -24,3 +23,49 @@ Despite a slightly delayed start compared to other teams, by the end of the week
 Within a day, I managed to complete all the backend functions for provider listings. 
 Following that, I contributed to creating the get_listing functions and crafting API calls that the frontend will utilize. 
 Additionally, I configured the MongoDB database. Sarvesh and I worked together on designing the database structure.
+
+Week 5:
+
+In week 5, our focus was on completing the backend functionalities related to user authentication and provider listing management. 
+We finalized the implementation of user signup, login, logout, and account deletion functionalities. I worked on refining the error handling mechanisms and integrating Stripe API for payment processing. 
+Additionally, I collaborated with Sarvesh to optimize database queries and ensure data integrity.
+
+Week 6:
+
+During the sixth week, we concentrated on enhancing the user experience by implementing features such as email verification during signup and password reset functionalities. 
+I integrated helper functions for sending verification emails and resetting passwords securely. 
+Furthermore, I worked on refining the listing management functionalities, including creating, updating, deactivating, and deleting listings. 
+We conducted thorough testing to ensure the robustness and reliability of these features.
+
+Week 7:
+
+In week 7, we shifted our focus towards improving system performance and scalability. 
+I optimized database queries and implemented caching mechanisms to reduce response times and enhance overall system efficiency. 
+Additionally, I collaborated with the frontend team to integrate the backend APIs seamlessly into the user interface. 
+We conducted stress testing to identify and address any bottlenecks or performance issues.
+
+Week 8:
+
+During the eighth week, we prioritized implementing additional user management functionalities, such as profile updates and password resets. 
+I enhanced the backend logic for user profile management and integrated secure password hashing mechanisms to ensure data security. 
+Moreover, I collaborated with the frontend team to implement dynamic user interfaces for profile editing and password reset functionalities.
+
+Week 9:
+
+In week 9, we focused on implementing booking management functionalities to enable users to create and manage bookings for parking spaces. 
+I developed backend APIs for creating bookings, releasing bookings, and ending bookings based on user interactions. 
+Additionally, I collaborated with the frontend team to design intuitive user interfaces for booking management, incorporating real-time updates and notifications.
+
+Week 10:
+
+During the tenth week, our efforts were directed towards implementing dispute resolution functionalities and refining the booking management system. 
+I integrated backend logic for handling disputes between users and providers, including creating disputes, resolving disputes, and retrieving dispute details. 
+Furthermore, I optimized the booking management system to ensure seamless communication between users and providers, enhancing the overall user experience.
+
+Week 11:
+
+In the final week of this period, we conducted comprehensive testing and debugging to address any remaining issues and ensure the stability and reliability of the system. 
+I collaborated closely with the quality assurance team to identify and resolve any bugs or performance issues. 
+Additionally, I documented the backend APIs and provided technical support to the deployment team during the system rollout. 
+Finally, we conducted a retrospective to reflect on our achievements and identify areas for improvement in future sprints.
+
